@@ -1,4 +1,4 @@
-package br.unicamp.ic.boilerplate;
+package br.unicamp.ic.mih;
 
 import com.getcapacitor.BridgeActivity;
 
