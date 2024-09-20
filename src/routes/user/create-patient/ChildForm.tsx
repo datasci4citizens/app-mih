@@ -48,7 +48,9 @@ const formSchema = z.object({
     lowWeight: z.boolean(),
     deliveryType: z.enum(["cesarean", "normal"]),
     brothers: z.boolean(),
-    brothersNumber: z.number(),
+    brothersNumber: z.string().regex(new RegExp('^[0-9]+$'), 'Apenas números').min(1, {
+        message: "Pelo menos um irmão"
+    }),
     consultDentist: z.boolean(),
     consultType: z.enum(["public", "private", "none"])
 })
@@ -67,7 +69,7 @@ export default function ChildForm() {
             lowWeight: false,
             deliveryType: "normal",
             brothers: false,
-            brothersNumber: 0,
+            brothersNumber: "",
             consultDentist: false,
             consultType: "none"
         },
@@ -266,7 +268,7 @@ export default function ChildForm() {
                                         <FormItem>
                                             <FormLabel>Número de irmãos</FormLabel>
                                             <FormControl>
-                                                <Input type="number" placeholder="Número de irmãos" {...field} />
+                                                <Input placeholder="Número de irmãos" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
