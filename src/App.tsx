@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import SelectUserType from './routes/user/SelectUserType';
 import CreatePatient from './routes/user/create-patient/CreatePatient';
 import ChildForm from './routes/user/create-patient/ChildForm';
+import PatientHomePage from './routes/home/PatientHomePage';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,11 @@ const router = createBrowserRouter([
   {
     path: 'user/create/patient/child',
     element: <ChildForm />
+  },
+  {
+    path: '/patient-home',
+    element: <PatientHomePage />
+
   }
 ]);
 

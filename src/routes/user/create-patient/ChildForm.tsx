@@ -36,6 +36,7 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select.tsx'
+import useSWRMutation from 'swr/mutation'
 
 const formSchema = z.object({
     childName: z.string().min(4, {
@@ -48,15 +49,42 @@ const formSchema = z.object({
     lowWeight: z.boolean(),
     deliveryType: z.enum(["cesarean", "normal"]),
     brothers: z.boolean(),
-    brothersNumber: z.string().regex(new RegExp('^[0-9]+$'), 'Apenas números').min(1, {
+    brothersNumber: z.string().regex(new RegExp('^[0-9]+$'), 'Apenas números positivos').min(1, {
         message: "Pelo menos um irmão"
     }),
     consultDentist: z.boolean(),
     consultType: z.enum(["public", "private", "none"])
 })
 
+async function sendRequest(url, { arg }: {
+    arg: {
+        childName: string;
+        birthday: Date;
+        highFever: boolean;
+        premature: boolean;
+        deliveryProblems: boolean;
+        lowWeight: boolean;
+        deliveryType: "cesarean" | "normal";
+        brothers: boolean;
+        brothersNumber: string;
+        consultDentist: boolean;
+        consultType: "public" | "private" | "none";
+    }
+}) {
+    console.log('=== sending request to ===')
+    console.log(url)
+    return await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(arg)
+    }).then(res => res.json())
+}
+
+
 export default function ChildForm() {
-    // const { trigger, data, error } = useSWRMutation('http://localhost:8000/patients', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -78,15 +106,15 @@ export default function ChildForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log('=== new values ===')
         console.log(values)
-        // const result = await trigger(values)
-        // console.log('=== result ===')
-        // console.log(result)
+        const result = await trigger(values)
+        console.log('=== result ===')
+        console.log(result)
     }
 
     return (
 
         <div className='flex min-h-screen items-center justify-center'>
-            <Card className='w-[90%] border-none'>
+            <Card className='w-[90%] border-none overflow-auto max-h-screen'>
                 <CardHeader>
                     <CardTitle className='text-center font-extrabold'>Cadastro da criança</CardTitle>
                 </CardHeader>
@@ -109,7 +137,7 @@ export default function ChildForm() {
                             <FormField control={form.control} name="birthday"
                                 render={({ field }) => (
                                     <FormItem className='text-center'>
-                                        <FormLabel>Data de Nascimento</FormLabel>
+                                        <FormLabel >Data de Nascimento</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
@@ -253,7 +281,13 @@ export default function ChildForm() {
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
                                                     checked={field.value}
-                                                    onCheckedChange={field.onChange} />
+                                                    onCheckedChange={(checked) => {
+                                                        field.onChange(checked);
+                                                        if (!checked) {
+                                                            form.setValue("brothersNumber", "");
+                                                        }
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormDescription>Não</FormDescription>
                                         </div>
@@ -287,7 +321,12 @@ export default function ChildForm() {
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
                                                     checked={field.value}
-                                                    onCheckedChange={field.onChange} />
+                                                    onCheckedChange={(checked) => {
+                                                        field.onChange(checked);
+                                                        if (!checked) {
+                                                            form.setValue("consultType", "none");
+                                                        }
+                                                    }} />
                                             </FormControl>
                                             <FormDescription>Não</FormDescription>
                                         </div>
@@ -315,7 +354,9 @@ export default function ChildForm() {
                                     </FormItem>
                                 )}
                             />)}
-                            <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit"><Link to="child">Próximo</Link></Button>
+                            <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit">
+                                <Link to="/patient-home">Adicionar</Link>
+                            </Button>
                         </form>
                     </Form>
                 </CardContent>

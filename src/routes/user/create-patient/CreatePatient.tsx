@@ -53,12 +53,14 @@ const formSchema = z.object({
     cep: z.string().min(8, {
         message: "O cep deve ter no mínimo 8 dígitos.",
     }),
-    accept_tcle: z.boolean()
+    accept_tcle: z.boolean().refine(val => val === true, {
+        message: "É necessário que concorde com os termos para avançar.",
+    })
 })
 
 
 export default function CreatePatient() {
-    const { trigger, data, error } = useSWRMutation('http://localhost:8000/patients', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -82,7 +84,7 @@ export default function CreatePatient() {
     return (
 
         <div className='flex min-h-screen items-center justify-center'>
-            <Card className='w-[90%] border-none'>
+            <Card className='w-[90%] border-none overflow-auto max-h-screen'>
                 <CardHeader>
                     <CardTitle className='text-center font-extrabold'>Complete o seu cadastro</CardTitle>
                 </CardHeader>
@@ -171,7 +173,7 @@ export default function CreatePatient() {
                     </form>
                 </Form>
             </Card>
-        </div>
+        </div >
 
     )
 
