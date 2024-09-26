@@ -21,7 +21,7 @@ export default function PatientHomePage() {
 
                 <div className="flex flex-col gap-[20px]">
                     <Card className="shadow-lg">
-                        <Link to="/patient-home/informations">
+                        <Link to="/patient-home/hmi-informations">
                             <CardHeader>
                                 <CardTitle className="text-xl">Informações</CardTitle>
                                 <CardDescription>Tratamentos, cuidados e dicas para casos de HMI</CardDescription>
@@ -29,7 +29,7 @@ export default function PatientHomePage() {
                         </Link>
                     </Card>
                     <Card className="shadow-lg">
-                        <Link to="/patient-home/informations">
+                        <Link to="/patient-registers">
                             <CardHeader>
                                 <CardTitle className="text-xl">Meus Registros</CardTitle>
                                 <CardDescription>Histórico de fotos e observações da arcada dentária</CardDescription>

@@ -3,6 +3,8 @@ import SelectUserType from './routes/user/SelectUserType';
 import CreatePatient from './routes/user/create-patient/CreatePatient';
 import ChildForm from './routes/user/create-patient/ChildForm';
 import PatientHomePage from './routes/home/PatientHomePage';
+import HmiInformations from './routes/home/HmiInformations';
+import PatientRegisters from './routes/registers/PatientRegisters';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,15 @@ const router = createBrowserRouter([
     path: '/patient-home',
     element: <PatientHomePage />
 
+  },
+  {
+    path: '/patient-home/hmi-informations',
+    element: <HmiInformations />
+
+  },
+  {
+    path: '/patient-registers',
+    element: <PatientRegisters />
   }
 ]);
 
