@@ -20,12 +20,40 @@ import { Switch } from '@/components/ui/switch.tsx'
 import useSWRMutation from 'swr/mutation'
 import { Link } from 'react-router-dom'
 
+
+
+const formSchema = z.object({
+    motherName: z.string().min(4, {
+        message: "Nome muito pequeno.",
+    }),
+    fatherName: z.string().min(4, {
+        message: "Nome muito pequeno.",
+    }),
+    phone_number: z.string().min(11, {
+        message: "O telefone deve ter no mínimo 11 dígitos.",
+    }),
+    state: z.string().min(2, {
+        message: "O Estado deve ter no mínimo 2 dígitos.",
+    }),
+    city: z.string().min(2, {
+        message: "A cidade deve ter no mínimo 2 dígitos.",
+    }),
+    neighborhood: z.string().min(2, {
+        message: "O Bairro deve ter no mínimo 2 dígitos.",
+    }),
+    accept_tcle: z.boolean().refine(val => val === true, {
+        message: "É necessário que concorde com os termos para avançar.",
+    })
+})
+
 async function sendRequest(url, { arg }: {
     arg: {
         motherName: string;
         fatherName: string;
         phone_number: string;
-        cep: string;
+        state: string;
+        city: string;
+        neighborhood: string;
         accept_tcle: boolean;
     }
 }) {
@@ -40,27 +68,9 @@ async function sendRequest(url, { arg }: {
     }).then(res => res.json())
 }
 
-const formSchema = z.object({
-    motherName: z.string().min(4, {
-        message: "Nome muito pequeno.",
-    }),
-    fatherName: z.string().min(4, {
-        message: "Nome muito pequeno.",
-    }),
-    phone_number: z.string().min(11, {
-        message: "O telefone deve ter no mínimo 11 dígitos.",
-    }),
-    cep: z.string().min(8, {
-        message: "O cep deve ter no mínimo 8 dígitos.",
-    }),
-    accept_tcle: z.boolean().refine(val => val === true, {
-        message: "É necessário que concorde com os termos para avançar.",
-    })
-})
-
 
 export default function CreatePatient() {
-    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/users/', sendRequest)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -68,7 +78,9 @@ export default function CreatePatient() {
             motherName: "",
             fatherName: "",
             phone_number: "",
-            cep: "",
+            state: "",
+            city: "",
+            neighborhood: "",
             accept_tcle: false
         },
     })
@@ -79,6 +91,7 @@ export default function CreatePatient() {
         const result = await trigger(values)
         console.log('=== result ===')
         console.log(result)
+        console.log(data)
     }
 
     return (
@@ -90,6 +103,7 @@ export default function CreatePatient() {
                 </CardHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+
                         <FormField
                             control={form.control}
                             name="motherName"
@@ -140,16 +154,39 @@ export default function CreatePatient() {
                         />
                         <FormField
                             control={form.control}
-                            name="cep"
+                            name="state"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Cep da residência</FormLabel>
+                                    <FormLabel>Estado</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Cep" {...field} />
+                                        <Input placeholder="Estado onde mora" {...field} />
                                     </FormControl>
-                                    <FormDescription>
-                                        Insira o Cep da residência
-                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="city"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Cidade</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Cidade onde mora" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="neighborhood"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Bairro</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Bairro onde mora" {...field} />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -169,6 +206,7 @@ export default function CreatePatient() {
                                 </FormItem>
                             )}
                         />
+
                         <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit"><Link to="child">Próximo</Link></Button>
                     </form>
                 </Form>

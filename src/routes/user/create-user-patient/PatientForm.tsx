@@ -114,6 +114,8 @@ export default function ChildForm() {
     return (
 
         <div className='flex min-h-screen items-center justify-center'>
+
+
             <Card className='w-[90%] border-none overflow-auto max-h-screen'>
                 <CardHeader>
                     <CardTitle className='text-center font-extrabold'>Cadastro da criança</CardTitle>
@@ -178,14 +180,14 @@ export default function ChildForm() {
                                     <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                         <FormLabel>Febre alta</FormLabel>
                                         <div className='flex gap-[15px] items-center justify-center'>
-                                            <FormDescription>Sim</FormDescription>
+                                            <FormDescription>Não</FormDescription>
                                             <FormControl>
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
                                                     checked={field.value}
                                                     onCheckedChange={field.onChange} />
                                             </FormControl>
-                                            <FormDescription>Não</FormDescription>
+                                            <FormDescription>Sim</FormDescription>
                                         </div>
                                     </FormItem>
                                 )}
@@ -197,14 +199,14 @@ export default function ChildForm() {
                                     <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                         <FormLabel>Nascimento prematuro</FormLabel>
                                         <div className='flex gap-[15px] items-center justify-center'>
-                                            <FormDescription>Sim</FormDescription>
+                                            <FormDescription>Não</FormDescription>
                                             <FormControl>
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
                                                     checked={field.value}
                                                     onCheckedChange={field.onChange} />
                                             </FormControl>
-                                            <FormDescription>Não</FormDescription>
+                                            <FormDescription>Sim</FormDescription>
                                         </div>
                                     </FormItem>
                                 )}
@@ -216,14 +218,14 @@ export default function ChildForm() {
                                     <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                         <FormLabel>Problemas no parto</FormLabel>
                                         <div className='flex gap-[15px] items-center justify-center'>
-                                            <FormDescription>Sim</FormDescription>
+                                            <FormDescription>Não</FormDescription>
                                             <FormControl>
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
                                                     checked={field.value}
                                                     onCheckedChange={field.onChange} />
                                             </FormControl>
-                                            <FormDescription>Não</FormDescription>
+                                            <FormDescription>Sim</FormDescription>
                                         </div>
                                     </FormItem>
                                 )}
@@ -235,14 +237,14 @@ export default function ChildForm() {
                                     <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                         <FormLabel>Baixo peso ao nascer</FormLabel>
                                         <div className='flex gap-[15px] items-center justify-center'>
-                                            <FormDescription>Sim</FormDescription>
+                                            <FormDescription>Não</FormDescription>
                                             <FormControl>
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
                                                     checked={field.value}
                                                     onCheckedChange={field.onChange} />
                                             </FormControl>
-                                            <FormDescription>Não</FormDescription>
+                                            <FormDescription>Sim</FormDescription>
                                         </div>
                                         <FormDescription className='text-xs'>(abaixo de 2,5kg)</FormDescription>
                                     </FormItem>
@@ -276,7 +278,7 @@ export default function ChildForm() {
                                     <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                         <FormLabel>Tem irmãos</FormLabel>
                                         <div className='flex gap-[15px] items-center justify-center'>
-                                            <FormDescription>Sim</FormDescription>
+                                            <FormDescription>Não</FormDescription>
                                             <FormControl>
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
@@ -289,7 +291,7 @@ export default function ChildForm() {
                                                     }}
                                                 />
                                             </FormControl>
-                                            <FormDescription>Não</FormDescription>
+                                            <FormDescription>Sim</FormDescription>
                                         </div>
                                     </FormItem>
                                 )}
@@ -316,7 +318,7 @@ export default function ChildForm() {
                                     <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                         <FormLabel>Já foi a um consulta com dentista</FormLabel>
                                         <div className='flex gap-[15px] items-center justify-center'>
-                                            <FormDescription>Sim</FormDescription>
+                                            <FormDescription>Não</FormDescription>
                                             <FormControl>
                                                 <Switch
                                                     className='data-[state=checked]:bg-[#0F172A]'
@@ -328,7 +330,7 @@ export default function ChildForm() {
                                                         }
                                                     }} />
                                             </FormControl>
-                                            <FormDescription>Não</FormDescription>
+                                            <FormDescription>Sim</FormDescription>
                                         </div>
                                     </FormItem>
                                 )}
@@ -354,6 +356,8 @@ export default function ChildForm() {
                                     </FormItem>
                                 )}
                             />)}
+
+
                             <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit">
                                 <Link to="/patient-home">Adicionar</Link>
                             </Button>

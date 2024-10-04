@@ -1,10 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import SelectUserType from './routes/user/SelectUserType';
-import CreatePatient from './routes/user/create-patient/CreatePatient';
-import ChildForm from './routes/user/create-patient/ChildForm';
+import CreatePatient from './routes/user/create-user-patient/CreateUser';
+import ChildForm from './routes/user/create-user-patient/PatientForm';
 import PatientHomePage from './routes/home/PatientHomePage';
 import HmiInformations from './routes/home/HmiInformations';
 import PatientRegisters from './routes/registers/PatientRegisters';
+import SelectPatientNew from './routes/registers/SelectPatientNew';
+import FinishRegisterNew from './routes/registers/FinishRegisterNew';
 
 const router = createBrowserRouter([
   {
@@ -38,6 +40,14 @@ const router = createBrowserRouter([
   {
     path: '/patient-registers',
     element: <PatientRegisters />
+  },
+  {
+    path: '/patient-registers/new-register',
+    element: <SelectPatientNew />
+  },
+  {
+    path: '/patient-registers/new-register-finish',
+    element: <FinishRegisterNew />
   }
 ]);
 
