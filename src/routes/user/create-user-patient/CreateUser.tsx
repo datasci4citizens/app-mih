@@ -46,7 +46,7 @@ const formSchema = z.object({
     })
 })
 
-async function sendRequest(url, { arg }: {
+async function sendRequest(url: string, { arg }: {
     arg: {
         motherName: string;
         fatherName: string;

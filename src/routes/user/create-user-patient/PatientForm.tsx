@@ -39,7 +39,7 @@ import {
 import useSWRMutation from 'swr/mutation'
 
 const formSchema = z.object({
-    childName: z.string().min(4, {
+    name: z.string().min(4, {
         message: "Nome muito pequeno.",
     }),
     birthday: z.date(),
@@ -49,25 +49,21 @@ const formSchema = z.object({
     lowWeight: z.boolean(),
     deliveryType: z.enum(["cesarean", "normal"]),
     brothers: z.boolean(),
-    brothersNumber: z.string().regex(new RegExp('^[0-9]+$'), 'Apenas números positivos').min(1, {
-        message: "Pelo menos um irmão"
-    }),
+    brothersNumber: z.number(),
     consultDentist: z.boolean(),
     consultType: z.enum(["public", "private", "none"])
 })
 
-async function sendRequest(url, { arg }: {
+async function sendRequest(url: string, { arg }: {
     arg: {
-        childName: string;
+        name: string;
         birthday: Date;
         highFever: boolean;
         premature: boolean;
         deliveryProblems: boolean;
         lowWeight: boolean;
         deliveryType: "cesarean" | "normal";
-        brothers: boolean;
-        brothersNumber: string;
-        consultDentist: boolean;
+        brothersNumber: number;
         consultType: "public" | "private" | "none";
     }
 }) {
@@ -84,12 +80,12 @@ async function sendRequest(url, { arg }: {
 
 
 export default function ChildForm() {
-    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients/', sendRequest)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            childName: "",
+            name: "",
             birthday: new Date(),
             highFever: false,
             premature: false,
@@ -97,7 +93,7 @@ export default function ChildForm() {
             lowWeight: false,
             deliveryType: "normal",
             brothers: false,
-            brothersNumber: "",
+            brothersNumber: 0,
             consultDentist: false,
             consultType: "none"
         },
@@ -106,7 +102,8 @@ export default function ChildForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log('=== new values ===')
         console.log(values)
-        const result = await trigger(values)
+        const { brothers, consultDentist, ...newValues } = values;
+        const result = await trigger(newValues)
         console.log('=== result ===')
         console.log(result)
     }
@@ -125,7 +122,7 @@ export default function ChildForm() {
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                             <FormField
                                 control={form.control}
-                                name="childName"
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Nome da criança</FormLabel>
@@ -286,7 +283,7 @@ export default function ChildForm() {
                                                     onCheckedChange={(checked) => {
                                                         field.onChange(checked);
                                                         if (!checked) {
-                                                            form.setValue("brothersNumber", "");
+                                                            form.setValue("brothersNumber", 0);
                                                         }
                                                     }}
                                                 />
@@ -304,7 +301,7 @@ export default function ChildForm() {
                                         <FormItem>
                                             <FormLabel>Número de irmãos</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Número de irmãos" {...field} />
+                                                <Input type="number" placeholder="Número de irmãos" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

@@ -91,16 +91,15 @@ export default function FinishRegisterNew() {
 
     return (
 
-        <div className='flex min-h-screen items-center justify-center'>
+        <div className='flex min-h-screen items-start justify-center p-[20px] pt-[100px]'>
 
-
-            <Card className='w-[90%] border-none overflow-auto max-h-screen'>
+            <Card className='w-[100%] border-none overflow-auto max-h-screen'>
                 <CardHeader>
                     <CardTitle className='text-center font-extrabold'>Terminar seu registro</CardTitle>
                 </CardHeader>
                 <CardContent className='flex flex-col items-center justify-center'>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                             <FormField
                                 control={form.control}
                                 name="toothache"
@@ -216,16 +215,19 @@ export default function FinishRegisterNew() {
                                     <FormItem>
                                         <FormLabel>Observações</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Observações adicionais" {...field} />
+                                            <Input className="w-[300px]" placeholder="Observações adicionais" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[300px]" type="submit">
-                                <Link to="/patient-home">Adicionar</Link>
-                            </Button>
+                            <div className='flex absolute inset-x-0 justify-center bottom-[40px]'>
+                                <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[300px] text-center" type="submit">
+                                    <Link to="/patient-home">Adicionar</Link>
+                                </Button>
+                            </div>
+
                         </form>
                     </Form>
                 </CardContent>

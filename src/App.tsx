@@ -7,6 +7,7 @@ import HmiInformations from './routes/home/HmiInformations';
 import PatientRegisters from './routes/registers/PatientRegisters';
 import SelectPatientNew from './routes/registers/SelectPatientNew';
 import FinishRegisterNew from './routes/registers/FinishRegisterNew';
+import Register from './routes/registers/Register';
 
 const router = createBrowserRouter([
   {
@@ -46,8 +47,13 @@ const router = createBrowserRouter([
     element: <SelectPatientNew />
   },
   {
-    path: '/patient-registers/new-register-finish',
+    path: '/patient-registers/new-register/finish',
     element: <FinishRegisterNew />
+  },
+  {
+    path: '/patient-registers/register',
+    element: <Register />
+
   }
 ]);
 
