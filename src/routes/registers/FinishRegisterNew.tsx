@@ -224,7 +224,7 @@ export default function FinishRegisterNew() {
 
                             <div className='flex absolute inset-x-0 justify-center bottom-[40px]'>
                                 <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[300px] text-center" type="submit">
-                                    <Link to="/patient-home">Adicionar</Link>
+                                    <Link to="/user/home">Adicionar</Link>
                                 </Button>
                             </div>
 

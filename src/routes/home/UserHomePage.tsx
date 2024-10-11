@@ -13,7 +13,7 @@ export default function PatientHomePage() {
             <div>
                 <div className="flex w-[100%] justify-end mb-[20%]">
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/patient-home/profile">
+                        <Link to="/user/home/profile">
                             <User2Icon color="black" />
                         </Link>
                     </Button>
@@ -21,7 +21,7 @@ export default function PatientHomePage() {
 
                 <div className="flex flex-col gap-[20px]">
                     <Card className="shadow-lg">
-                        <Link to="/patient-home/hmi-informations">
+                        <Link to="/user/home/hmi-informations">
                             <CardHeader>
                                 <CardTitle className="text-xl">Informações</CardTitle>
                                 <CardDescription>Tratamentos, cuidados e dicas para casos de HMI</CardDescription>
@@ -29,7 +29,7 @@ export default function PatientHomePage() {
                         </Link>
                     </Card>
                     <Card className="shadow-lg">
-                        <Link to="/patient-registers">
+                        <Link to="/user/registers">
                             <CardHeader>
                                 <CardTitle className="text-xl">Meus Registros</CardTitle>
                                 <CardDescription>Histórico de fotos e observações da arcada dentária</CardDescription>
@@ -37,7 +37,7 @@ export default function PatientHomePage() {
                         </Link>
                     </Card>
                     <Card className="shadow-lg">
-                        <Link to="/user/create/patient/child">
+                        <Link to="/user/create/patient">
                             <CardHeader>
                                 <CardTitle className="text-xl">Adicionar Criança</CardTitle>
                                 <CardDescription>Cadastre outra criança</CardDescription>

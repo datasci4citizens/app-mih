@@ -20,8 +20,6 @@ import { Switch } from '@/components/ui/switch.tsx'
 import useSWRMutation from 'swr/mutation'
 import { Link } from 'react-router-dom'
 
-
-
 const formSchema = z.object({
     motherName: z.string().min(4, {
         message: "Nome muito pequeno.",
@@ -92,6 +90,7 @@ export default function CreatePatient() {
         console.log('=== result ===')
         console.log(result)
         console.log(data)
+        console.log(error);
     }
 
     return (
@@ -207,7 +206,7 @@ export default function CreatePatient() {
                             )}
                         />
 
-                        <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit"><Link to="child">Próximo</Link></Button>
+                        <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit"><Link to="patient">Próximo</Link></Button>
                     </form>
                 </Form>
             </Card>

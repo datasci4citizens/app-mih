@@ -13,7 +13,7 @@ export default function SelectPatientNew() {
             <div>
                 <div className="flex w-[100%] justify-end mb-[20%]">
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/patient-home/profile">
+                        <Link to="/user/home/profile">
                             <User2Icon color="black" />
                         </Link>
                     </Button>
@@ -67,7 +67,7 @@ export default function SelectPatientNew() {
             </div>
 
             <div className="w-[100%]">
-                <Link to="/patient-home"><Button className="w-[100%] bg-[#0F172A] hover:bg-[#0F172A]/90 ">Novo Registro</Button></Link>
+                <Link to="/user/home"><Button className="w-[100%] bg-[#0F172A] hover:bg-[#0F172A]/90 ">Novo Registro</Button></Link>
             </div>
 
         </div>

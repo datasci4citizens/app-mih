@@ -356,7 +356,7 @@ export default function ChildForm() {
 
 
                             <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit">
-                                <Link to="/patient-home">Adicionar</Link>
+                                <Link to="/user/home">Adicionar</Link>
                             </Button>
                         </form>
                     </Form>

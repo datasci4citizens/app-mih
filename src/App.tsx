@@ -2,12 +2,14 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import SelectUserType from './routes/user/SelectUserType';
 import CreatePatient from './routes/user/create-user-patient/CreateUser';
 import ChildForm from './routes/user/create-user-patient/PatientForm';
-import PatientHomePage from './routes/home/PatientHomePage';
+import PatientHomePage from './routes/home/UserHomePage';
 import HmiInformations from './routes/home/HmiInformations';
 import PatientRegisters from './routes/registers/PatientRegisters';
 import SelectPatientNew from './routes/registers/SelectPatientNew';
 import FinishRegisterNew from './routes/registers/FinishRegisterNew';
 import Register from './routes/registers/Register';
+import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
+import SpecialistHomePage from './routes/home/SpecialistHomePage';
 
 const router = createBrowserRouter([
   {
@@ -15,43 +17,53 @@ const router = createBrowserRouter([
     element: <h1>Home!</h1>,
   },
   {
-    path: '/user/create',
+    path: '/create',
     element: <SelectUserType />
 
   },
   {
-    path: 'user/create/patient',
+    path: '/user/create',
     element: <CreatePatient />
 
   },
   {
-    path: 'user/create/patient/child',
+    path: '/user/create/patient',
     element: <ChildForm />
   },
   {
-    path: '/patient-home',
+    path: '/specialist/create',
+    element: <CreateSpecialist />
+
+  },
+  {
+    path: '/user/home',
     element: <PatientHomePage />
 
   },
   {
-    path: '/patient-home/hmi-informations',
+    path: '/specialist/home',
+    element: <SpecialistHomePage />
+
+  },
+  {
+    path: '/user/home/hmi-informations',
     element: <HmiInformations />
 
   },
   {
-    path: '/patient-registers',
+    path: '/user/registers',
     element: <PatientRegisters />
   },
   {
-    path: '/patient-registers/new-register',
+    path: '/user/registers/new-register',
     element: <SelectPatientNew />
   },
   {
-    path: '/patient-registers/new-register/finish',
+    path: '/user/registers/new-register/finish',
     element: <FinishRegisterNew />
   },
   {
-    path: '/patient-registers/register',
+    path: '/user/registers/register',
     element: <Register />
 
   }

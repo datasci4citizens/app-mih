@@ -12,11 +12,11 @@ export default function SelectUserType() {
             <div className="flex flex-col gap-2 w-[80%]">
                 <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 gap-[5px]">
                     <MailIcon className="w-[16px]"></MailIcon>
-                    <Link to="patient">Sou Paciente</Link>
+                    <Link to="/user/create">Sou Paciente</Link>
                 </Button>
                 <Button className="bg-[#334155] hover:bg-[#334155]/90 gap-[5px]">
                     <MailIcon className="w-[16px]"></MailIcon>
-                    <Link to="dentist">Sou Dentista</Link>
+                    <Link to="/specialist/create">Sou Dentista</Link>
                 </Button>
             </div>
 
