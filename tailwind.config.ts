@@ -59,7 +59,7 @@ export default {
 				},
 				primary: {
 					// biome-ignore lint/style/useNamingConvention: external naming
-					DEFAULT: orange[500],
+					DEFAULT: "#0C4A6E",
 					foreground: orange[50],
 				},
 				secondary: {

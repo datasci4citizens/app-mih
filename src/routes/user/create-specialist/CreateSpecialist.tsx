@@ -1,8 +1,6 @@
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { redirect } from "react-router-dom";
-
 import { useForm } from 'react-hook-form'
 
 import { Button } from "@/components/ui/button"
@@ -20,7 +18,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
 import useSWRMutation from 'swr/mutation'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -29,11 +27,9 @@ const formSchema = z.object({
         message: "Nome muito pequeno.",
     }),
     phone_number: z.string().min(11, {
-        message: "O email deve ter no mínimo 11 dígitos.",
-    }),
-    email: z.string().min(11, {
         message: "O telefone deve ter no mínimo 11 dígitos.",
     }),
+    email: z.string(),
 })
 
 async function sendRequest(url: string, { arg }: {
@@ -57,6 +53,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function CreateSpecialist() {
     const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/specialists/', sendRequest)
+    const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -75,7 +72,11 @@ export default function CreateSpecialist() {
         console.log(result)
         console.log(data)
         console.log(error)
-        return redirect('specialist/home');
+        if (result && !error) {
+            navigate("/specialist/home"); // Redireciona para a home
+        } else {
+            console.error('Erro ao enviar dados:', error);
+        }
     }
 
     return (
@@ -137,7 +138,7 @@ export default function CreateSpecialist() {
                             )}
                         />
 
-                        <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit"><Link to="/specialist/home">Próximo</Link></Button>
+                        <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit">Próximo</Button>
                     </form>
                 </Form>
             </Card>

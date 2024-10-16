@@ -6,17 +6,15 @@ export default function SelectUserType() {
 
     return (
 
-        <div className="flex flex-col min-h-screen items-center justify-between pt-[100px] pb-[60px]">
-            <h1 className="font-extrabold text-3xl">APP HMI (DENTE)</h1>
+        <div className="flex flex-col min-h-screen items-center justify-center gap-[32px] pt-[100px] pb-[60px] bg-primary">
+            <h1 className="font-extrabold text-3xl text-white">MolarCheck</h1>
 
-            <div className="flex flex-col gap-2 w-[80%]">
-                <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 gap-[5px]">
-                    <MailIcon className="w-[16px]"></MailIcon>
-                    <Link to="/user/create">Sou Paciente</Link>
+            <div className="flex flex-col gap-2 w-[40%]">
+                <Button className="bg-white hover:bg-white gap-[5px]">
+                    <Link to="/user/create" className="text-black font-semibold">Sou Paciente</Link>
                 </Button>
-                <Button className="bg-[#334155] hover:bg-[#334155]/90 gap-[5px]">
-                    <MailIcon className="w-[16px]"></MailIcon>
-                    <Link to="/specialist/create">Sou Dentista</Link>
+                <Button className="bg-white hover:bg-white gap-[5px]">
+                    <Link to="/specialist/create" className="text-black font-semibold">Sou Dentista</Link>
                 </Button>
             </div>
 
