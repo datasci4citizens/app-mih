@@ -109,7 +109,7 @@ export default function PatientForm() {
         const { brothers, consultDentist, ...newValues } = values;
         const result = await trigger(newValues)
         if (result && !error) {
-            navigate('/user/home'); // Redireciona para a home
+            navigate(`/user/home/${result.user_id}`); // Redireciona para a home
         } else {
             console.error('Erro ao enviar dados:', error);
         }

@@ -81,68 +81,75 @@ export default function CreateSpecialist() {
 
     return (
 
-        <div className='flex min-h-screen items-center justify-center'>
-            <Card className='w-[90%] border-none overflow-auto max-h-screen'>
-                <CardHeader>
-                    <CardTitle className='text-center font-extrabold'>Complete o seu cadastro</CardTitle>
-                </CardHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        <div>
 
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nome completo</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nome" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Insira o seu nome completo
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>E-mail</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Email de cadastro" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Insira o email usado no login com o google
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="phone_number"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Numero de telefone</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Telefone" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Insira o telefone para contato
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-                        <Button className="bg-[#0F172A] hover:bg-[#0F172A]/90 w-[100%]" type="submit">Próximo</Button>
-                    </form>
-                </Form>
-            </Card>
-        </div >
+            <div className='flex min-h-screen items-center justify-center rounded-t-3xl -mt-16 bg-white'>
+
+                <Card className='w-[90%] border-none overflow-auto max-h-screen'>
+                    <CardHeader>
+                        <CardTitle className='text-center font-extrabold'>Complete o seu cadastro</CardTitle>
+                    </CardHeader>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nome completo</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Nome" {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Insira o seu nome completo
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>E-mail</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Email de cadastro" {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Insira o email usado no login com o google
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="phone_number"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Numero de telefone</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Telefone" {...field} />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Insira o telefone para contato
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <Button className=" w-[100%]" type="submit">Próximo</Button>
+                        </form>
+                    </Form>
+                </Card>
+            </div >
+        </div>
+
 
     )
 

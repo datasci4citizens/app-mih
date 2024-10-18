@@ -63,7 +63,7 @@ export default function RegisterDiagnostic() {
 
             <Card className="max-h-screen p-[30px] border-none rounded-t-3xl -mt-16 shadow-none">
 
-                <div className="flex w-[100%] justify-between items-center my-10">
+                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to="/specialist/home/pending-registers">

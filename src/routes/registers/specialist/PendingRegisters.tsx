@@ -16,7 +16,7 @@ export default function PendingRegisters() {
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
             <div className="p-[30px] bg-white rounded-t-3xl -mt-16">
-                <div className="flex w-[100%] justify-between items-center my-10">
+                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to="/specialist/home">

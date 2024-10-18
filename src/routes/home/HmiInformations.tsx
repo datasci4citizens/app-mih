@@ -6,11 +6,13 @@ import {
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, User2Icon } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
 
 
 export default function HmiInformations() {
+
+    const { id } = useParams();
 
     return (
 
@@ -20,10 +22,10 @@ export default function HmiInformations() {
 
             <div className="flex flex-col  items-center p-[30px] justify-start rounded-t-3xl -mt-16 bg-white">
 
-                <div className="flex w-[100%] justify-between items-center my-10">
+                <div className="flex w-[100%] justify-between items-center mt-2 mb-20">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/user/home">
+                        <Link to={`/user/home/${id}`}>
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>

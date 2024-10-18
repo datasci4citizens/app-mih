@@ -12,6 +12,7 @@ import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PendingRegisters from './routes/registers/specialist/PendingRegisters';
 import RegisterDiagnostic from './routes/registers/specialist/RegisterDiagnostic';
+import TCLE from './routes/user/create-user-patient/Tcle';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,11 @@ const router = createBrowserRouter([
 
   },
   {
+    path: 'user/create/tcle',
+    element: <TCLE />
+
+  },
+  {
     path: '/user/create/patient/:id',
     element: <PatientForm />
   },
@@ -38,7 +44,7 @@ const router = createBrowserRouter([
 
   },
   {
-    path: '/user/home',
+    path: '/user/home/:id',
     element: <PatientHomePage />
 
   },
@@ -48,24 +54,24 @@ const router = createBrowserRouter([
 
   },
   {
-    path: '/user/home/hmi-informations',
+    path: '/user/home/hmi-informations/:id',
     element: <HmiInformations />
 
   },
   {
-    path: '/user/registers',
+    path: '/user/registers/:id',
     element: <PatientRegisters />
   },
   {
-    path: '/user/registers/new-register',
+    path: '/user/registers/new-register/:id',
     element: <SelectPatientNew />
   },
   {
-    path: '/user/registers/new-register/finish',
+    path: '/user/registers/new-register/finish/:id',
     element: <FinishRegisterNew />
   },
   {
-    path: '/user/registers/register',
+    path: '/user/registers/register/:id',
     element: <Register />
 
   },

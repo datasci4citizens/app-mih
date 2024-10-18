@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
 // import useSWRMutation from 'swr/mutation'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
     Select,
     SelectContent,
@@ -69,6 +69,8 @@ const formSchema = z.object({
 export default function FinishRegisterNew() {
     // const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
 
+    const { id } = useParams();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -95,15 +97,15 @@ export default function FinishRegisterNew() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <div className='flex items-start justify-start p-[20px] pt-[100px] rounded-t-3xl -mt-16 bg-white'>
+            <div className='flex flex-col items-start justify-center p-[20px] pt-[100px] rounded-t-3xl -mt-16 bg-white'>
 
-                <Card className='w-[100%] border-none '>
+                <Card className='w-[100%] border-none -mt-16'>
                     <CardHeader>
                         <CardTitle className='text-center font-extrabold'>Terminar seu registro</CardTitle>
                     </CardHeader>
                     <CardContent className='flex flex-col items-center justify-center'>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <FormField
                                     control={form.control}
                                     name="toothache"
@@ -226,11 +228,10 @@ export default function FinishRegisterNew() {
                                     )}
                                 />
 
-                                <div className='flex absolute inset-x-0 justify-center bottom-[40px]'>
-                                    <Button className="w-[300px] text-center" type="submit">
-                                        <Link to="/user/home">Enviar registro</Link>
-                                    </Button>
-                                </div>
+                                <Button className="w-[300px] text-center" type="submit">
+                                    <Link to={`/user/home/${id}`}>Enviar registro</Link>
+                                </Button>
+
 
                             </form>
                         </Form>
