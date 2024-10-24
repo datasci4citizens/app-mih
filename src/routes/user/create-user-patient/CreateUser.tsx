@@ -21,10 +21,7 @@ import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 
 const formSchema = z.object({
-    motherName: z.string().min(4, {
-        message: "Nome muito pequeno.",
-    }),
-    fatherName: z.string().min(4, {
+    personInCharge: z.string().min(4, {
         message: "Nome muito pequeno.",
     }),
     phone_number: z.string().min(11, {
@@ -46,8 +43,7 @@ const formSchema = z.object({
 
 async function sendRequest(url: string, { arg }: {
     arg: {
-        motherName: string;
-        fatherName: string;
+        personInCharge: string;
         phone_number: string;
         state: string;
         city: string;
@@ -74,8 +70,7 @@ export default function CreatePatient() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            motherName: "",
-            fatherName: "",
+            personInCharge: "",
             phone_number: "",
             state: "",
             city: "",
@@ -115,32 +110,13 @@ export default function CreatePatient() {
 
                             <FormField
                                 control={form.control}
-                                name="motherName"
+                                name="personInCharge"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nome da Mãe</FormLabel>
+                                        <FormLabel className='font-bold'>Nome do responsável*</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Nome da Mãe" {...field} />
+                                            <Input placeholder="Nome do responsável" {...field} />
                                         </FormControl>
-                                        <FormDescription>
-                                            Insira o nome completo da mãe
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="fatherName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Nome do Pai</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nome do Pai" {...field} />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Insira o nome completo do pai
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -150,7 +126,7 @@ export default function CreatePatient() {
                                 name="phone_number"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Numero de telefone</FormLabel>
+                                        <FormLabel className='font-bold'>Numero de telefone*</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Telefone" {...field} />
                                         </FormControl>
@@ -166,7 +142,7 @@ export default function CreatePatient() {
                                 name="state"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Estado</FormLabel>
+                                        <FormLabel className='font-bold'>Estado*</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Estado onde mora" {...field} />
                                         </FormControl>
@@ -179,7 +155,7 @@ export default function CreatePatient() {
                                 name="city"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Cidade</FormLabel>
+                                        <FormLabel className='font-bold'>Cidade*</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Cidade onde mora" {...field} />
                                         </FormControl>
@@ -192,7 +168,7 @@ export default function CreatePatient() {
                                 name="neighborhood"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Bairro</FormLabel>
+                                        <FormLabel className='font-bold'>Bairro*</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Bairro onde mora" {...field} />
                                         </FormControl>
@@ -207,11 +183,10 @@ export default function CreatePatient() {
                                     <FormItem className='flex gap-[10px] items-center justify-center'>
                                         <FormControl>
                                             <Switch
-                                                className='data-[state=checked]:bg-[#0F172A]'
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange} />
                                         </FormControl>
-                                        <FormLabel>Li e aceito os termos TLCE</FormLabel>
+                                        <FormLabel className='font-bold'>Li e aceito os termos TLCE</FormLabel>
                                     </FormItem>
                                 )}
                             />

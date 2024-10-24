@@ -27,6 +27,7 @@ import {
     SelectValue
 } from '@/components/ui/select.tsx'
 import useSWRMutation from 'swr/mutation'
+import { Textarea } from '@/components/ui/textarea'
 
 const formSchema = z.object({
     toothache: z.boolean(),
@@ -101,7 +102,7 @@ export default function FinishRegisterNew() {
 
                 <Card className='w-[100%] border-none -mt-16'>
                     <CardHeader>
-                        <CardTitle className='text-center font-extrabold'>Terminar seu registro</CardTitle>
+                        <CardTitle className='text-center font-extrabold mb-10'>Terminar seu registro</CardTitle>
                     </CardHeader>
                     <CardContent className='flex flex-col items-center justify-center'>
                         <Form {...form}>
@@ -111,12 +112,11 @@ export default function FinishRegisterNew() {
                                     name="toothache"
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel>Sente dor nos dentes</FormLabel>
+                                            <FormLabel className='font-bold'>A criança sente dor nos dentes ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        className='data-[state=checked]:bg-[#0F172A]'
                                                         checked={field.value}
                                                         onCheckedChange={(checked) => {
                                                             field.onChange(checked);
@@ -135,7 +135,7 @@ export default function FinishRegisterNew() {
                                     name="painLevel"
                                     render={({ field }) => (
                                         <FormItem >
-                                            <FormLabel>Nível da dor</FormLabel>
+                                            <FormLabel className='font-bold'>Nível da dor </FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -157,12 +157,11 @@ export default function FinishRegisterNew() {
                                     name="sensitivity"
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel>Sensibilidade nos dentes</FormLabel>
+                                            <FormLabel className='font-bold'>A criança tem sensibilidade nos dentes ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        className='data-[state=checked]:bg-[#0F172A]'
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange} />
                                                 </FormControl>
@@ -176,12 +175,11 @@ export default function FinishRegisterNew() {
                                     name="toothStain"
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel>Apresenta mancha nos dentes</FormLabel>
+                                            <FormLabel className='font-bold'>A criança apresenta mancha nos dentes ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        className='data-[state=checked]:bg-[#0F172A]'
                                                         checked={field.value}
                                                         onCheckedChange={(checked) => {
                                                             field.onChange(checked);
@@ -200,12 +198,11 @@ export default function FinishRegisterNew() {
                                     name="aestheticDiscomfort"
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel>A mancha gera desconforto estético</FormLabel>
+                                            <FormLabel className='font-bold'>A mancha gera desconforto estético</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        className='data-[state=checked]:bg-[#0F172A]'
                                                         checked={field.value}
                                                         onCheckedChange={field.onChange} />
                                                 </FormControl>
@@ -221,7 +218,12 @@ export default function FinishRegisterNew() {
                                         <FormItem>
                                             <FormLabel>Observações</FormLabel>
                                             <FormControl>
-                                                <Input className="w-[300px]" placeholder="Observações adicionais" {...field} />
+                                                <Textarea
+
+                                                    placeholder="Observações adicionais"
+                                                    className="resize-none "
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
