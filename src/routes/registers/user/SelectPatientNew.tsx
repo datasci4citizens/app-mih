@@ -4,7 +4,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
-export default function SelectPatientNew() {
+type PatientData = {
+
+    patient: string
+
+}
+
+type PatientFormProps = PatientData & {
+    updateFields: (fields: Partial<PatientData>) => void;
+    next: () => void;
+}
+
+export default function SelectPatientNew({ patient, updateFields, next }: PatientFormProps) {
 
     const { id } = useParams();
 
@@ -66,8 +77,10 @@ export default function SelectPatientNew() {
 
                 </Card>
 
-                <Select defaultValue={""}>
-                    <SelectTrigger className="w-[300px]">
+                <Select defaultValue={patient} name="patient" onValueChange={e => {
+                    updateFields({ patient: e })
+                }}>
+                    <SelectTrigger className="w-[300px]" >
                         <SelectValue placeholder="Selecione a criança" />
                     </SelectTrigger>
                     <SelectContent>
@@ -78,13 +91,16 @@ export default function SelectPatientNew() {
 
 
 
-                <Button className="w-[300px] text-center mt-[40px]" type="submit">
-                    <Link to={`/user/registers/new-register/finish/${id}`}>Próximo</Link>
+                <Button className="w-[300px] text-center mt-[40px]" type="submit" onClick={() => {
+                    if (patient !== "")
+                        next();
+                }}>
+                    Próximo
                 </Button>
 
 
             </div>
-        </div>
+        </div >
 
 
     )

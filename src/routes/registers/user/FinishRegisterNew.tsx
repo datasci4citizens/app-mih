@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
 // import useSWRMutation from 'swr/mutation'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
     Select,
     SelectContent,
@@ -28,10 +28,11 @@ import {
 } from '@/components/ui/select.tsx'
 import useSWRMutation from 'swr/mutation'
 import { Textarea } from '@/components/ui/textarea'
+import { ArrowLeft } from 'lucide-react'
 
 const formSchema = z.object({
     toothache: z.boolean(),
-    painLevel: z.enum(["mild", "moderate", "intense", "none"]),
+    painLevel: z.enum(["mild", "moderate", "intense", ""]),
     sensitivity: z.boolean(),
     toothStain: z.boolean(),
     aestheticDiscomfort: z.boolean(),
@@ -65,18 +66,52 @@ const formSchema = z.object({
 //         body: JSON.stringify(arg)
 //     }).then(res => res.json())
 // }
+type FinishRegisterData = {
+    toothache: boolean,
+    painLevel: "mild" | "moderate" | "intense" | "",
+    sensitivity: boolean,
+    toothStain: boolean,
+    aestheticDiscomfort: boolean,
+    observations: string
+}
 
+type FinishRegisterFormsProps = FinishRegisterData & {
+    updateFields: (fields: Partial<FinishRegisterData>) => void,
+    next: () => void | undefined,
+    back: () => void | undefined
+}
 
-export default function FinishRegisterNew() {
+export default function FinishRegisterNew({
+    toothache,
+    painLevel,
+    sensitivity,
+    toothStain,
+    aestheticDiscomfort,
+    observations,
+    updateFields,
+    next,
+    back
+}: FinishRegisterFormsProps) {
     // const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
 
+    // const { formData, updateFormData } = useFormContext();
+
     const { id } = useParams();
+
+    console.log({
+        toothache,
+        painLevel,
+        sensitivity,
+        toothStain,
+        aestheticDiscomfort,
+        observations,
+    })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             toothache: false,
-            painLevel: "none",
+            painLevel: "",
             sensitivity: false,
             toothStain: false,
             aestheticDiscomfort: false,
@@ -85,11 +120,7 @@ export default function FinishRegisterNew() {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log('=== new values ===')
-        console.log(values)
-        const result = await trigger(values)
-        console.log('=== result ===')
-        console.log(result)
+        updateFields({ ...values })
     }
 
     return (
@@ -98,9 +129,16 @@ export default function FinishRegisterNew() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <div className='flex flex-col items-start justify-center p-[20px] pt-[100px] rounded-t-3xl -mt-16 bg-white'>
+            <div className='flex flex-col items-start justify-center pt-[30px] rounded-t-3xl -mt-16 bg-white'>
 
-                <Card className='w-[100%] border-none -mt-16'>
+                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
+
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
+                        <ArrowLeft color="black" />
+                    </Button>
+                </div>
+
+                <Card className='w-[100%] border-none'>
                     <CardHeader>
                         <CardTitle className='text-center font-extrabold mb-10'>Terminar seu registro</CardTitle>
                     </CardHeader>
@@ -117,12 +155,9 @@ export default function FinishRegisterNew() {
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        checked={field.value}
+                                                        checked={toothache}
                                                         onCheckedChange={(checked) => {
-                                                            field.onChange(checked);
-                                                            if (!checked) {
-                                                                form.setValue("painLevel", "none");
-                                                            }
+                                                            updateFields({ toothache: checked })
                                                         }} />
                                                 </FormControl>
                                                 <FormDescription>Sim</FormDescription>
@@ -130,13 +165,15 @@ export default function FinishRegisterNew() {
                                         </FormItem>
                                     )}
                                 />
-                                {form.watch('toothache') && (<FormField
+                                {toothache && (<FormField
                                     control={form.control}
                                     name="painLevel"
                                     render={({ field }) => (
                                         <FormItem >
                                             <FormLabel className='font-bold'>Nível da dor </FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={e => {
+                                                updateFields({ painLevel: e })
+                                            }} defaultValue={painLevel}>
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Consulta em qual meio" />
@@ -162,8 +199,10 @@ export default function FinishRegisterNew() {
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        checked={field.value}
-                                                        onCheckedChange={field.onChange} />
+                                                        checked={sensitivity}
+                                                        onCheckedChange={checked => {
+                                                            updateFields({ sensitivity: checked })
+                                                        }} />
                                                 </FormControl>
                                                 <FormDescription>Sim</FormDescription>
                                             </div>
@@ -180,9 +219,9 @@ export default function FinishRegisterNew() {
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        checked={field.value}
+                                                        checked={toothStain}
                                                         onCheckedChange={(checked) => {
-                                                            field.onChange(checked);
+                                                            updateFields({ toothStain: checked })
                                                             if (!checked) {
                                                                 form.setValue("aestheticDiscomfort", false);
                                                             }
@@ -193,7 +232,7 @@ export default function FinishRegisterNew() {
                                         </FormItem>
                                     )}
                                 />
-                                {form.watch('toothStain') && (<FormField
+                                {toothStain && (<FormField
                                     control={form.control}
                                     name="aestheticDiscomfort"
                                     render={({ field }) => (
@@ -203,8 +242,10 @@ export default function FinishRegisterNew() {
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
                                                     <Switch
-                                                        checked={field.value}
-                                                        onCheckedChange={field.onChange} />
+                                                        checked={aestheticDiscomfort}
+                                                        onCheckedChange={checked => {
+                                                            updateFields({ aestheticDiscomfort: checked })
+                                                        }} />
                                                 </FormControl>
                                                 <FormDescription>Sim</FormDescription>
                                             </div>
@@ -222,7 +263,10 @@ export default function FinishRegisterNew() {
 
                                                     placeholder="Observações adicionais"
                                                     className="resize-none "
-                                                    {...field}
+                                                    value={observations}
+                                                    onChange={e => {
+                                                        updateFields({ observations: e.target.value })
+                                                    }}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -231,7 +275,7 @@ export default function FinishRegisterNew() {
                                 />
 
                                 <Button className="w-[300px] text-center" type="submit">
-                                    <Link to={`/user/home/${id}`}>Enviar registro</Link>
+                                    Próximo
                                 </Button>
 
 

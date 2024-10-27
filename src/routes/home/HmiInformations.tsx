@@ -11,16 +11,51 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
+    type CarouselApi,
 } from "@/components/ui/carousel"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ArrowLeft, BookPlusIcon, FileQuestion, HeartHandshake, HeartPulse, Hospital, Info, User2Icon } from "lucide-react"
 import { Link, useParams } from "react-router-dom"
+import { useEffect, useState } from "react";
 
 
 
 export default function HmiInformations() {
+
+    const [api, setApi] = useState<CarouselApi>()
+    const [current, setCurrent] = useState(0)
+    const [count, setCount] = useState(0)
+
+
+    const carouselItems = [
+        <Info />,
+        <HeartPulse />,
+        <Hospital />,
+        <HeartHandshake />,
+        <BookPlusIcon />,
+        <FileQuestion />
+    ]
+
+    useEffect(() => {
+        if (!api) {
+            return
+        }
+
+        const handleClick = (index: number) => {
+
+
+
+        }
+
+        setCount(api.scrollSnapList().length)
+        setCurrent(api.selectedScrollSnap())
+
+        api.on("select", () => {
+            setCurrent(api.selectedScrollSnap())
+        })
+    }, [api])
 
     const { id } = useParams();
 
@@ -29,7 +64,6 @@ export default function HmiInformations() {
         <div className="min-h-screen max-h-screen overflow-auto">
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
-
 
             <Card className="flex flex-col border-none shadow-none items-center p-[30px] justify-start rounded-t-3xl -mt-16 bg-white">
 
@@ -50,7 +84,30 @@ export default function HmiInformations() {
 
                 <CardHeader className="w-full mb-5 text-3xl font-semi-bold text-center">Informações sobre <b>HMI</b></CardHeader>
 
-                <Carousel className="w-[80%]">
+                <div className="mb-2 flex gap-2 text-center text-sm text-muted-foreground max-w-[80%]">
+                    {
+
+
+                        Array.from({ length: count }).map((_, index) => {
+
+                            return <Button
+                                key={index}
+                                size={"icon"}
+                                className={`rounded-3xl transition-colors duration-100 ${index <= current ? 'bg-primary hover:bg-primary text-white' : 'bg-primary/20 hover:bg-primary/20 text-primary'
+                                    } delay-200`}
+                                onClick={() => api?.scrollTo(index)}
+                            >
+                                <h1>{carouselItems[index]}</h1>
+
+
+
+                            </Button>
+
+                        })
+
+                    }
+                </div>
+                <Carousel setApi={setApi} className="w-[80%]">
 
                     <CarouselContent className="">
                         <CarouselItem>
@@ -161,6 +218,7 @@ export default function HmiInformations() {
                     <CarouselPrevious />
                     <CarouselNext />
                 </Carousel>
+
             </Card >
 
         </div >

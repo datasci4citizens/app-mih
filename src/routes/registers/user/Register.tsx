@@ -12,6 +12,7 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
+    type CarouselApi
 } from "@/components/ui/carousel"
 
 import {
@@ -23,11 +24,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 
 export default function Register() {
-
     const { id } = useParams();
+
 
     return (
 
@@ -41,7 +43,7 @@ export default function Register() {
                     <div className="flex w-[100%] justify-between items-center px-[30px] mb-10">
 
                         <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                            <Link to={`/user/registers/${id}`}>
+                            <Link to={`/user/registers/patient-registers/${id}`}>
                                 <ArrowLeft color="black" />
                             </Link>
                         </Button>
@@ -76,6 +78,7 @@ export default function Register() {
                                 <CarouselPrevious />
                                 <CarouselNext />
                             </Carousel>
+
 
                             <Card className="min-w-[80%]">
                                 <CardHeader>

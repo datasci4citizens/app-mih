@@ -4,7 +4,7 @@ import CreatePatient from './routes/user/create-user-patient/CreateUser';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import PatientHomePage from './routes/home/UserHomePage';
 import HmiInformations from './routes/home/HmiInformations';
-import PatientRegisters from './routes/registers/user/PatientRegisters';
+import Patients from './routes/registers/user/Patients';
 import SelectPatientNew from './routes/registers/user/SelectPatientNew';
 import FinishRegisterNew from './routes/registers/user/FinishRegisterNew';
 import Register from './routes/registers/user/Register';
@@ -13,6 +13,9 @@ import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PendingRegisters from './routes/registers/specialist/PendingRegisters';
 import RegisterDiagnostic from './routes/registers/specialist/RegisterDiagnostic';
 import TCLE from './routes/user/create-user-patient/Tcle';
+import { FormProvider, type ErrorOption, type Field, type FieldArray, type FieldArrayPath, type FieldError, type FieldErrors, type FieldName, type FieldRefs, type FieldValues, type FormState, type InternalFieldName, type RegisterOptions, type SubmitErrorHandler, type SubmitHandler, type UseFormRegisterReturn } from 'react-hook-form';
+import PatientRegisters from './routes/registers/user/PatientRegisters';
+import CreateRegister from './routes/registers/user/CreateRegisterForm';
 
 const router = createBrowserRouter([
   {
@@ -60,11 +63,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/user/registers/:id',
+    element: <Patients />
+  },
+  {
+    path: '/user/registers/patient-registers/:id',
     element: <PatientRegisters />
   },
   {
     path: '/user/registers/new-register/:id',
     element: <SelectPatientNew />
+  },
+  {
+    path: '/user/registers/create-register/:id',
+    element: <CreateRegister />
   },
   {
     path: '/user/registers/new-register/finish/:id',
@@ -87,5 +98,7 @@ const router = createBrowserRouter([
 ]);
 
 export function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <RouterProvider router={router} />
+  )
 }

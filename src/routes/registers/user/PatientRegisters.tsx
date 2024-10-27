@@ -1,12 +1,51 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Edit, Trash, User2Icon } from "lucide-react";
+import { ArrowLeft, BookPlus, Edit, Eye, Trash, User2Icon } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 export default function PatientRegisters() {
 
     const { id } = useParams();
+
+    const children = [
+
+        {
+            register: "1",
+            createDate: "dd/mm/yyyy",
+            diagostic: "Presença de HMI",
+            id: 10
+
+        },
+        {
+            register: "2",
+            createDate: "dd/mm/yyyy",
+            diagostic: "Ausência de HMI",
+            id: 11
+
+        },
+        {
+            register: "3",
+            createDate: "dd/mm/yyyy",
+            diagostic: "",
+            id: 12
+
+        },
+        {
+            register: "5",
+            createDate: "dd/mm/yyyy",
+            diagostic: "Presença de HMI",
+            id: 13
+
+        },
+        {
+            register: "4",
+            createDate: "dd/mm/yyyy",
+            diagostic: "Sugestivo de HMI ",
+            id: 13
+
+        },
+    ]
 
     return (
 
@@ -18,12 +57,12 @@ export default function PatientRegisters() {
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to={`/user/home/${id}`}>
+                        <Link to={`/user/registers/${id}`}>
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
 
-                    <h1 className="text-3xl font-bold">Meus Registros</h1>
+                    <h1 className="text-3xl font-bold">Registros</h1>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to="/user/home/profile">
@@ -31,114 +70,42 @@ export default function PatientRegisters() {
                         </Link>
                     </Button>
                 </div>
+                {children.map((value) => {
+                    if (value.id == Number(id))
+                        return (<Card className="w-[100%] p-0" key={value.id}>
 
-                <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger className="font-semibold hover:no-underline">Crianças cadastradas</AccordionTrigger>
-                        <AccordionContent className="flex flex-col gap-[10px]">
-                            <Card>
-                                <CardHeader className="py-[10px]">
-                                    <CardDescription>Júlia Moreira Cunha de Souza</CardDescription>
-                                </CardHeader>
-                            </Card>
-                            <Card>
-                                <CardHeader className="py-[10px]">
-                                    <CardDescription>Júlia Moreira Cunha de Souza</CardDescription>
-                                </CardHeader>
-                            </Card>
-                            <Card>
-                                <CardHeader className="py-[10px]">
-                                    <CardDescription>Júlia Moreira Cunha de Souza</CardDescription>
-                                </CardHeader>
-                            </Card>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+                            <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 
-                <Card className="w-[100%] p-0">
+                                <Card className="px-4 py-1 flex items-center justify-between">
 
-                    <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
+                                    <div>
+                                        <CardTitle className="text-lg w-[150px]">Registro {value.register}</CardTitle>
+                                        <CardDescription>{value.createDate}</CardDescription>
+                                        {
+                                            value.diagostic && (
+                                                <CardDescription>{value.diagostic}</CardDescription>
+                                            )
 
-                        <Card className="px-4 py-1 flex items-center justify-between">
-                            <Link to={`/user/registers/register/${id}`}>
-                                <div>
-                                    <CardTitle className="text-lg">Registro 1</CardTitle>
-                                    <CardDescription>Criança X</CardDescription>
-                                    <CardDescription>dd/mm/yyyy</CardDescription>
-                                    {
-                                        true && (
-
-                                            <CardDescription className="font-semibold">Diagnóstico: presença</CardDescription>
-                                        )
-                                    }
-                                </div>
-                            </Link>
-
-                            <div className="flex gap-2">
-                                <Button size={"icon"}>
-                                    <Edit></Edit>
-                                </Button>
-                                <Button size={"icon"}>
-                                    <Trash></Trash>
-                                </Button>
-                            </div>
-
-                        </Card>
-                        <Card className="px-4 py-1 flex items-center justify-between">
-                            <Link to={`/user/registers/register/${id}`}>
-                                <div>
-                                    <CardTitle className="text-lg">Registro 2</CardTitle>
-                                    <CardDescription>Criança X</CardDescription>
-                                    <CardDescription>dd/mm/yyyy</CardDescription>
-                                    {
-                                        false && (
-
-                                            <CardDescription className="font-semibold">Diagnóstico: presença</CardDescription>
-                                        )
-                                    }
-                                </div>
-
-                            </Link>
-                            <div className="flex gap-2">
-                                <Button size={"icon"}>
-                                    <Edit></Edit>
-                                </Button>
-                                <Button size={"icon"}>
-                                    <Trash></Trash>
-                                </Button>
-                            </div>
-
-                        </Card>
-                        <Card className="px-4 py-1 flex items-center justify-between">
-                            <Link to={`/user/registers/register/${id}`}>
-                                <div>
-                                    <CardTitle className="text-lg">Registro 3</CardTitle>
-                                    <CardDescription>Criança X</CardDescription>
-                                    <CardDescription>dd/mm/yyyy</CardDescription>
-                                    {
-                                        true && (
-
-                                            <CardDescription className="font-semibold">Diagnóstico: ausência</CardDescription>
-                                        )
-                                    }
-                                </div>
-                            </Link>
-
-                            <div className="flex gap-2">
-                                <Button size={"icon"}>
-                                    <Edit></Edit>
-                                </Button>
-                                <Button size={"icon"}>
-                                    <Trash></Trash>
-                                </Button>
-                            </div>
-
-                        </Card>
-
-                    </CardContent>
+                                        }
+                                    </div>
 
 
-                </Card>
+                                    <div className="flex gap-2">
+                                        <Link to={`/user/registers/register/${value.id}`}>
+                                            <Button className="gap-2" size={"icon"}>
+                                                <Eye />
+                                            </Button>
+                                        </Link>
+                                    </div>
+
+                                </Card>
+
+                            </CardContent>
+                        </Card>)
+                }
+                )
+
+                }
 
 
                 <Button className="w-[300px] text-center mt-[20px]" type="submit">
