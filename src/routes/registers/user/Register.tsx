@@ -12,7 +12,7 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-    type CarouselApi
+
 } from "@/components/ui/carousel"
 
 import {
@@ -22,9 +22,8 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
-import { useState, useEffect } from "react";
 
 type RegisterData = {
 

@@ -1,8 +1,7 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookPlus, Edit, Eye, Trash, User2Icon } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Eye, User2Icon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type RegisterData = {
 

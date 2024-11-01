@@ -4,17 +4,11 @@ import CreatePatient from './routes/user/create-user-patient/CreateUser';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import PatientHomePage from './routes/home/UserHomePage';
 import HmiInformations from './routes/home/HmiInformations';
-import Patients from './routes/registers/user/Patients';
-import SelectPatientNew from './routes/registers/user/create-register/SelectPatientNew';
-import FinishRegisterNew from './routes/registers/user/create-register/FinishRegisterNew';
-import Register from './routes/registers/user/Register';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PendingRegisters from './routes/registers/specialist/PendingRegisters';
 import RegisterDiagnostic from './routes/registers/specialist/RegisterDiagnostic';
 import TCLE from './routes/user/create-user-patient/Tcle';
-import { FormProvider, type ErrorOption, type Field, type FieldArray, type FieldArrayPath, type FieldError, type FieldErrors, type FieldName, type FieldRefs, type FieldValues, type FormState, type InternalFieldName, type RegisterOptions, type SubmitErrorHandler, type SubmitHandler, type UseFormRegisterReturn } from 'react-hook-form';
-import PatientRegisters from './routes/registers/user/PatientRegisters';
 import CreateRegister from './routes/registers/user/create-register/CreateRegisterForm';
 import RegistersControl from './routes/registers/user/RegistersControl';
 
