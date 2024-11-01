@@ -17,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
 // import useSWRMutation from 'swr/mutation'
-import { useParams } from 'react-router-dom'
 import {
     Select,
     SelectContent,
@@ -126,6 +125,7 @@ export default function FinishRegisterNew({
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log(values);
         next()
     }
 
@@ -154,7 +154,7 @@ export default function FinishRegisterNew({
                                 <FormField
                                     control={form.control}
                                     name="toothache"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                             <FormLabel className='font-bold'>A criança sente dor nos dentes ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
@@ -181,7 +181,7 @@ export default function FinishRegisterNew({
                                 {toothache && (<FormField
                                     control={form.control}
                                     name="painLevel"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem >
                                             <FormLabel className='font-bold'>Nível da dor </FormLabel>
                                             <Select
@@ -208,7 +208,7 @@ export default function FinishRegisterNew({
                                 <FormField
                                     control={form.control}
                                     name="sensitivity"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                             <FormLabel className='font-bold'>A criança tem sensibilidade nos dentes ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
@@ -230,7 +230,7 @@ export default function FinishRegisterNew({
                                 <FormField
                                     control={form.control}
                                     name="toothStain"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                             <FormLabel className='font-bold'>A criança apresenta mancha nos dentes ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
@@ -256,7 +256,7 @@ export default function FinishRegisterNew({
                                 {toothStain && (<FormField
                                     control={form.control}
                                     name="aestheticDiscomfort"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
                                             <FormLabel className='font-bold'>A mancha gera desconforto estético ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
@@ -278,7 +278,7 @@ export default function FinishRegisterNew({
                                 <FormField
                                     control={form.control}
                                     name="userObservations"
-                                    render={({ field }) => (
+                                    render={() => (
                                         <FormItem>
                                             <FormLabel>Observações</FormLabel>
                                             <FormControl>

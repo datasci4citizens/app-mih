@@ -1,4 +1,4 @@
-import { number, z } from 'zod'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useForm } from 'react-hook-form'
@@ -26,9 +26,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
 // import useSWRMutation from 'swr/mutation'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Calendar } from '@/components/ui/calendar.tsx'
-import { Calendar as CalendarIcon, Car } from "lucide-react"
+import { Calendar as CalendarIcon } from "lucide-react"
 import {
     Select,
     SelectContent,
@@ -142,6 +142,7 @@ export default function PatientForm() {
         console.log(values)
         const { brothers, consultDentist, ...newValues } = values;
         const result = await trigger(newValues)
+        console.log(data);
         if (result && !error) {
             navigate(`/user/home`); // Redireciona para a home
         } else {

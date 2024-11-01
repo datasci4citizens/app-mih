@@ -121,6 +121,7 @@ export default function CreateRegister() {
             "patient_id": 10
         }
 
+
         console.log(arg)
 
         const result = await trigger(arg)
@@ -131,6 +132,7 @@ export default function CreateRegister() {
             console.error('Erro ao enviar dados:', error);
         }
 
+        console.log(data)
     }
 
     const steps = [

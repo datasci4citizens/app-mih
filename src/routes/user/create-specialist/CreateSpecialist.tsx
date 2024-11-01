@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch.tsx'
 
 import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
