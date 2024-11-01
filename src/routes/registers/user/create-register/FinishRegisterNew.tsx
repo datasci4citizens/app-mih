@@ -13,12 +13,11 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
 // import useSWRMutation from 'swr/mutation'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import {
     Select,
     SelectContent,
@@ -26,20 +25,29 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select.tsx'
-import useSWRMutation from 'swr/mutation'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft } from 'lucide-react'
 
 const formSchema = z.object({
     toothache: z.boolean(),
-    painLevel: z.enum(["mild", "moderate", "intense", ""]),
+    painLevel: z.number(),
     sensitivity: z.boolean(),
     toothStain: z.boolean(),
     aestheticDiscomfort: z.boolean(),
-    observations: z.string()
+    userObservations: z.string()
 
 
-})
+}).superRefine((values, ctx) => {
+    console.log(values.toothache)
+    console.log(values.painLevel)
+    if (values.toothache && values.painLevel === 0) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['painLevel'],
+            message: "Selecione um nível de dor",
+        });
+    }
+});
 
 // async function sendRequest(url, { arg }: {
 //     arg: {
@@ -68,11 +76,11 @@ const formSchema = z.object({
 // }
 type FinishRegisterData = {
     toothache: boolean,
-    painLevel: "mild" | "moderate" | "intense" | "",
+    painLevel: number,
     sensitivity: boolean,
     toothStain: boolean,
     aestheticDiscomfort: boolean,
-    observations: string
+    userObservations: string
 }
 
 type FinishRegisterFormsProps = FinishRegisterData & {
@@ -87,7 +95,7 @@ export default function FinishRegisterNew({
     sensitivity,
     toothStain,
     aestheticDiscomfort,
-    observations,
+    userObservations,
     updateFields,
     next,
     back
@@ -96,31 +104,29 @@ export default function FinishRegisterNew({
 
     // const { formData, updateFormData } = useFormContext();
 
-    const { id } = useParams();
-
     console.log({
         toothache,
         painLevel,
         sensitivity,
         toothStain,
         aestheticDiscomfort,
-        observations,
+        userObservations,
     })
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             toothache: false,
-            painLevel: "",
+            painLevel: 0,
             sensitivity: false,
             toothStain: false,
             aestheticDiscomfort: false,
-            observations: ""
+            userObservations: ""
         },
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        updateFields({ ...values })
+        next()
     }
 
     return (
@@ -157,7 +163,14 @@ export default function FinishRegisterNew({
                                                     <Switch
                                                         checked={toothache}
                                                         onCheckedChange={(checked) => {
-                                                            updateFields({ toothache: checked })
+                                                            updateFields({ toothache: checked });
+                                                            form.setValue("toothache", checked);
+
+                                                            if (!checked) {
+                                                                updateFields({ painLevel: 0 });
+                                                                form.setValue("painLevel", 0);
+                                                            }
+
                                                         }} />
                                                 </FormControl>
                                                 <FormDescription>Sim</FormDescription>
@@ -171,18 +184,21 @@ export default function FinishRegisterNew({
                                     render={({ field }) => (
                                         <FormItem >
                                             <FormLabel className='font-bold'>Nível da dor </FormLabel>
-                                            <Select onValueChange={e => {
-                                                updateFields({ painLevel: e })
-                                            }} defaultValue={painLevel}>
+                                            <Select
+                                                onValueChange={e => {
+                                                    updateFields({ painLevel: Number(e) })
+                                                    form.setValue("painLevel", Number(e));
+                                                }}
+                                                defaultValue={String(painLevel)}>
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Consulta em qual meio" />
+                                                        <SelectValue placeholder="Selecione o nível de dor" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="mild">Leve</SelectItem>
-                                                    <SelectItem value="moderate">Moderada</SelectItem>
-                                                    <SelectItem value="intense">Intensa</SelectItem>
+                                                    <SelectItem value="1">Leve</SelectItem>
+                                                    <SelectItem value="2">Moderada</SelectItem>
+                                                    <SelectItem value="3">Intensa</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -202,6 +218,8 @@ export default function FinishRegisterNew({
                                                         checked={sensitivity}
                                                         onCheckedChange={checked => {
                                                             updateFields({ sensitivity: checked })
+                                                            form.setValue("sensitivity", checked);
+
                                                         }} />
                                                 </FormControl>
                                                 <FormDescription>Sim</FormDescription>
@@ -222,7 +240,10 @@ export default function FinishRegisterNew({
                                                         checked={toothStain}
                                                         onCheckedChange={(checked) => {
                                                             updateFields({ toothStain: checked })
+                                                            form.setValue("toothStain", checked);
+
                                                             if (!checked) {
+                                                                updateFields({ aestheticDiscomfort: false })
                                                                 form.setValue("aestheticDiscomfort", false);
                                                             }
                                                         }} />
@@ -237,7 +258,7 @@ export default function FinishRegisterNew({
                                     name="aestheticDiscomfort"
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel className='font-bold'>A mancha gera desconforto estético</FormLabel>
+                                            <FormLabel className='font-bold'>A mancha gera desconforto estético ?</FormLabel>
                                             <div className='flex gap-[15px] items-center justify-center'>
                                                 <FormDescription>Não</FormDescription>
                                                 <FormControl>
@@ -245,6 +266,8 @@ export default function FinishRegisterNew({
                                                         checked={aestheticDiscomfort}
                                                         onCheckedChange={checked => {
                                                             updateFields({ aestheticDiscomfort: checked })
+                                                            form.setValue("aestheticDiscomfort", checked);
+
                                                         }} />
                                                 </FormControl>
                                                 <FormDescription>Sim</FormDescription>
@@ -254,7 +277,7 @@ export default function FinishRegisterNew({
                                 />)}
                                 <FormField
                                     control={form.control}
-                                    name="observations"
+                                    name="userObservations"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Observações</FormLabel>
@@ -263,9 +286,11 @@ export default function FinishRegisterNew({
 
                                                     placeholder="Observações adicionais"
                                                     className="resize-none "
-                                                    value={observations}
+                                                    value={userObservations}
                                                     onChange={e => {
-                                                        updateFields({ observations: e.target.value })
+                                                        updateFields({ userObservations: e.target.value })
+                                                        form.setValue("userObservations", e.target.value);
+
                                                     }}
                                                 />
                                             </FormControl>

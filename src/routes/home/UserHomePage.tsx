@@ -6,8 +6,6 @@ import { Link, useParams } from "react-router-dom";
 
 export default function PatientHomePage() {
 
-    const { id } = useParams();
-
     return (
 
         <div className="min-h-screen">
@@ -27,7 +25,7 @@ export default function PatientHomePage() {
 
                     <div className="flex flex-col gap-[20px]">
                         <Card className="shadow-lg">
-                            <Link to={`/user/home/hmi-informations/${id}`}>
+                            <Link to={`/user/home/hmi-informations`}>
                                 <CardHeader>
                                     <CardTitle className="text-xl">Informações</CardTitle>
                                     <CardDescription>Tratamentos, cuidados e dicas para casos de HMI</CardDescription>
@@ -35,7 +33,7 @@ export default function PatientHomePage() {
                             </Link>
                         </Card>
                         <Card className="shadow-lg">
-                            <Link to={`/user/registers/${id}`}>
+                            <Link to={`/user/registers`}>
                                 <CardHeader>
                                     <CardTitle className="text-xl">Meus Registros</CardTitle>
                                     <CardDescription>Histórico de fotos e observações da arcada dentária</CardDescription>
@@ -43,7 +41,7 @@ export default function PatientHomePage() {
                             </Link>
                         </Card>
                         <Card className="shadow-lg">
-                            <Link to={`/user/create/patient/${id}`}>
+                            <Link to={`/user/create/patient`}>
                                 <CardHeader>
                                     <CardTitle className="text-xl">Adicionar Criança</CardTitle>
                                     <CardDescription>Cadastre outra criança</CardDescription>
@@ -56,7 +54,7 @@ export default function PatientHomePage() {
 
 
                 <Button className="w-[300px] text-center mt-[40px]" type="submit">
-                    <Link to={`/user/registers/new-register/${id}`}>Novo Registro</Link>
+                    <Link to={`/user/registers/create-register`}>Novo Registro</Link>
                 </Button>
 
 

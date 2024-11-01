@@ -51,6 +51,8 @@ async function sendRequest(url: string, { arg }: {
         accept_tcle: boolean;
     }
 }) {
+
+
     console.log('=== sending request to ===')
     console.log(url)
     return await fetch(url, {
@@ -64,7 +66,7 @@ async function sendRequest(url: string, { arg }: {
 
 
 export default function CreatePatient() {
-    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/users/', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://localhost:8000/users/', sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -88,7 +90,7 @@ export default function CreatePatient() {
         console.log(data)
         console.log(error);
         if (result && !error) {
-            navigate(`patient/${result.id}`); // Redireciona para a home
+            navigate(`patient`); // Redireciona para a home
         } else {
             console.error('Erro ao enviar dados:', error);
         }

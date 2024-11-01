@@ -4,38 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, BookPlus, Edit, Eye, Trash, User2Icon } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
-const children = [
+type PatientsData = {
 
-    {
-        name: "Julia Moreira Cunha de Souza",
-        age: 12,
-        id: 10
+    name: string;
+    age: number;
+    id: string;
+}
 
-    },
-    {
-        name: "Gabriel Moreira Cunha de Souza",
-        age: 10,
-        id: 11
+type PatientsProps = {
 
-    },
-    {
-        name: "Nataly Santiago Miranda Silva",
-        age: 9,
-        id: 12
-
-    },
-    {
-        name: "Ricardo Oliveira Santos",
-        age: 11,
-        id: 13
-
-    },
-
-]
-
-export default function Patients() {
-
-    const { id } = useParams();
+    patientsData: PatientsData[];
+    setPatient: (patientId: string) => void;
+}
+export default function Patients({ patientsData, setPatient }: PatientsProps) {
 
     return (
 
@@ -47,7 +28,7 @@ export default function Patients() {
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to={`/user/home/${id}`}>
+                        <Link to={`/user/home`}>
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
@@ -60,7 +41,7 @@ export default function Patients() {
                         </Link>
                     </Button>
                 </div>
-                {children.map((value) =>
+                {patientsData.map((value) =>
 
                     <Card className="w-[100%] p-0" key={value.id}>
 
@@ -75,12 +56,11 @@ export default function Patients() {
 
 
                                 <div className="flex gap-2">
-                                    <Link to={`/user/registers/patient-registers/${value.id}`}>
-                                        <Button className="gap-2">
-                                            <h1>Ver Registros</h1>
-                                            <BookPlus />
-                                        </Button>
-                                    </Link>
+                                    <Button className="gap-2" onClick={() => setPatient(value.id)}>
+                                        <h1>Ver Registros</h1>
+                                        <BookPlus />
+                                    </Button>
+
                                 </div>
 
                             </Card>
@@ -93,7 +73,7 @@ export default function Patients() {
 
 
                 <Button className="w-[300px] text-center mt-[20px]" type="submit">
-                    <Link to={`/user/registers/new-register/${id}`}>Novo Registro</Link>
+                    <Link to={`/user/registers/create-register`}>Novo Registro</Link>
                 </Button>
 
 

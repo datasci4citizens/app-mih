@@ -95,6 +95,7 @@ async function sendRequest(url: string, { arg }: {
         highFever: boolean;
         premature: boolean;
         deliveryProblems: boolean;
+        deliveryProblemsTypes: string[];
         lowWeight: boolean;
         deliveryType: "cesarean" | "normal";
         brothersNumber: string;
@@ -115,8 +116,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function PatientForm() {
 
-    const { id } = useParams();
-    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/patients/user/${id}`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/patients/user/${10}`, sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -143,7 +143,7 @@ export default function PatientForm() {
         const { brothers, consultDentist, ...newValues } = values;
         const result = await trigger(newValues)
         if (result && !error) {
-            navigate(`/user/home/${result.user_id}`); // Redireciona para a home
+            navigate(`/user/home`); // Redireciona para a home
         } else {
             console.error('Erro ao enviar dados:', error);
         }

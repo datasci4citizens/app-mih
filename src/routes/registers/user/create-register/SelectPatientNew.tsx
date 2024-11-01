@@ -17,8 +17,6 @@ type PatientFormProps = PatientData & {
 
 export default function SelectPatientNew({ patient, updateFields, next }: PatientFormProps) {
 
-    const { id } = useParams();
-
     return (
 
         <div className="min-h-screen max-h-screen overflow-scroll">
@@ -30,7 +28,7 @@ export default function SelectPatientNew({ patient, updateFields, next }: Patien
                 <div className="flex w-[100%] justify-between items-center px-[30px] mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to={`/user/home/${id}`}>
+                        <Link to={`/user/home`}>
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
@@ -77,19 +75,20 @@ export default function SelectPatientNew({ patient, updateFields, next }: Patien
 
                 </Card>
 
-                <Select defaultValue={patient} name="patient" onValueChange={e => {
-                    updateFields({ patient: e })
-                }}>
-                    <SelectTrigger className="w-[300px]" >
-                        <SelectValue placeholder="Selecione a criança" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="id_0">Júlia Moreira </SelectItem>
-                        <SelectItem value="id_1">Gabriel Montino</SelectItem>
-                    </SelectContent>
-                </Select>
-
-
+                <div className="flex flex-col gap-2">
+                    <h1 className="font-bold text-md"> Selecione uma criança *</h1>
+                    <Select defaultValue={patient} name="patient" onValueChange={e => {
+                        updateFields({ patient: e })
+                    }}>
+                        <SelectTrigger className="w-[300px]" >
+                            <SelectValue placeholder="Selecione a criança" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="id_0">Júlia Moreira </SelectItem>
+                            <SelectItem value="id_1">Gabriel Montino</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
                 <Button className="w-[300px] text-center mt-[40px]" type="submit" onClick={() => {
                     if (patient !== "")

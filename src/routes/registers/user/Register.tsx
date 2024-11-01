@@ -26,9 +26,32 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { useState, useEffect } from "react";
 
+type RegisterData = {
 
-export default function Register() {
-    const { id } = useParams();
+    register: string;
+    createDate: string;
+    diagostic: string;
+    id: string;
+
+}
+
+type PatientData = {
+
+    name: string;
+    age: number;
+    id: string;
+
+}
+
+type RegisterProps = {
+
+    register: RegisterData;
+    patient: PatientData;
+    back: () => void;
+
+}
+
+export default function Register({ register, patient, back }: RegisterProps) {
 
 
     return (
@@ -42,13 +65,13 @@ export default function Register() {
                 <div className="w-[100%] mt-2">
                     <div className="flex w-[100%] justify-between items-center px-[30px] mb-10">
 
-                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                            <Link to={`/user/registers/patient-registers/${id}`}>
-                                <ArrowLeft color="black" />
-                            </Link>
+                        <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+
+                            <ArrowLeft color="black" />
+
                         </Button>
 
-                        <h1 className="text-3xl font-bold">Registro 1</h1>
+                        <h1 className="text-3xl font-bold">Registro {register.register}</h1>
 
                         <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                             <Link to="/user/home/profile">
@@ -83,18 +106,15 @@ export default function Register() {
                             <Card className="min-w-[80%]">
                                 <CardHeader>
                                     <CardTitle className="text-sm ">
-                                        Criança 1
+                                        {patient.name}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <CardDescription>
-                                        Nome
+                                        {patient.age}
                                     </CardDescription>
                                     <CardDescription>
-                                        Idade
-                                    </CardDescription>
-                                    <CardDescription>
-                                        Registro enviado: dd/mm/yyyy
+                                        Registro enviado: {register.createDate}
                                     </CardDescription>
                                     <CardDescription>
                                         Nivel de dor

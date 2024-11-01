@@ -43,12 +43,6 @@ export default function HmiInformations() {
             return
         }
 
-        const handleClick = (index: number) => {
-
-
-
-        }
-
         setCount(api.scrollSnapList().length)
         setCurrent(api.selectedScrollSnap())
 
@@ -57,7 +51,6 @@ export default function HmiInformations() {
         })
     }, [api])
 
-    const { id } = useParams();
 
     return (
 
@@ -70,7 +63,7 @@ export default function HmiInformations() {
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to={`/user/home/${id}`}>
+                        <Link to={`/user/home`}>
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
