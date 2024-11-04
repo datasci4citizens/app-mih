@@ -5,9 +5,19 @@ import RegisterSumary from "./RegisterSumary"
 import useSWRMutation from "swr/mutation"
 import { useNavigate } from "react-router-dom"
 
+
+type PatientsData = {
+
+    name: string;
+    age: number;
+    id: string;
+}
+
+type PatientsArray = PatientsData[];
+
 type RegisterData = {
 
-    patient: string,
+    patient: PatientsData,
     toothache: boolean,
     painLevel: number,
     sensitivity: boolean,
@@ -19,7 +29,11 @@ type RegisterData = {
 
 const INIT_DATA: RegisterData = {
 
-    patient: "",
+    patient: {
+        name: "",
+        age: 0,
+        id: ""
+    },
     toothache: false,
     painLevel: -1,
     sensitivity: false,
@@ -45,6 +59,8 @@ type SendData = {
 
 interface FormContextType {
     sendData: RegisterData;
+    patientsData: PatientsArray;
+    selectPatient: (patientId: string) => void;
     updateFields: (fields: Partial<RegisterData>) => void;
     next: () => void;
     back: () => void;
@@ -85,7 +101,44 @@ export default function CreateRegister() {
 
     }
 
+    function selectPatient(patientId: string) {
+
+        const patientSelected = patientsData.find((pat) => pat.id == patientId);
+
+        updateFields({ patient: patientSelected })
+
+    }
+
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+    const patientsData: PatientsArray = [
+
+        {
+            name: "Julia Moreira Cunha de Souza",
+            age: 12,
+            id: "10"
+
+        },
+        {
+            name: "Gabriel Moreira Cunha de Souza",
+            age: 10,
+            id: "11"
+
+        },
+        {
+            name: "Nataly Santiago Miranda Silva",
+            age: 9,
+            id: "12"
+
+        },
+        {
+            name: "Robervaldo Oliveira Santos",
+            age: 11,
+            id: "13"
+
+        },
+
+    ]
 
     function next() {
 
@@ -129,7 +182,7 @@ export default function CreateRegister() {
             "userObservations": sendData.userObservations,
             "specialistObservations": "",
             "diagnosis": "",
-            "patient_id": 10
+            "patient_id": Number(sendData.patient.id)
         }
 
 
@@ -155,6 +208,8 @@ export default function CreateRegister() {
 
         <FormContext.Provider value={{
             sendData,
+            patientsData,
+            selectPatient,
             updateFields,
             next,
             back,

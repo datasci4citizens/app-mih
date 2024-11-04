@@ -33,8 +33,8 @@ export default function RegisterSumary() {
                             <Edit onClick={() => goTo(0)}></Edit>
                         </CardHeader>
                         <CardContent>
-                            <CardDescription>
-                                {patient}
+                            <CardDescription className="text-base font-bold">
+                                {patient.name}
                             </CardDescription>
                         </CardContent>
                     </Card>

@@ -35,8 +35,8 @@ export default function PatientHomePage() {
                         <Card className="shadow-lg">
                             <Link to={`/user/registers`}>
                                 <CardHeader>
-                                    <CardTitle className="text-xl">Meus Registros</CardTitle>
-                                    <CardDescription>Histórico de fotos e observações da arcada dentária</CardDescription>
+                                    <CardTitle className="text-xl">Minhas crianças</CardTitle>
+                                    <CardDescription>Crianças cadastradas, seus registros e criação de novos registros</CardDescription>
                                 </CardHeader>
                             </Link>
                         </Card>
@@ -51,12 +51,6 @@ export default function PatientHomePage() {
                     </div>
 
                 </div>
-
-
-                <Button className="w-[300px] text-center mt-[40px]" type="submit">
-                    <Link to={`/user/registers/create-register`}>Novo Registro</Link>
-                </Button>
-
 
             </div>
         </div>

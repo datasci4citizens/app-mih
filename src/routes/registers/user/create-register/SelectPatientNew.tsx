@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useFormContext } from "./CreateRegisterForm";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function SelectPatientNew() {
 
-    const { sendData, updateFields, next } = useFormContext();
+    const { sendData, patientsData, selectPatient, next } = useFormContext();
 
     const { patient } = { ...sendData };
 
@@ -34,58 +34,45 @@ export default function SelectPatientNew() {
                     </Button>
                 </div>
 
-                <Card className="mb-[20px]">
+                <Card className="border-none shadow-none">
                     <CardHeader>
-                        <CardTitle className="text-center">
-                            Crianças
+                        <CardTitle className="text-center font-bold">
+                            Selecione uma criança
                         </CardTitle>
 
-                        <CardContent className="flex flex-col min-h-[300px] max-h-[300px] overflow-y-scroll p-[10px] gap-[10px]">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Criança 1</CardTitle>
-                                    <CardDescription>Júlia Moreira</CardDescription>
-                                    <CardDescription>11 anos</CardDescription>
-                                    {
-                                        true && (
+                        <CardContent className="flex flex-col max-h-[600px] overflow-y-scroll p-[10px] gap-[10px] border-2 rounded-xl">
+                            <RadioGroup defaultValue={patient.id} onValueChange={(e) => selectPatient(e)}>
+                                {
+                                    patientsData.map((child) =>
 
-                                            <CardDescription className="font-semibold">Último registro: dd/mm/yyyy</CardDescription>
-                                        )
-                                    }
-                                </CardHeader>
+                                        <label htmlFor={child.id}>
+                                            <Card className="px-4 flex max-w-[350px] items-center justify-center">
+                                                <RadioGroupItem value={child.id} id={child.id} />
+                                                <CardHeader>
+                                                    <CardTitle>{child.name}</CardTitle>
+                                                    {
+                                                        true && (
 
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Criança 2</CardTitle>
-                                    <CardDescription>Gabriel Montino</CardDescription>
-                                    <CardDescription>12 anos</CardDescription>
-                                </CardHeader>
+                                                            <CardDescription className="font-semibold">Último registro: dd/mm/yyyy</CardDescription>
+                                                        )
+                                                    }
+                                                </CardHeader>
 
-                            </Card>
+                                            </Card>
+                                        </label>
 
+                                    )
+
+                                }
+
+                            </RadioGroup>
                         </CardContent>
                     </CardHeader>
 
                 </Card>
 
-                <div className="flex flex-col gap-2">
-                    <h1 className="font-bold text-md"> Selecione uma criança *</h1>
-                    <Select defaultValue={patient} name="patient" onValueChange={e => {
-                        updateFields({ patient: e })
-                    }}>
-                        <SelectTrigger className="w-[300px]" >
-                            <SelectValue placeholder="Selecione a criança" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="id_0">Júlia Moreira </SelectItem>
-                            <SelectItem value="id_1">Gabriel Montino</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <Button className="w-[300px] text-center mt-[40px]" type="submit" onClick={() => {
-                    if (patient !== "")
+                <Button className="w-[300px] text-center my-4" type="submit" onClick={() => {
+                    if (patient.id !== "")
                         next();
                 }}>
                     Próximo

@@ -24,7 +24,7 @@ export default function Patients() {
                         </Link>
                     </Button>
 
-                    <h1 className="text-3xl font-bold">Registros</h1>
+                    <h1 className="text-3xl font-bold">Crianças</h1>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to="/user/home/profile">
@@ -38,21 +38,19 @@ export default function Patients() {
 
                         <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 
-                            <Card className="px-4 py-1 flex items-center justify-between">
+                            <Card className="px-0 py-0 flex flex-col items-center justify-between">
 
-                                <div>
-                                    <CardTitle className="text-lg w-[150px]">{value.name}</CardTitle>
-                                    <CardDescription>Idade {value.age} anos</CardDescription>
+                                <div className="m-2 text-center">
+                                    <CardTitle className="text-lg">{value.name}</CardTitle>
+                                    <CardDescription>Último registro: dd/mm/yyy</CardDescription>
                                 </div>
 
+                                <Button className="gap-2 w-full rounded-t-none" onClick={() => selectPatient(value.id)}>
+                                    <h1>Registros</h1>
+                                    <BookPlus />
+                                </Button>
 
-                                <div className="flex gap-2">
-                                    <Button className="gap-2" onClick={() => selectPatient(value.id)}>
-                                        <h1>Ver Registros</h1>
-                                        <BookPlus />
-                                    </Button>
 
-                                </div>
 
                             </Card>
 
@@ -63,8 +61,8 @@ export default function Patients() {
                 }
 
 
-                <Button className="w-[300px] text-center mt-[20px]" type="submit">
-                    <Link to={`/user/registers/create-register`}>Novo Registro</Link>
+                <Button className="text-center mt-[20px]" type="submit">
+                    <Link to={`/user/create/patient`}>Adicionar criança</Link>
                 </Button>
 
 

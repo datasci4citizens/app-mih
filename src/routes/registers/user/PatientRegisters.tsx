@@ -68,7 +68,7 @@ export default function PatientRegisters() {
                 }
 
 
-                <Button className="w-[300px] text-center mt-[20px]" type="submit">
+                <Button className="text-center mt-[20px]" type="submit">
                     <Link to={`/user/registers/create-register`}>Novo Registro</Link>
                 </Button>
 
