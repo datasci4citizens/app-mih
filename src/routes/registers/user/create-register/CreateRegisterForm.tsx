@@ -182,7 +182,7 @@ export default function CreateRegister() {
             "userObservations": sendData.userObservations,
             "specialistObservations": "",
             "diagnosis": "",
-            "patient_id": Number(sendData.patient.id)
+            "patient_id": 10
         }
 
 
@@ -209,8 +209,8 @@ export default function CreateRegister() {
         <FormContext.Provider value={{
             sendData,
             patientsData,
-            selectPatient,
             updateFields,
+            selectPatient,
             next,
             back,
             goTo,

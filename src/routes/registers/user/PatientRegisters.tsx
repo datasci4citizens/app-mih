@@ -3,12 +3,22 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRegistersContext } from "./RegistersControl";
+import useSWR from 'swr';
 
-
+const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 export default function PatientRegisters() {
 
-    const { registers, selectRegister, back } = useRegistersContext();
+    const { patient, registers, setRegisters, selectRegister, back } = useRegistersContext();
+
+    const { data, error, isLoading } = useSWR(`http://localhost:8000/patients/${patient?.id}/mih`, fetcher)
+
+    if (error)
+        return <h1>{error}</h1>
+    if (isLoading)
+        return <h1>loading</h1>
+
+    setRegisters(data.mih)
 
     return (
 
@@ -33,19 +43,19 @@ export default function PatientRegisters() {
                         </Link>
                     </Button>
                 </div>
-                {registers.map((value) => {
-                    return (<Card className="w-[100%] p-0" key={value.id}>
+                {registers?.map((value, i) => {
+                    return (<Card className="w-[100%] p-0" key={value.mih_id}>
 
                         <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 
                             <Card className="px-4 py-1 flex items-center justify-between">
 
                                 <div>
-                                    <CardTitle className="text-lg w-[150px]">Registro {value.register}</CardTitle>
-                                    <CardDescription>{value.createDate}</CardDescription>
+                                    <CardTitle className="text-lg w-[150px]">Registro {i + 1}</CardTitle>
+                                    <CardDescription>{new Date(value.start_date).toLocaleDateString("pt-BR")}</CardDescription>
                                     {
-                                        value.diagostic && (
-                                            <CardDescription>{value.diagostic}</CardDescription>
+                                        value.diagnosis && (
+                                            <CardDescription>{value.diagnosis}</CardDescription>
                                         )
 
                                     }
@@ -53,7 +63,7 @@ export default function PatientRegisters() {
 
 
                                 <div className="flex gap-2">
-                                    <Button className="gap-2" size={"icon"} onClick={() => selectRegister(value.register)}>
+                                    <Button className="gap-2" size={"icon"} onClick={() => selectRegister(String(value.mih_id))}>
                                         <Eye />
                                     </Button>
                                 </div>

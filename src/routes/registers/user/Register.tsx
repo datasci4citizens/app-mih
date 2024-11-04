@@ -47,7 +47,7 @@ export default function Register() {
 
                         </Button>
 
-                        <h1 className="text-3xl font-bold">Registro {register.register}</h1>
+                        <h1 className="text-3xl font-bold">Registro {register?.mih_id}</h1>
 
                         <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                             <Link to="/user/home/profile">
@@ -82,27 +82,27 @@ export default function Register() {
                             <Card className="min-w-[80%]">
                                 <CardHeader>
                                     <CardTitle className="text-sm ">
-                                        {patient.name}
+                                        {patient?.name}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <CardDescription>
-                                        {patient.age}
+                                        Idade: {patient?.age} anos
                                     </CardDescription>
                                     <CardDescription>
-                                        Registro enviado: {register.createDate}
+                                        Registro enviado: {new Date(register?.start_date ? register?.start_date : 0).toLocaleDateString('pt-BR')}
                                     </CardDescription>
                                     <CardDescription>
-                                        Nivel de dor
+                                        Nivel de dor {register?.painLevel}
                                     </CardDescription>
                                     <CardDescription>
-                                        Apresenta manchas
+                                        Apresenta manchas {register?.stain ? "Sim" : "Não"}
                                     </CardDescription>
                                     <CardDescription>
-                                        Tem Sensibilidade
+                                        Tem Sensibilidade {register?.sensitivityField ? "Sim" : "Não"}
                                     </CardDescription>
                                     <CardDescription>
-                                        Observações
+                                        Observações {register?.userObservations}
                                     </CardDescription>
 
                                 </CardContent>
