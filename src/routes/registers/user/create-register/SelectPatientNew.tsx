@@ -3,19 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useFormContext } from "./CreateRegisterForm";
 
-type PatientData = {
+export default function SelectPatientNew() {
 
-    patient: string
+    const { sendData, updateFields, next } = useFormContext();
 
-}
-
-type PatientFormProps = PatientData & {
-    updateFields: (fields: Partial<PatientData>) => void;
-    next: () => void;
-}
-
-export default function SelectPatientNew({ patient, updateFields, next }: PatientFormProps) {
+    const { patient } = { ...sendData };
 
     return (
 

@@ -1,41 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Edit } from "lucide-react";
+import { useFormContext } from "./CreateRegisterForm";
 
+export default function RegisterSumary() {
 
-type dataForm = {
+    const { sendData, back, goTo, submit } = useFormContext();
 
-    patient: string,
-    toothache: boolean,
-    painLevel: number,
-    sensitivity: boolean,
-    toothStain: boolean,
-    aestheticDiscomfort: boolean,
-    userObservations: string
-
-}
-
-type dataFormProps = dataForm & {
-
-    back: () => void;
-    goTo: (index: number) => void;
-    submit: () => void;
-
-}
-
-export default function RegisterSumary({
-    patient,
-    toothache,
-    painLevel,
-    sensitivity,
-    toothStain,
-    aestheticDiscomfort,
-    userObservations,
-    back,
-    goTo,
-    submit }: dataFormProps) {
-
-
+    const { patient, toothache, painLevel, sensitivity,
+        toothStain, aestheticDiscomfort, userObservations } = { ...sendData }
 
     return (
 

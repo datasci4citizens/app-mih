@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useFormContext } from "./RegistersControl";
+import { useRegistersContext } from "./RegistersControl";
 
 
 
 export default function PatientRegisters() {
 
-    const { registers, selectRegister, back } = useFormContext();
+    const { registers, selectRegister, back } = useRegistersContext();
 
     return (
 

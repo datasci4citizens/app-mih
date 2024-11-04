@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { createContext, useContext, useState } from "react"
 import FinishRegisterNew from "./FinishRegisterNew"
 import SelectPatientNew from "./SelectPatientNew"
 import RegisterSumary from "./RegisterSumary"
@@ -42,6 +42,17 @@ type SendData = {
     patient_id: number
 
 }
+
+interface FormContextType {
+    sendData: RegisterData;
+    updateFields: (fields: Partial<RegisterData>) => void;
+    next: () => void;
+    back: () => void;
+    goTo: (index: number) => void;
+    submit: () => void;
+}
+
+const FormContext = createContext<FormContextType | undefined>(undefined);
 
 async function sendRequest(url: string, { arg }: {
     arg: SendData;
@@ -136,14 +147,31 @@ export default function CreateRegister() {
     }
 
     const steps = [
-        <SelectPatientNew {...sendData} updateFields={updateFields} next={next} />,
-        <FinishRegisterNew {...sendData} updateFields={updateFields} next={next} back={back} />,
-        <RegisterSumary {...sendData} back={back} goTo={goTo} submit={submit} />
+        <SelectPatientNew />,
+        <FinishRegisterNew />,
+        <RegisterSumary />
     ]
     return (
 
-        steps[currentStepIndex]
+        <FormContext.Provider value={{
+            sendData,
+            updateFields,
+            next,
+            back,
+            goTo,
+            submit
+        }}>
+            {steps[currentStepIndex]}
+        </FormContext.Provider>
 
     )
 
 }
+
+export const useFormContext = () => {
+    const context = useContext(FormContext);
+    if (!context) {
+        throw new Error("useFormContext must be used within a FormProvider");
+    }
+    return context;
+};

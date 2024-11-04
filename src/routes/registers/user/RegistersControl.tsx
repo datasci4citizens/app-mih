@@ -23,7 +23,7 @@ type RegisterData = {
 
 type RegisterArray = RegisterData[];
 
-interface FormContextType {
+interface RegistersContextType {
     patientsData: PatientsArray;
     selectPatient: (patientId: string) => void;
     registers: RegisterArray;
@@ -33,7 +33,7 @@ interface FormContextType {
     back: () => void;
 }
 
-const FormContext = createContext<FormContextType | undefined>(undefined);
+const RegistersContext = createContext<RegistersContextType | undefined>(undefined);
 
 export default function RegistersControl() {
 
@@ -179,7 +179,7 @@ export default function RegistersControl() {
     ]
 
     return (
-        <FormContext.Provider
+        <RegistersContext.Provider
             value={{
                 patientsData,
                 selectPatient,
@@ -190,13 +190,13 @@ export default function RegistersControl() {
                 back
             }}>
             {pages[page]}
-        </FormContext.Provider>
+        </RegistersContext.Provider>
     )
 
 }
 
-export const useFormContext = () => {
-    const context = useContext(FormContext);
+export const useRegistersContext = () => {
+    const context = useContext(RegistersContext);
     if (!context) {
         throw new Error("useFormContext must be used within a FormProvider");
     }

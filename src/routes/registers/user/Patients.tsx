@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, BookPlus, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useFormContext } from "./RegistersControl";
+import { useRegistersContext } from "./RegistersControl";
 
 export default function Patients() {
 
-    const { patientsData, selectPatient } = useFormContext();
+    const { patientsData, selectPatient } = useRegistersContext();
 
     return (
 

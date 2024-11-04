@@ -16,7 +16,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
-// import useSWRMutation from 'swr/mutation'
 import {
     Select,
     SelectContent,
@@ -26,6 +25,7 @@ import {
 } from '@/components/ui/select.tsx'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft } from 'lucide-react'
+import { useFormContext } from './CreateRegisterForm'
 
 const formSchema = z.object({
     toothache: z.boolean(),
@@ -48,69 +48,17 @@ const formSchema = z.object({
     }
 });
 
-// async function sendRequest(url, { arg }: {
-//     arg: {
-//         childName: string;
-//         birthday: Date;
-//         highFever: boolean;
-//         premature: boolean;
-//         deliveryProblems: boolean;
-//         lowWeight: boolean;
-//         deliveryType: "cesarean" | "normal";
-//         brothers: boolean;
-//         brothersNumber: string;
-//         consultDentist: boolean;
-//         consultType: "public" | "private" | "none";
-//     }
-// }) {
-//     console.log('=== sending request to ===')
-//     console.log(url)
-//     return await fetch(url, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(arg)
-//     }).then(res => res.json())
-// }
-type FinishRegisterData = {
-    toothache: boolean,
-    painLevel: number,
-    sensitivity: boolean,
-    toothStain: boolean,
-    aestheticDiscomfort: boolean,
-    userObservations: string
-}
+export default function FinishRegisterNew() {
 
-type FinishRegisterFormsProps = FinishRegisterData & {
-    updateFields: (fields: Partial<FinishRegisterData>) => void,
-    next: () => void | undefined,
-    back: () => void | undefined
-}
+    const { sendData, updateFields, next, back } = useFormContext();
 
-export default function FinishRegisterNew({
-    toothache,
-    painLevel,
-    sensitivity,
-    toothStain,
-    aestheticDiscomfort,
-    userObservations,
-    updateFields,
-    next,
-    back
-}: FinishRegisterFormsProps) {
-    // const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/patients', sendRequest)
-
-    // const { formData, updateFormData } = useFormContext();
-
-    console.log({
-        toothache,
+    const { toothache,
         painLevel,
         sensitivity,
         toothStain,
         aestheticDiscomfort,
         userObservations,
-    })
+    } = { ...sendData };
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

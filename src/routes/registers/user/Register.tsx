@@ -24,11 +24,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
-import { useFormContext } from "./RegistersControl";
+import { useRegistersContext } from "./RegistersControl";
 
 export default function Register() {
 
-    const { register, patient, back } = useFormContext();
+    const { register, patient, back } = useRegistersContext();
 
     return (
 
