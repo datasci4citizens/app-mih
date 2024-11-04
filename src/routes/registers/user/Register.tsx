@@ -24,34 +24,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
+import { useFormContext } from "./RegistersControl";
 
-type RegisterData = {
+export default function Register() {
 
-    register: string;
-    createDate: string;
-    diagostic: string;
-    id: string;
-
-}
-
-type PatientData = {
-
-    name: string;
-    age: number;
-    id: string;
-
-}
-
-type RegisterProps = {
-
-    register: RegisterData;
-    patient: PatientData;
-    back: () => void;
-
-}
-
-export default function Register({ register, patient, back }: RegisterProps) {
-
+    const { register, patient, back } = useFormContext();
 
     return (
 

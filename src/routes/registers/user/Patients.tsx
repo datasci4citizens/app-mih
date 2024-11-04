@@ -3,20 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, BookPlus, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useFormContext } from "./RegistersControl";
 
-type PatientsData = {
+export default function Patients() {
 
-    name: string;
-    age: number;
-    id: string;
-}
-
-type PatientsProps = {
-
-    patientsData: PatientsData[];
-    setPatient: (patientId: string) => void;
-}
-export default function Patients({ patientsData, setPatient }: PatientsProps) {
+    const { patientsData, selectPatient } = useFormContext();
 
     return (
 
@@ -56,7 +47,7 @@ export default function Patients({ patientsData, setPatient }: PatientsProps) {
 
 
                                 <div className="flex gap-2">
-                                    <Button className="gap-2" onClick={() => setPatient(value.id)}>
+                                    <Button className="gap-2" onClick={() => selectPatient(value.id)}>
                                         <h1>Ver Registros</h1>
                                         <BookPlus />
                                     </Button>

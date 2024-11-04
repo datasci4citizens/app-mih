@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import Patients from "./Patients";
 import Register from "./Register";
 import PatientRegisters from "./PatientRegisters";
@@ -22,6 +22,18 @@ type RegisterData = {
 }
 
 type RegisterArray = RegisterData[];
+
+interface FormContextType {
+    patientsData: PatientsArray;
+    selectPatient: (patientId: string) => void;
+    registers: RegisterArray;
+    selectRegister: (id: string) => void;
+    register: RegisterData;
+    patient: PatientsData;
+    back: () => void;
+}
+
+const FormContext = createContext<FormContextType | undefined>(undefined);
 
 export default function RegistersControl() {
 
@@ -160,14 +172,33 @@ export default function RegistersControl() {
 
     const pages = [
 
-        <Patients patientsData={patientsData} setPatient={selectPatient} />,
-        <PatientRegisters registers={registers} setRegister={selectRegister} back={back} />,
-        <Register register={register} patient={patient} back={back} />,
+        <Patients />,
+        <PatientRegisters />,
+        <Register />,
 
     ]
 
     return (
-        pages[page]
+        <FormContext.Provider
+            value={{
+                patientsData,
+                selectPatient,
+                registers,
+                selectRegister,
+                register,
+                patient,
+                back
+            }}>
+            {pages[page]}
+        </FormContext.Provider>
     )
 
-} 
+}
+
+export const useFormContext = () => {
+    const context = useContext(FormContext);
+    if (!context) {
+        throw new Error("useFormContext must be used within a FormProvider");
+    }
+    return context;
+};

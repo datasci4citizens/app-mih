@@ -2,25 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useFormContext } from "./RegistersControl";
 
-type RegisterData = {
 
-    register: string;
-    createDate: string;
-    diagostic: string;
-    id: string;
 
-}
+export default function PatientRegisters() {
 
-type PatientRegistersProps = {
-
-    registers: RegisterData[];
-    setRegister: (register: string) => void;
-    back: () => void;
-
-}
-
-export default function PatientRegisters({ registers, setRegister, back }: PatientRegistersProps) {
+    const { registers, selectRegister, back } = useFormContext();
 
     return (
 
@@ -65,7 +53,7 @@ export default function PatientRegisters({ registers, setRegister, back }: Patie
 
 
                                 <div className="flex gap-2">
-                                    <Button className="gap-2" size={"icon"} onClick={() => setRegister(value.register)}>
+                                    <Button className="gap-2" size={"icon"} onClick={() => selectRegister(value.register)}>
                                         <Eye />
                                     </Button>
                                 </div>
