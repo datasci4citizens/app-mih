@@ -60,12 +60,6 @@ export default function Patients() {
 
                 }
 
-
-                <Button className="text-center mt-[20px]" type="submit">
-                    <Link to={`/user/create/patient`}>Adicionar criança</Link>
-                </Button>
-
-
             </div>
         </div>
 

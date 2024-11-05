@@ -61,7 +61,7 @@ const router = createBrowserRouter([
     element: <RegistersControl />
   },
   {
-    path: '/user/registers/create-register',
+    path: '/user/registers/create-register/:patient_id/:first_time',
     element: <CreateRegister />
   },
   {

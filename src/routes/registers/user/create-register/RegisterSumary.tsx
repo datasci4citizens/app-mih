@@ -28,13 +28,12 @@ export default function RegisterSumary() {
 
                 <div className="w-full px-[30px] space-y-4">
                     <Card className="w-full">
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader className="flex flex-row items-center justify-center">
                             <CardTitle>Criança Selecionada</CardTitle>
-                            <Edit onClick={() => goTo(0)}></Edit>
                         </CardHeader>
                         <CardContent>
-                            <CardDescription className="text-base font-bold">
-                                {patient.name}
+                            <CardDescription className="text-base font-bold text-center">
+                                {patient?.name}
                             </CardDescription>
                         </CardContent>
                     </Card>

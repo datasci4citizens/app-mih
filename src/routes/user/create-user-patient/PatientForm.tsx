@@ -70,7 +70,7 @@ const formSchema = z.object({
     brothers: z.boolean(),
     brothersNumber: z.string(),
     consultDentist: z.boolean(),
-    consultType: z.enum(["public", "private", "none"])
+    consultType: z.enum(["public", "private", ""])
 }).superRefine((values, ctx) => {
     if (values.deliveryProblems && values.deliveryProblemsTypes.length === 0) {
         ctx.addIssue({
@@ -99,7 +99,7 @@ async function sendRequest(url: string, { arg }: {
         lowWeight: boolean;
         deliveryType: "cesarean" | "normal";
         brothersNumber: number;
-        consultType: "public" | "private" | "none";
+        consultType: "public" | "private" | "";
     }
 }) {
     console.log('=== sending request to ===')
@@ -112,7 +112,6 @@ async function sendRequest(url: string, { arg }: {
         body: JSON.stringify(arg)
     }).then(res => res.json())
 }
-
 
 export default function PatientForm() {
 
@@ -133,7 +132,7 @@ export default function PatientForm() {
             brothers: false,
             brothersNumber: "",
             consultDentist: false,
-            consultType: "none"
+            consultType: ""
         },
     })
 
@@ -156,7 +155,7 @@ export default function PatientForm() {
         const result = await trigger(newValue)
         console.log(data);
         if (result && !error) {
-            navigate(`/user/home`); // Redireciona para a home
+            navigate(`/user/registers/create-register/${result.patient_id}/first_time`);
         } else {
             console.error('Erro ao enviar dados:', error);
         }
@@ -460,7 +459,7 @@ export default function PatientForm() {
                                                                 onCheckedChange={(checked) => {
                                                                     field.onChange(checked);
                                                                     if (!checked) {
-                                                                        form.setValue("consultType", "none");
+                                                                        form.setValue("consultType", "");
                                                                     }
                                                                 }} />
                                                         </FormControl>

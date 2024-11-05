@@ -6,7 +6,6 @@ import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import CreateRegister from "./create-register/CreateRegisterForm";
 
 type PatientsData = {
     name: string,

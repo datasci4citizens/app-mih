@@ -1,24 +1,31 @@
 import { createContext, useContext, useState } from "react"
 import FinishRegisterNew from "./FinishRegisterNew"
-import SelectPatientNew from "./SelectPatientNew"
 import RegisterSumary from "./RegisterSumary"
 import useSWRMutation from "swr/mutation"
-import { useNavigate } from "react-router-dom"
-import { useRegistersContext } from "../RegistersControl"
-
+import { useNavigate, useParams } from "react-router-dom"
+import useSWR from "swr"
+import ConfirmPatient from "./ConfirmPatient"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, User2Icon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type PatientsData = {
-
-    name: string;
-    age: number;
-    id: string;
+    name: string,
+    birthday: string,
+    highFever: boolean,
+    premature: boolean,
+    deliveryProblems: boolean,
+    lowWeight: boolean,
+    deliveryType: string,
+    brothersNumber: number,
+    consultType: string,
+    deliveryProblemsTypes: string,
+    patient_id: number,
 }
-
-type PatientsArray = PatientsData[];
 
 type RegisterData = {
 
-    patient: PatientsData,
+    patient: PatientsData | undefined,
     toothache: boolean,
     painLevel: number,
     sensitivity: boolean,
@@ -30,11 +37,7 @@ type RegisterData = {
 
 const INIT_DATA: RegisterData = {
 
-    patient: {
-        name: "",
-        age: 0,
-        id: ""
-    },
+    patient: undefined,
     toothache: false,
     painLevel: -1,
     sensitivity: false,
@@ -60,8 +63,7 @@ type SendData = {
 
 interface FormContextType {
     sendData: RegisterData;
-    patientsData: PatientsArray;
-    selectPatient: (patientId: string) => void;
+    patient_id: string | undefined;
     updateFields: (fields: Partial<RegisterData>) => void;
     next: () => void;
     back: () => void;
@@ -86,13 +88,52 @@ async function sendRequest(url: string, { arg }: {
     }).then(res => res.json())
 }
 
+const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
+
+function IsLoading() {
+
+    return (
+        <div className="min-h-screen max-h-screen overflow-scroll">
+
+            <div className="bg-[#0C4A6E] h-32 w-full"></div>
+
+            <div className="flex flex-col items-center justify-center pt-[30px] rounded-t-3xl -mt-16 bg-white">
+
+                <div className="flex w-[100%] justify-between items-center px-[30px] mt-2 mb-10">
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <ArrowLeft color="black" />
+                    </Button>
+
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <User2Icon color="black" />
+                    </Button>
+                </div>
+
+                <Skeleton className="h-[250px] w-[80%] rounded-xl " />
+
+            </div>
+        </div >
+    )
+
+}
+
 export default function CreateRegister() {
+
+    const { patient_id, first_time } = useParams();
 
     const { trigger, data, error } = useSWRMutation('http://localhost:8000/mih/', sendRequest)
 
+    const { data: patientData, error: isError, isLoading } = useSWR(`http://127.0.0.1:8000/patients/${patient_id}`, fetcher)
+
     const [sendData, setSendData] = useState(INIT_DATA)
 
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
     const navigate = useNavigate();
+
+    if (isLoading)
+        return <IsLoading />
+
 
     const updateFields = (fields: Partial<RegisterData>) => {
 
@@ -101,45 +142,6 @@ export default function CreateRegister() {
         })
 
     }
-
-    function selectPatient(patientId: string) {
-
-        const patientSelected = patientsData.find((pat) => pat.id == patientId);
-
-        updateFields({ patient: patientSelected })
-
-    }
-
-    const [currentStepIndex, setCurrentStepIndex] = useState(0);
-
-    const patientsData: PatientsArray = [
-
-        {
-            name: "Julia Moreira Cunha de Souza",
-            age: 12,
-            id: "10"
-
-        },
-        {
-            name: "Gabriel Moreira Cunha de Souza",
-            age: 10,
-            id: "11"
-
-        },
-        {
-            name: "Nataly Santiago Miranda Silva",
-            age: 9,
-            id: "12"
-
-        },
-        {
-            name: "Robervaldo Oliveira Santos",
-            age: 11,
-            id: "13"
-
-        },
-
-    ]
 
     function next() {
 
@@ -157,7 +159,7 @@ export default function CreateRegister() {
 
         setCurrentStepIndex(i => {
 
-            if (currentStepIndex <= 0)
+            if (currentStepIndex <= 1)
                 return i;
             else
                 return i - 1;
@@ -200,8 +202,14 @@ export default function CreateRegister() {
         console.log(data)
     }
 
+    if (!sendData.patient) {
+        updateFields({ patient: patientData })
+        if (first_time == "new")
+            next()
+    }
+
     const steps = [
-        <SelectPatientNew />,
+        <ConfirmPatient />,
         <FinishRegisterNew />,
         <RegisterSumary />
     ]
@@ -209,9 +217,8 @@ export default function CreateRegister() {
 
         <FormContext.Provider value={{
             sendData,
-            patientsData,
+            patient_id,
             updateFields,
-            selectPatient,
             next,
             back,
             goTo,

@@ -77,7 +77,7 @@ export default function PatientRegisters() {
                 }
 
                 <Button className="text-center mt-[20px]" type="submit">
-                    <Link to={`/user/registers/create-register`}>Novo Registro</Link>
+                    <Link to={`/user/registers/create-register/${patient?.patient_id}/new`}>Novo Registro</Link>
                 </Button>
 
 
