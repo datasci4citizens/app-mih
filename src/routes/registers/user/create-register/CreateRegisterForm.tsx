@@ -4,6 +4,7 @@ import SelectPatientNew from "./SelectPatientNew"
 import RegisterSumary from "./RegisterSumary"
 import useSWRMutation from "swr/mutation"
 import { useNavigate } from "react-router-dom"
+import { useRegistersContext } from "../RegistersControl"
 
 
 type PatientsData = {

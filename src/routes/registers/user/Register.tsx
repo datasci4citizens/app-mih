@@ -87,7 +87,7 @@ export default function Register() {
                                 </CardHeader>
                                 <CardContent>
                                     <CardDescription>
-                                        Idade: {patient?.age} anos
+                                        Idade: anos
                                     </CardDescription>
                                     <CardDescription>
                                         Registro enviado: {new Date(register?.start_date ? register?.start_date : 0).toLocaleDateString('pt-BR')}

@@ -95,10 +95,10 @@ async function sendRequest(url: string, { arg }: {
         highFever: boolean;
         premature: boolean;
         deliveryProblems: boolean;
-        deliveryProblemsTypes: string[];
+        deliveryProblemsTypes: string;
         lowWeight: boolean;
         deliveryType: "cesarean" | "normal";
-        brothersNumber: string;
+        brothersNumber: number;
         consultType: "public" | "private" | "none";
     }
 }) {
@@ -116,7 +116,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/patients/user/${10}`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/users/${10}/patients`, sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -140,8 +140,20 @@ export default function PatientForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log('=== new values ===')
         console.log(values)
-        const { brothers, consultDentist, ...newValues } = values;
-        const result = await trigger(newValues)
+
+        const newValue = {
+            name: values.name,
+            birthday: values.birthday,
+            highFever: values.highFever,
+            premature: values.premature,
+            deliveryProblems: values.deliveryProblems,
+            lowWeight: values.lowWeight,
+            deliveryType: values.deliveryType,
+            deliveryProblemsTypes: values.deliveryProblemsTypes.join(" "),
+            brothersNumber: Number(values.brothersNumber),
+            consultType: values.consultType
+        }
+        const result = await trigger(newValue)
         console.log(data);
         if (result && !error) {
             navigate(`/user/home`); // Redireciona para a home

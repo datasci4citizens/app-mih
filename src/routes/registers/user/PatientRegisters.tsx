@@ -5,13 +5,13 @@ import { Link } from "react-router-dom";
 import { useRegistersContext } from "./RegistersControl";
 import useSWR from 'swr';
 
-const fetcher = (...args) => fetch(...args).then(res => res.json())
+const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
 export default function PatientRegisters() {
 
     const { patient, registers, setRegisters, selectRegister, back } = useRegistersContext();
 
-    const { data, error, isLoading } = useSWR(`http://localhost:8000/patients/${patient?.id}/mih`, fetcher)
+    const { data, error, isLoading } = useSWR(`http://localhost:8000/patients/${patient?.patient_id}/mih`, fetcher)
 
     if (error)
         return <h1>{error}</h1>
@@ -72,11 +72,9 @@ export default function PatientRegisters() {
 
                         </CardContent>
                     </Card>)
-                }
-                )
+                })
 
                 }
-
 
                 <Button className="text-center mt-[20px]" type="submit">
                     <Link to={`/user/registers/create-register`}>Novo Registro</Link>

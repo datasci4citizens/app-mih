@@ -32,9 +32,9 @@ export default function Patients() {
                         </Link>
                     </Button>
                 </div>
-                {patientsData.map((value) =>
+                {patientsData?.map((value) =>
 
-                    <Card className="w-[100%] p-0" key={value.id}>
+                    <Card className="w-[100%] p-0" key={value.patient_id}>
 
                         <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 
@@ -45,7 +45,7 @@ export default function Patients() {
                                     <CardDescription>Último registro: dd/mm/yyy</CardDescription>
                                 </div>
 
-                                <Button className="gap-2 w-full rounded-t-none" onClick={() => selectPatient(value.id)}>
+                                <Button className="gap-2 w-full rounded-t-none" onClick={() => selectPatient(String(value.patient_id))}>
                                     <h1>Registros</h1>
                                     <BookPlus />
                                 </Button>
