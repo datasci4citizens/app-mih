@@ -3,27 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useFormContext } from "./CreateRegisterForm";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import useSWR from "swr";
-import { useEffect } from "react";
-
-type PatientsData = {
-    name: string,
-    birthday: string,
-    highFever: boolean,
-    premature: boolean,
-    deliveryProblems: boolean,
-    lowWeight: boolean,
-    deliveryType: string,
-    brothersNumber: number,
-    consultType: string,
-    deliveryProblemsTypes: string,
-    patient_id: number,
-    created_at: string,
-    updated_at: string
-}
-
-const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
 export default function ConfirmPatient() {
 
@@ -72,7 +51,7 @@ export default function ConfirmPatient() {
                                 <CardDescription>
                                     Data de nascimento: {new Date(patient?.birthday || "").toLocaleDateString('pt-BR')}
                                 </CardDescription>
-                                {patient?.brothersNumber || 0 > 0 &&
+                                {(patient?.brothersNumber || 0) > 0 &&
                                     (
                                         <CardDescription>
                                             Número de irmãos: {patient?.brothersNumber}

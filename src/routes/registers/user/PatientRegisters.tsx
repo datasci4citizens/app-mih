@@ -4,6 +4,7 @@ import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRegistersContext } from "./RegistersControl";
 import useSWR from 'swr';
+import SkeletonLoading from "./SkeletonLoading";
 
 const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
@@ -16,7 +17,7 @@ export default function PatientRegisters() {
     if (error)
         return <h1>{error}</h1>
     if (isLoading)
-        return <h1>loading</h1>
+        return <SkeletonLoading />
 
     setRegisters(data.mih)
 

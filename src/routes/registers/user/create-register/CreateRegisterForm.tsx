@@ -8,6 +8,8 @@ import ConfirmPatient from "./ConfirmPatient"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, User2Icon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import CaptureOne from "./CaptureOne"
+import CaptureTwo from "./CaptureTwo"
 
 type PatientsData = {
     name: string,
@@ -25,18 +27,24 @@ type PatientsData = {
 
 type RegisterData = {
 
-    patient: PatientsData | undefined,
-    toothache: boolean,
-    painLevel: number,
-    sensitivity: boolean,
-    toothStain: boolean,
-    aestheticDiscomfort: boolean,
-    userObservations: string
+    photo1: string;
+    photo2: string;
+    photo3: string;
+    patient: PatientsData | undefined;
+    toothache: boolean;
+    painLevel: number;
+    sensitivity: boolean;
+    toothStain: boolean;
+    aestheticDiscomfort: boolean;
+    userObservations: string;
 
 }
 
 const INIT_DATA: RegisterData = {
 
+    photo1: "",
+    photo2: "",
+    photo3: "",
     patient: undefined,
     toothache: false,
     painLevel: -1,
@@ -49,15 +57,15 @@ const INIT_DATA: RegisterData = {
 
 type SendData = {
 
-    start_date: string,
-    painLevel: number,
-    sensitivityField: boolean,
-    stain: boolean,
-    aestheticDiscomfort: boolean,
-    userObservations: string,
-    specialistObservations: string,
-    diagnosis: string,
-    patient_id: number
+    start_date: string;
+    painLevel: number;
+    sensitivityField: boolean;
+    stain: boolean;
+    aestheticDiscomfort: boolean;
+    userObservations: string;
+    specialistObservations: string;
+    diagnosis: string;
+    patient_id: number;
 
 }
 
@@ -131,6 +139,9 @@ export default function CreateRegister() {
 
     const navigate = useNavigate();
 
+    if (isError)
+        return <h1>Error</h1>
+
     if (isLoading)
         return <IsLoading />
 
@@ -147,7 +158,7 @@ export default function CreateRegister() {
 
         setCurrentStepIndex(i => {
 
-            if (currentStepIndex >= 2)
+            if (currentStepIndex >= 4)
                 return i;
             else
                 return i + 1;
@@ -210,6 +221,8 @@ export default function CreateRegister() {
 
     const steps = [
         <ConfirmPatient />,
+        <CaptureOne />,
+        <CaptureTwo />,
         <FinishRegisterNew />,
         <RegisterSumary />
     ]

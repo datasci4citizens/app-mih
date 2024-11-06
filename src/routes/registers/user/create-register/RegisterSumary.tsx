@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Edit } from "lucide-react";
 import { useFormContext } from "./CreateRegisterForm";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function RegisterSumary() {
 
@@ -39,9 +40,56 @@ export default function RegisterSumary() {
                     </Card>
 
                     <Card className="w-full">
+                        <CardHeader className="flex flex-row items-center justify-center">
+                            <CardTitle>Fotos dos dentes</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <CardDescription className="text-base font-bold text-center">
+                                <Accordion type="single" collapsible className="w-full flex flex-col justify-center">
+
+                                    <AccordionItem value="captureItem1">
+                                        <AccordionTrigger className="font-bold text-primary text-base">
+                                            Dentes frontais
+                                        </AccordionTrigger>
+
+                                        <AccordionContent className="flex flex-col items-center justify-center">
+                                            <div className="flex w-full justify-end">
+                                                <Edit color="black" onClick={() => goTo(1)}></Edit>
+                                            </div>
+                                            <img src={sendData.photo1} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+
+                                        </AccordionContent>
+
+                                    </AccordionItem>
+
+                                    <AccordionItem value="captureItem2">
+                                        <AccordionTrigger className="font-bold text-primary text-base">
+                                            Dentes molares
+                                        </AccordionTrigger>
+
+                                        <AccordionContent className="flex flex-col items-center justify-center gap-2">
+                                            <div className="flex w-full justify-end">
+                                                <Edit color="black" width={30} onClick={() => goTo(2)}></Edit>
+                                            </div>
+                                            Molar Direito
+                                            <img src={sendData.photo2} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+                                            Molar esquerdo
+                                            <img src={sendData.photo3} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+
+                                        </AccordionContent>
+
+                                    </AccordionItem>
+
+                                </Accordion>
+
+                            </CardDescription>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="w-full">
                         <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle>Informações finais</CardTitle>
-                            <Edit onClick={() => goTo(1)}></Edit>
+                            <Edit onClick={() => goTo(3)}></Edit>
                         </CardHeader>
                         <CardContent className="space-y-2 divide-y-2 divide-primary/20">
                             <CardDescription>
@@ -84,7 +132,7 @@ export default function RegisterSumary() {
                 </Button>
 
             </div>
-        </div>
+        </div >
 
     )
 

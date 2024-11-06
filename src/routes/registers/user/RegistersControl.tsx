@@ -3,9 +3,7 @@ import Patients from "./Patients";
 import Register from "./Register";
 import PatientRegisters from "./PatientRegisters";
 import useSWR from "swr";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, User2Icon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import SkeletonLoading from "./SkeletonLoading";
 
 type PatientsData = {
     name: string,
@@ -55,41 +53,6 @@ const RegistersContext = createContext<RegistersContextType | undefined>(undefin
 
 const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
-function SkeletonPatients() {
-
-    return (
-        <div className="min-h-screen max-h-screen overflow-auto">
-
-            <div className="bg-[#0C4A6E] h-32 w-full"></div>
-
-            <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
-                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
-
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <ArrowLeft color="black" />
-                    </Button>
-
-                    <h1 className="text-3xl font-bold">Crianças</h1>
-
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <User2Icon color="black" />
-                    </Button>
-                </div>
-
-                <Skeleton className="h-[125px] w-full rounded-xl" />
-                <Skeleton className="h-[125px] w-full rounded-xl" />
-                <Skeleton className="h-[125px] w-full rounded-xl" />
-
-                <Button className="text-center mt-[20px]" type="submit">
-                    Adicionar criança
-                </Button>
-
-            </div>
-        </div>
-    )
-
-}
-
 export default function RegistersControl() {
 
     const { data, error, isLoading } = useSWR(`http://localhost:8000/users/10/patients/`, fetcher)
@@ -103,7 +66,7 @@ export default function RegistersControl() {
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
     if (isLoading)
-        return <SkeletonPatients></SkeletonPatients>
+        return <SkeletonLoading />
 
     function selectPatient(patientId: string) {
 
