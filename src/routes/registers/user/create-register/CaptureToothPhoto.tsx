@@ -10,7 +10,7 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
 
     const { sendData, updateFields } = useFormContext();
 
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     const [photo, setPhoto] = useState<string | undefined>(undefined);
 
@@ -40,7 +40,9 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
     });
 
     const handleButtonClick = () => {
+
         inputRef.current?.click();
+
     };
 
     return (

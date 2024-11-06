@@ -65,6 +65,8 @@ export default function RegistersControl() {
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
+    if (error)
+        return <h1>error</h1>
     if (isLoading)
         return <SkeletonLoading />
 
