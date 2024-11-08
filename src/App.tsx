@@ -14,6 +14,7 @@ import CreatePatient from './routes/user/create-user-patient/CreateUser';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import TCLE from './routes/user/create-user-patient/Tcle';
 import SelectUserType from './routes/user/SelectUserType';
+import { SWRConfig } from 'swr';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -90,6 +91,8 @@ const router = createBrowserRouter([
 
 export function App() {
   return (
-    <RouterProvider router={router} />
+    <SWRConfig value={{ fetcher: (url, args) => fetch(`${import.meta.env.BASE_URL_SERVER}${url}`, ...args) }}>
+      <RouterProvider router={router} />
+    </SWRConfig>
   )
 }
