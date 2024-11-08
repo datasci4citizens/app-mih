@@ -47,7 +47,7 @@ export default function Register() {
 
                         </Button>
 
-                        <h1 className="text-3xl font-bold">Registro {register?.mih_id}</h1>
+                        <h1 className="text-3xl font-bold">Registro</h1>
 
                         <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                             <Link to="/user/home/profile">
@@ -57,6 +57,10 @@ export default function Register() {
                     </div>
 
                     <Card className="w-[100%] p-[20px] border-none shadow-none">
+
+                        <CardDescription>
+                            Resgistro criado em: {new Date(register?.start_date || "").toLocaleDateString('pt-BR')}
+                        </CardDescription>
 
                         <CardContent className="flex flex-col items-center p-[20px] ">
 
@@ -87,13 +91,13 @@ export default function Register() {
                                 </CardHeader>
                                 <CardContent>
                                     <CardDescription>
-                                        Idade: anos
+                                        Data de nascimento: {new Date(patient?.birthday || "").toLocaleDateString('pt-BR')}
                                     </CardDescription>
                                     <CardDescription>
                                         Registro enviado: {new Date(register?.start_date ? register?.start_date : 0).toLocaleDateString('pt-BR')}
                                     </CardDescription>
                                     <CardDescription>
-                                        Nivel de dor {register?.painLevel}
+                                        Nivel de dor
                                     </CardDescription>
                                     <CardDescription>
                                         Apresenta manchas {register?.stain ? "Sim" : "Não"}

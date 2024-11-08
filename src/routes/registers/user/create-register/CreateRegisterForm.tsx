@@ -47,7 +47,7 @@ const INIT_DATA: RegisterData = {
     photo3: "",
     patient: undefined,
     toothache: false,
-    painLevel: -1,
+    painLevel: 0,
     sensitivity: false,
     toothStain: false,
     aestheticDiscomfort: false,
@@ -65,7 +65,6 @@ type SendData = {
     userObservations: string;
     specialistObservations: string;
     diagnosis: string;
-    patient_id: number;
 
 }
 
@@ -129,7 +128,7 @@ export default function CreateRegister() {
 
     const { patient_id, first_time } = useParams();
 
-    const { trigger, data, error } = useSWRMutation('http://localhost:8000/mih/', sendRequest)
+    const { trigger, data, error } = useSWRMutation(`http://localhost:8000/mih/${patient_id}`, sendRequest)
 
     const { data: patientData, error: isError, isLoading } = useSWR(`http://127.0.0.1:8000/patients/${patient_id}`, fetcher)
 
@@ -195,8 +194,7 @@ export default function CreateRegister() {
             "aestheticDiscomfort": sendData.aestheticDiscomfort,
             "userObservations": sendData.userObservations,
             "specialistObservations": "",
-            "diagnosis": "",
-            "patient_id": 10
+            "diagnosis": ""
         }
 
 

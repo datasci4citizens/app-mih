@@ -90,8 +90,17 @@ export default function RegistersControl() {
 
         setPage((v) => {
 
-            if (v != 0)
+            if (v != 0) {
+                if (v == 1) {
+
+                    setRegisters(undefined);
+                    setPatient(undefined);
+                }
+                else if (v == 2)
+                    setRegister(undefined);
+
                 return v - 1;
+            }
 
             return v;
 

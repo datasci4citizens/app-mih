@@ -19,23 +19,14 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
         if (file) {
             const imageUrl = URL.createObjectURL(file);
             setPhoto(imageUrl);
-            if (photoStep == "1")
-                updateFields({ photo1: imageUrl })
-            else if (photoStep == "2")
-                updateFields({ photo2: imageUrl })
-            else
-                updateFields({ photo3: imageUrl })
+            updateFields({ [`photo${photoStep}`]: imageUrl });
         }
     };
 
     useEffect(() => {
 
-        if (photoStep == "1")
-            setPhoto(sendData.photo1)
-        else if (photoStep == "2")
-            setPhoto(sendData.photo2)
-        else
-            setPhoto(sendData.photo3)
+        const photoKey = `photo${photoStep}` as 'photo1' | 'photo2' | 'photo3';
+        setPhoto(sendData[photoKey]);
 
     });
 

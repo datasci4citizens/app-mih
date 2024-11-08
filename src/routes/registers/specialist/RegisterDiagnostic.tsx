@@ -32,6 +32,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
+import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import useSWR from "swr";
+import SkeletonLoading from "../user/SkeletonLoading";
 
 const formSchema = z.object({
     diagnostic: z.string(),
@@ -39,6 +42,10 @@ const formSchema = z.object({
 })
 
 export default function RegisterDiagnostic() {
+
+    const { setDiagnostic, register, back } = useSpecialistRegistersContext();
+
+    const { data, error, isLoading } = useSWR("http://127.0.0.1:8000/patients/10/mih");
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -54,6 +61,11 @@ export default function RegisterDiagnostic() {
         console.log(values)
     }
 
+    if (isLoading)
+        <SkeletonLoading />
+
+    console.log(data)
+
     return (
 
 
@@ -65,10 +77,8 @@ export default function RegisterDiagnostic() {
 
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/specialist/home/pending-registers">
-                            <ArrowLeft color="black" />
-                        </Link>
+                    <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <ArrowLeft color="black" />
                     </Button>
 
                     <h1 className="text-3xl font-bold">Avaliações</h1>
@@ -103,13 +113,9 @@ export default function RegisterDiagnostic() {
                     <Card className="min-w-[85%]">
                         <CardHeader>
                             <CardTitle className="text-sm ">
-                                Criança 1
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <CardDescription>
-                                Nome
-                            </CardDescription>
                             <CardDescription>
                                 Idade
                             </CardDescription>
@@ -147,6 +153,7 @@ export default function RegisterDiagnostic() {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
+                                                <SelectItem value="o">Foto inadequada para diagnóstico</SelectItem>
                                                 <SelectItem value="sugestive">Sugestivo de HMI</SelectItem>
                                                 <SelectItem value="presence">Presença de HMI</SelectItem>
                                                 <SelectItem value="absence">Ausência de HMI</SelectItem>

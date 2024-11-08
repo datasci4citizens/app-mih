@@ -19,7 +19,8 @@ export default function PatientRegisters() {
     if (isLoading)
         return <SkeletonLoading />
 
-    setRegisters(data.mih)
+    if (!registers && data.mih.length > 0)
+        setRegisters(data.mih)
 
     return (
 

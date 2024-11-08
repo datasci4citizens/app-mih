@@ -25,7 +25,7 @@ export default function SpecialistHomePage() {
 
                 <div className="flex flex-col gap-[20px]">
                     <Card className="shadow-lg">
-                        <Link to="/specialist/home/pending-registers">
+                        <Link to="/specialist/home/registers-evaluation">
                             <CardHeader>
                                 <CardTitle className="text-xl">Avaliações Pendentes</CardTitle>
                                 <CardDescription>Registros enviados e sem avaliação</CardDescription>

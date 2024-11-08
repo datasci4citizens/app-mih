@@ -33,7 +33,7 @@ export default function RegisterSumary() {
                             <CardTitle>Criança Selecionada</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <CardDescription className="text-base font-bold text-center">
+                            <CardDescription className="text-xl font-bold text-center">
                                 {patient?.name}
                             </CardDescription>
                         </CardContent>
@@ -67,7 +67,7 @@ export default function RegisterSumary() {
                                             Dentes molares
                                         </AccordionTrigger>
 
-                                        <AccordionContent className="flex flex-col items-center justify-center gap-2">
+                                        <AccordionContent className="flex flex-col font-extrabold text-base items-center justify-center gap-2">
                                             <div className="flex w-full justify-end">
                                                 <Edit color="black" width={30} onClick={() => goTo(2)}></Edit>
                                             </div>

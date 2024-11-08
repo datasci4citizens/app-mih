@@ -1,27 +1,44 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, User2Icon } from "lucide-react";
+import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
+import useSWR from "swr";
+import SkeletonLoading from "../user/SkeletonLoading";
+import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+
+type RegisterData = {
+    start_date: string,
+    end_date: string,
+    painLevel: number,
+    sensitivityField: boolean,
+    stain: boolean,
+    aestheticDiscomfort: boolean,
+    userObservations: string,
+    specialistObservations: string,
+    diagnosis: string
+    mih_id: number;
+}
 
 export default function PendingRegisters() {
 
+    const { registers, selectRegister } = useSpecialistRegistersContext()
+
+    console.log(registers);
+
     return (
 
-
-
-
-        <div className="flex flex-col min-h-screen max-h-screen w-[100%] overflow-scroll items-start justify-start ">
+        <div className="min-h-screen max-h-screen overflow-auto">
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <div className="p-[30px] bg-white rounded-t-3xl -mt-16">
+            <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/specialist/home">
+                    <Link to="/specialist/home">
+                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                             <ArrowLeft color="black" />
-                        </Link>
-                    </Button>
+                        </Button>
+                    </Link>
 
                     <h1 className="text-3xl font-bold">Avaliações</h1>
 
@@ -31,47 +48,41 @@ export default function PendingRegisters() {
                         </Link>
                     </Button>
                 </div>
+                {registers?.map((value: RegisterData, i: number) => {
+                    return (
+                        <Card className="w-[100%] p-0" key={value.mih_id}>
 
-                <h1 className="text-center mb-[32px]">Selecione abaixo um registro para ser avaliado</h1>
+                            <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 
-                <Card>
-                    <CardHeader>
-                        <CardContent className="flex flex-col min-h-[500px] max-h-[500px] overflow-y-scroll p-[10px] gap-[10px]">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle><Link to="/specialist/home/register-diagnostic">Registro 1</Link> </CardTitle>
-                                    <CardDescription>Registro da Criança X feito no dia dd/mm/yyyy</CardDescription>
-                                </CardHeader>
+                                <Card className="px-4 py-1 flex items-center justify-between">
 
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Registro 2</CardTitle>
-                                    <CardDescription>Registro da Criança X feito no dia dd/mm/yyyy</CardDescription>
-                                </CardHeader>
+                                    <div>
+                                        <CardTitle className="text-lg w-[150px]">Registro {i + 1}</CardTitle>
+                                        <CardDescription>{new Date(value.start_date).toLocaleDateString("pt-BR")}</CardDescription>
+                                        {
+                                            value.diagnosis && (
+                                                <CardDescription>{value.diagnosis}</CardDescription>
+                                            )
 
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Registro 3</CardTitle>
-                                    <CardDescription>Registro da Criança X feito no dia dd/mm/yyyy</CardDescription>
-                                </CardHeader>
+                                        }
+                                    </div>
 
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Registro 4</CardTitle>
-                                    <CardDescription>Registro da Criança X feito no dia dd/mm/yyyy</CardDescription>
-                                </CardHeader>
 
-                            </Card>
+                                    <div className="flex gap-2">
+                                        <Button className="gap-2" size={"icon"} onClick={() => selectRegister(String(value.mih_id))}>
+                                            <Eye />
+                                        </Button>
+                                    </div>
 
-                        </CardContent>
-                    </CardHeader>
+                                </Card>
 
-                </Card>
+                            </CardContent>
+                        </Card>)
+                })
+
+                }
+
             </div>
-
         </div>
     )
 
