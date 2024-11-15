@@ -11,10 +11,6 @@ export function AuthGuard() {
         setTimeout(() => setLoading(false), 5000);
     }, [])
 
-    if (loading) {
-        return <p>Calmai to carregano </p>
-    }
-
     return <UserContextProvider value={{ name: "Miguel" }}>
         <Outlet />
     </UserContextProvider>

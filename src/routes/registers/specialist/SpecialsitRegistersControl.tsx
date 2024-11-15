@@ -3,6 +3,7 @@ import SkeletonLoading from "../user/SkeletonLoading";
 import PendingRegisters from "./PendingRegisters";
 import RegisterDiagnostic from "./RegisterDiagnostic";
 import useSWR from "swr";
+import useSWRMutation from 'swr/mutation'
 
 type RegisterData = {
     start_date: string,
@@ -13,7 +14,7 @@ type RegisterData = {
     aestheticDiscomfort: boolean,
     userObservations: string,
     specialistObservations: string,
-    diagnosis: string
+    diagnosis: string;
     mih_id: number;
 }
 
@@ -22,6 +23,9 @@ type RegisterArray = RegisterData[];
 interface RegistersContextType {
     setRegisters: (registers: RegisterArray) => void;
     registers: RegisterArray | undefined;
+    submitRegister: () => void;
+    setObservation: (observation: string) => void;
+    setDiagnostic: (diagnosis: string) => void;
     selectRegister: (id: string) => void;
     register: RegisterData | undefined;
     back: () => void;
@@ -30,6 +34,22 @@ interface RegistersContextType {
 const SpecialistRegistersContext = createContext<RegistersContextType | undefined>(undefined);
 
 const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
+
+async function sendRequest(url: string, { arg }: {
+    arg: RegisterData
+}) {
+
+
+    console.log('=== sending request to ===')
+    console.log(url)
+    return await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(arg)
+    }).then(res => res.json())
+}
 
 export default function SpecialistRegistersControl() {
 
@@ -40,6 +60,8 @@ export default function SpecialistRegistersControl() {
     const [registers, setRegisters] = useState<RegisterArray | undefined>(undefined)
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
+
+    const { trigger, data: sendData, error: isError } = useSWRMutation(`http://localhost:8000/mih/${register?.mih_id}`, sendRequest)
 
     if (error)
         return <h1>error</h1>
@@ -56,8 +78,34 @@ export default function SpecialistRegistersControl() {
         setPage(1);
     }
 
-    function setDiagnostic(mid_id: number) {
+    function setDiagnostic(diagnosis: string) {
 
+        setRegister((prevRegister) => {
+            if (!prevRegister) {
+                return undefined;
+            }
+
+            return {
+                ...prevRegister,
+                diagnosis: diagnosis,
+            };
+        });
+
+
+    }
+
+    function setObservation(observation: string) {
+
+        setRegister((prevRegister) => {
+            if (!prevRegister) {
+                return undefined;
+            }
+
+            return {
+                ...prevRegister,
+                specialistObservations: observation,
+            };
+        });
 
 
     }
@@ -75,6 +123,24 @@ export default function SpecialistRegistersControl() {
 
     }
 
+    async function submitRegister() {
+
+        if (!register) {
+
+            return undefined;
+        }
+
+        if (register.diagnosis == null) {
+
+            return undefined;
+        }
+
+        await trigger(register);
+
+        back()
+
+    }
+
     const pages = [
         <PendingRegisters />,
         <RegisterDiagnostic />
@@ -85,6 +151,9 @@ export default function SpecialistRegistersControl() {
             value={{
                 setRegisters,
                 registers,
+                submitRegister,
+                setObservation,
+                setDiagnostic,
                 selectRegister,
                 register,
                 back

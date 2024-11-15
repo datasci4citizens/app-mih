@@ -91,7 +91,7 @@ const router = createBrowserRouter([
 
 export function App() {
   return (
-    <SWRConfig value={{ fetcher: (url, args) => fetch(`${import.meta.env.BASE_URL_SERVER}${url}`, ...args) }}>
+    <SWRConfig value={{ fetcher: (url, args) => fetch(`${import.meta.env.VITE_SERVER_URL}${url}`, ...args) }}>
       <RouterProvider router={router} />
     </SWRConfig>
   )

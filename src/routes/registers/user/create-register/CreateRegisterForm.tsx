@@ -64,7 +64,7 @@ type SendData = {
     aestheticDiscomfort: boolean;
     userObservations: string;
     specialistObservations: string;
-    diagnosis: string;
+    diagnosis: string | null;
 
 }
 
@@ -194,7 +194,7 @@ export default function CreateRegister() {
             "aestheticDiscomfort": sendData.aestheticDiscomfort,
             "userObservations": sendData.userObservations,
             "specialistObservations": "",
-            "diagnosis": ""
+            "diagnosis": null
         }
 
 

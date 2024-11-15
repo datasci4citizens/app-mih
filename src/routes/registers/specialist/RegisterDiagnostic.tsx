@@ -43,9 +43,9 @@ const formSchema = z.object({
 
 export default function RegisterDiagnostic() {
 
-    const { setDiagnostic, register, back } = useSpecialistRegistersContext();
+    const { submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
 
-    const { data, error, isLoading } = useSWR("http://127.0.0.1:8000/patients/10/mih");
+    const { data, error, isLoading } = useSWR(`http://127.0.0.1:8000/datas/mih/${register?.mih_id}`);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -56,8 +56,7 @@ export default function RegisterDiagnostic() {
     })
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+        submitRegister();
         console.log(values)
     }
 
@@ -110,33 +109,61 @@ export default function RegisterDiagnostic() {
                         <CarouselNext />
                     </Carousel>
 
-                    <Card className="min-w-[85%]">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm ">
+                            <CardTitle className="text-base">
+                                {data?.patient.name}
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="px-6 divide-y-2 divide-primary/20">
                             <CardDescription>
-                                Idade
+                                Data de nascimento: {new Date(data?.patient.birthday || "").toLocaleDateString('pt-BR')}
+                            </CardDescription>
+                            {(data?.patient.brothersNumber || 0) > 0 &&
+                                (
+                                    <CardDescription>
+                                        Número de irmãos: {data?.patient.brothersNumber}
+                                    </CardDescription>
+                                )
+                            }
+                            <CardDescription>
+                                Teve febre alta ou infecção até os 3 anos: {data?.patient.highFever ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Registro enviado: dd/mm/yyyy
+                                Teve nascimento prematuro: {data?.patient.premature ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Nivel de dor
+                                Teve baixo peso ao nascer: {data?.patient.lowWeight ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Apresenta manchas
+                                Tipo de parto: {data?.patient.deliveryType == "normal" ? "Normal" : "Cesárea"}
+                            </CardDescription>
+                            {
+                                data?.patient.consultType !== "" &&
+                                (
+                                    <CardDescription>
+                                        Já teve atendimento odontológico {data?.patient.consultType == "public" ? "público" : "particular"}
+                                    </CardDescription>
+                                )
+                            }
+                            <CardDescription>
+                                Dor nos dentes: {data?.painLevel == 0 ? "Não possui" : ""}
+                                {data?.painLevel == 1 ? "Leve" : ""}
+                                {data?.painLevel == 2 ? "Moderada" : ""}
+                                {data?.painLevel == 3 ? "Intensa" : ""}
                             </CardDescription>
                             <CardDescription>
-                                Tem Sensibilidade
+                                Tem sensibilidade nos dentes: {data?.sensitivityField ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Observações
+                                Possui manchas nos dentes: {data?.stain ? "Sim" : "Não"}
                             </CardDescription>
-
+                            <CardDescription>
+                                Observações do responsável: {data?.userObservations}
+                            </CardDescription>
                         </CardContent>
                     </Card>
+
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 flex flex-col justify-center items-center mt-4">
@@ -146,7 +173,11 @@ export default function RegisterDiagnostic() {
                                 render={({ field }) => (
                                     <FormItem className="w-[300px]">
                                         <FormLabel>Diagnóstico</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={(e) => {
+                                            setDiagnostic(e);
+                                            form.setValue("diagnostic", e)
+
+                                        }} defaultValue={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Selecione o diagnóstico" />
@@ -170,7 +201,10 @@ export default function RegisterDiagnostic() {
                                     <FormItem className="w-[300px]">
                                         <FormLabel>Observações</FormLabel>
                                         <FormControl>
-                                            <Input  {...field} />
+                                            <Input  {...field} onChange={(e) => {
+                                                setObservation(e.target.value)
+                                                form.setValue("observations", e.target.value)
+                                            }} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
