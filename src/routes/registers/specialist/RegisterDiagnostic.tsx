@@ -41,11 +41,13 @@ const formSchema = z.object({
     observations: z.string()
 })
 
+const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
+
 export default function RegisterDiagnostic() {
 
     const { submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
 
-    const { data, error, isLoading } = useSWR(`http://127.0.0.1:8000/datas/mih/${register?.mih_id}`);
+    const { data, error, isLoading } = useSWR(`/patient/mih/57`);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

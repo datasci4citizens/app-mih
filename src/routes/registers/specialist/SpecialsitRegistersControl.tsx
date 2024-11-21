@@ -53,7 +53,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function SpecialistRegistersControl() {
 
-    const { data, error, isLoading } = useSWR(`http://localhost:8000/patients/${10}/mih`, fetcher)
+    const { data, error, isLoading } = useSWR(`http://127.0.0.1:8000/mih/undiagnosed`, fetcher)
 
     const [page, setPage] = useState(0);
 
