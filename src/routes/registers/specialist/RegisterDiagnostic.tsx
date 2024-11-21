@@ -41,13 +41,12 @@ const formSchema = z.object({
     observations: z.string()
 })
 
-const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
 export default function RegisterDiagnostic() {
 
     const { submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
 
-    const { data, error, isLoading } = useSWR(`/patient/mih/57`);
+    const { data, error, isLoading } = useSWR(`/patient/mih/${register?.mih_id}`);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -114,37 +113,37 @@ export default function RegisterDiagnostic() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-base">
-                                {data?.patient.name}
+                                {data?.patient?.name}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 divide-y-2 divide-primary/20">
                             <CardDescription>
-                                Data de nascimento: {new Date(data?.patient.birthday || "").toLocaleDateString('pt-BR')}
+                                Data de nascimento: {new Date(data?.patient?.birthday || "").toLocaleDateString('pt-BR')}
                             </CardDescription>
-                            {(data?.patient.brothersNumber || 0) > 0 &&
+                            {(data?.patient?.brothersNumber || 0) > 0 &&
                                 (
                                     <CardDescription>
-                                        Número de irmãos: {data?.patient.brothersNumber}
+                                        Número de irmãos: {data?.patient?.brothersNumber}
                                     </CardDescription>
                                 )
                             }
                             <CardDescription>
-                                Teve febre alta ou infecção até os 3 anos: {data?.patient.highFever ? "Sim" : "Não"}
+                                Teve febre alta ou infecção até os 3 anos: {data?.patient?.highFever ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Teve nascimento prematuro: {data?.patient.premature ? "Sim" : "Não"}
+                                Teve nascimento prematuro: {data?.patient?.premature ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Teve baixo peso ao nascer: {data?.patient.lowWeight ? "Sim" : "Não"}
+                                Teve baixo peso ao nascer: {data?.patient?.lowWeight ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Tipo de parto: {data?.patient.deliveryType == "normal" ? "Normal" : "Cesárea"}
+                                Tipo de parto: {data?.patient?.deliveryType == "normal" ? "Normal" : "Cesárea"}
                             </CardDescription>
                             {
-                                data?.patient.consultType !== "" &&
+                                data?.patient?.consultType !== "" &&
                                 (
                                     <CardDescription>
-                                        Já teve atendimento odontológico {data?.patient.consultType == "public" ? "público" : "particular"}
+                                        Já teve atendimento odontológico {data?.patient?.consultType == "public" ? "público" : "particular"}
                                     </CardDescription>
                                 )
                             }

@@ -36,14 +36,14 @@ const SpecialistRegistersContext = createContext<RegistersContextType | undefine
 const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
 async function sendRequest(url: string, { arg }: {
-    arg: RegisterData
+    arg: { diagnosis: string }
 }) {
 
 
     console.log('=== sending request to ===')
     console.log(url)
     return await fetch(url, {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -53,7 +53,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function SpecialistRegistersControl() {
 
-    const { data, error, isLoading } = useSWR(`http://127.0.0.1:8000/mih/undiagnosed`, fetcher)
+    const { data, error, isLoading, mutate } = useSWR('http://127.0.0.1:8000/mih/undiagnosed', fetcher);
 
     const [page, setPage] = useState(0);
 
@@ -63,13 +63,33 @@ export default function SpecialistRegistersControl() {
 
     const { trigger, data: sendData, error: isError } = useSWRMutation(`http://localhost:8000/mih/${register?.mih_id}`, sendRequest)
 
-    if (error)
+    if (error) {
+        console.log(error)
         return <h1>error</h1>
+    }
     if (isLoading)
         return <SkeletonLoading />
 
-    if (!registers && data.mih.length > 0)
-        setRegisters(data.mih)
+    if (!registers && data.length > 0)
+        setRegisters(data)
+
+    const handleDiagnosis = async () => {
+
+        try {
+
+            const newData = await fetch('http://127.0.0.1:8000/mih/undiagnosed', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            }).then(res => res.json());
+
+
+            mutate(newData);
+            setRegisters(data);
+        } catch (err) {
+            console.error('Erro ao diagnosticar:', err);
+        }
+    };
+
 
     function selectRegister(registerId: string) {
 
@@ -135,7 +155,15 @@ export default function SpecialistRegistersControl() {
             return undefined;
         }
 
-        await trigger(register);
+        await trigger({ "diagnosis": register.diagnosis });
+
+        const newRegisters = registers?.filter((reg) => reg.mih_id != register.mih_id);
+
+        setRegisters(newRegisters);
+
+        if (registers !== undefined)
+            if (registers.length < 6)
+                handleDiagnosis()
 
         back()
 

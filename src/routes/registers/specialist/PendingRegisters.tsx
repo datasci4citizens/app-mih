@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import SkeletonLoading from "../user/SkeletonLoading";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import { register } from "module";
 
 type RegisterData = {
     start_date: string,
@@ -57,7 +58,7 @@ export default function PendingRegisters() {
                                 <Card className="px-4 py-1 flex items-center justify-between">
 
                                     <div>
-                                        <CardTitle className="text-lg w-[150px]">Registro {i + 1}</CardTitle>
+                                        <CardTitle className="text-lg w-[150px]">Registro {value.mih_id}</CardTitle>
                                         <CardDescription>{new Date(value.start_date).toLocaleDateString("pt-BR")}</CardDescription>
                                         {
                                             value.diagnosis && (

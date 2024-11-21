@@ -22,6 +22,8 @@ export function AuthGuard() {
 
         )
 
+    console.log(data)
+
     // if (!data)
     //     navigate("/")
 
