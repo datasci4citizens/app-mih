@@ -27,25 +27,23 @@ export default function Patients() {
                     <h1 className="text-3xl font-bold">Crianças</h1>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/user/home/profile">
-                            <User2Icon color="black" />
-                        </Link>
+                        <User2Icon color="black" />
                     </Button>
                 </div>
-                {patientsData?.map((value) =>
+                {patientsData?.map((patient) =>
 
-                    <Card className="w-[100%] p-0" key={value.patient_id}>
+                    <Card className="w-[100%] p-0" key={patient.patient_id}>
 
                         <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 
                             <Card className="px-0 py-0 flex flex-col items-center justify-between">
 
                                 <div className="m-2 text-center">
-                                    <CardTitle className="text-lg">{value.name}</CardTitle>
-                                    <CardDescription>Último registro: dd/mm/yyy</CardDescription>
+                                    <CardTitle className="text-lg">{patient.name}</CardTitle>
+                                    <CardDescription>Data de nascimento: {new Date(patient.birthday).toLocaleDateString('pt-BR')}</CardDescription>
                                 </div>
 
-                                <Button className="gap-2 w-full rounded-t-none" onClick={() => selectPatient(String(value.patient_id))}>
+                                <Button className="gap-2 w-full rounded-t-none" onClick={() => selectPatient(String(patient.patient_id))}>
                                     <h1>Registros</h1>
                                     <BookPlus />
                                 </Button>

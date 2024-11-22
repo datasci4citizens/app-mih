@@ -10,6 +10,7 @@ import { ArrowLeft, User2Icon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import CaptureOne from "./CaptureOne"
 import CaptureTwo from "./CaptureTwo"
+import ErrorPage from "@/lib/components_utils/ErrorPage"
 
 type PatientsData = {
     name: string,
@@ -63,7 +64,7 @@ type SendData = {
     stain: boolean;
     aestheticDiscomfort: boolean;
     userObservations: string;
-    specialistObservations: string;
+    specialistObservations: string | null;
     diagnosis: string | null;
 
 }
@@ -136,11 +137,12 @@ export default function CreateRegister() {
 
     const navigate = useNavigate();
 
-    if (isError)
-        return <h1>Error</h1>
-
-    if (isLoading)
+    if (isLoading) {
         return <IsLoading />
+    }
+    if (isError) {
+        return <ErrorPage type="user"></ErrorPage>
+    }
 
 
     const updateFields = (fields: Partial<RegisterData>) => {
@@ -191,7 +193,7 @@ export default function CreateRegister() {
             "stain": sendData.toothStain,
             "aestheticDiscomfort": sendData.aestheticDiscomfort,
             "userObservations": sendData.userObservations,
-            "specialistObservations": "",
+            "specialistObservations": null,
             "diagnosis": null
         }
 
@@ -199,6 +201,10 @@ export default function CreateRegister() {
         console.log(arg)
 
         const result = await trigger(arg)
+
+        if (error) {
+            return <ErrorPage type="user"></ErrorPage>
+        }
 
         if (result && !error) {
             navigate(`/user/home/`); // Redireciona para a home

@@ -4,7 +4,8 @@ import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRegistersContext } from "./RegistersControl";
 import useSWR from 'swr';
-import SkeletonLoading from "./SkeletonLoading";
+import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 export default function PatientRegisters() {
 
@@ -12,10 +13,12 @@ export default function PatientRegisters() {
 
     const { data, error, isLoading } = useSWR(`/patients/${patient?.patient_id}/mih`)
 
-    if (error)
-        return <h1>{error}</h1>
-    if (isLoading)
+    if (isLoading) {
         return <SkeletonLoading />
+    }
+    if (error) {
+        return <ErrorPage type="user"></ErrorPage>
+    }
 
     if (!registers && data.mih.length > 0)
         setRegisters(data.mih)
@@ -38,9 +41,7 @@ export default function PatientRegisters() {
                     <h1 className="text-3xl font-bold">Registros</h1>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/user/home/profile">
-                            <User2Icon color="black" />
-                        </Link>
+                        <User2Icon color="black" />
                     </Button>
                 </div>
                 {registers?.map((value, i) => {

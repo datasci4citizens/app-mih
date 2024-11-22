@@ -20,6 +20,7 @@ import { Switch } from '@/components/ui/switch.tsx'
 import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/lib/hooks/use-user'
+import ErrorPage from '@/lib/components_utils/ErrorPage'
 
 const formSchema = z.object({
     personInCharge: z.string().min(4, {
@@ -86,6 +87,11 @@ export default function CreatePatient() {
         console.log('=== new values ===')
         console.log(values)
         const result = await trigger(values)
+
+        if (error) {
+            return <ErrorPage type="user"></ErrorPage>
+        }
+
         console.log('=== result ===')
         console.log(result)
         console.log(data)

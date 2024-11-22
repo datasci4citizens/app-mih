@@ -3,7 +3,8 @@ import Patients from "./Patients";
 import Register from "./Register";
 import PatientRegisters from "./PatientRegisters";
 import useSWR from "swr";
-import SkeletonLoading from "./SkeletonLoading";
+import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 type PatientsData = {
     name: string,
@@ -64,10 +65,12 @@ export default function RegistersControl() {
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
-    if (error)
-        return <h1>error</h1>
-    if (isLoading)
+    if (isLoading) {
         return <SkeletonLoading />
+    }
+    if (error) {
+        return <ErrorPage type="user"></ErrorPage>
+    }
 
     function selectPatient(patientId: string) {
 

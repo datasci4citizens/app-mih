@@ -29,13 +29,13 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
 import useSWR from "swr";
-import SkeletonLoading from "../user/SkeletonLoading";
+import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
 import { Textarea } from "@/components/ui/textarea";
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 const formSchema = z.object({
     diagnostic: z.string(),
@@ -65,6 +65,9 @@ export default function RegisterDiagnostic() {
     if (isLoading)
         <SkeletonLoading />
 
+    if (error)
+        return <ErrorPage type="specialist"></ErrorPage>
+
     console.log(data)
 
     return (
@@ -85,9 +88,7 @@ export default function RegisterDiagnostic() {
                     <h1 className="text-3xl font-bold">Avaliações</h1>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/user/home/profile">
-                            <User2Icon color="black" />
-                        </Link>
+                        <User2Icon color="black" />
                     </Button>
                 </div>
 
@@ -114,37 +115,37 @@ export default function RegisterDiagnostic() {
                     <Card className="min-w-full">
                         <CardHeader>
                             <CardTitle className="text-base">
-                                Nome: {data?.patients?.name}
+                                Nome: {data?.patient?.name}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 divide-y-2 divide-primary/20">
                             <CardDescription>
-                                Data de nascimento: {new Date(data?.patients?.birthday || "").toLocaleDateString('pt-BR')}
+                                Data de nascimento: {new Date(data?.patient?.birthday || "").toLocaleDateString('pt-BR')}
                             </CardDescription>
-                            {(data?.patients?.brothersNumber || 0) > 0 &&
+                            {(data?.patient?.brothersNumber || 0) > 0 &&
                                 (
                                     <CardDescription>
-                                        Número de irmãos: {data?.patients?.brothersNumber}
+                                        Número de irmãos: {data?.patient?.brothersNumber}
                                     </CardDescription>
                                 )
                             }
                             <CardDescription>
-                                Febre ou infecção até os 3 anos: {data?.patients?.highFever ? "Sim" : "Não"}
+                                Febre ou infecção até os 3 anos: {data?.patient?.highFever ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Teve nascimento prematuro: {data?.patients?.premature ? "Sim" : "Não"}
+                                Teve nascimento prematuro: {data?.patient?.premature ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Teve baixo peso ao nascer: {data?.patients?.lowWeight ? "Sim" : "Não"}
+                                Teve baixo peso ao nascer: {data?.patient?.lowWeight ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Tipo de parto: {data?.patients?.deliveryType == "normal" ? "Normal" : "Cesárea"}
+                                Tipo de parto: {data?.patient?.deliveryType == "normal" ? "Normal" : "Cesárea"}
                             </CardDescription>
                             {
-                                data?.patients?.consultType !== "" &&
+                                data?.patient?.consultType !== "" &&
                                 (
                                     <CardDescription>
-                                        Atendimento odontológico: {data?.patients?.consultType == "public" ? "público" : "particular"}
+                                        Atendimento odontológico: {data?.patient?.consultType == "public" ? "público" : "particular"}
                                     </CardDescription>
                                 )
                             }

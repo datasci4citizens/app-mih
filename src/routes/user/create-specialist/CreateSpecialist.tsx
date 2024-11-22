@@ -18,6 +18,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 
 import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
+import ErrorPage from '@/lib/components_utils/ErrorPage'
 
 
 
@@ -67,6 +68,10 @@ export default function CreateSpecialist() {
         console.log('=== new values ===')
         console.log(values)
         const result = await trigger(values)
+
+        if (error) {
+            return <ErrorPage type="user"></ErrorPage>
+        }
         console.log('=== result ===')
         console.log(result)
         console.log(data)

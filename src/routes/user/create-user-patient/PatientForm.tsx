@@ -28,7 +28,7 @@ import { Switch } from '@/components/ui/switch.tsx'
 // import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 import { Calendar } from '@/components/ui/calendar.tsx'
-import { Calendar as CalendarIcon } from "lucide-react"
+import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react"
 import {
     Select,
     SelectContent,
@@ -39,6 +39,7 @@ import {
 import useSWRMutation from 'swr/mutation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Checkbox } from '@/components/ui/checkbox'
+import ErrorPage from '@/lib/components_utils/ErrorPage'
 
 
 const deliveryProblems = [
@@ -153,6 +154,11 @@ export default function PatientForm() {
             consultType: values.consultType
         }
         const result = await trigger(newValue)
+
+        if (error) {
+            return <ErrorPage type="user"></ErrorPage>
+        }
+
         console.log(data);
         if (result && !error) {
             navigate(`/user/registers/create-register/${result.patient_id}/first_time`);
@@ -169,7 +175,14 @@ export default function PatientForm() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <div className='flex min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10'>
+            <div className='flex flex-col min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10'>
+
+                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2">
+
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={() => navigate("/user/home")}>
+                        <ArrowLeft color="black" />
+                    </Button>
+                </div>
 
                 <Card className='w-full border-none'>
                     <CardHeader>

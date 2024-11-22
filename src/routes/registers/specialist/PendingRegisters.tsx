@@ -1,11 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
-import useSWR from "swr";
-import SkeletonLoading from "../user/SkeletonLoading";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
-import { register } from "module";
 
 type RegisterData = {
     start_date: string,
@@ -23,8 +20,6 @@ type RegisterData = {
 export default function PendingRegisters() {
 
     const { registers, selectRegister } = useSpecialistRegistersContext()
-
-    console.log(registers);
 
     return (
 
@@ -44,12 +39,10 @@ export default function PendingRegisters() {
                     <h1 className="text-3xl font-bold">Avaliações</h1>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/user/home/profile">
-                            <User2Icon color="black" />
-                        </Link>
+                        <User2Icon color="black" />
                     </Button>
                 </div>
-                {registers?.map((value: RegisterData, i: number) => {
+                {registers?.map((value: RegisterData) => {
                     return (
                         <Card className="w-[100%] p-0" key={value.mih_id}>
 

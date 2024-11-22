@@ -17,9 +17,7 @@ export default function SpecialistHomePage() {
 
                 <div className="flex w-[100%] justify-end mt-2 mb-10">
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/specialist/home/profile">
-                            <User2Icon color="black" />
-                        </Link>
+                        <User2Icon color="black" />
                     </Button>
                 </div>
 

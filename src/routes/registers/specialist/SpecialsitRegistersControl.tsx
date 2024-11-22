@@ -1,9 +1,10 @@
 import { createContext, useContext, useState } from "react";
-import SkeletonLoading from "../user/SkeletonLoading";
+import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
 import PendingRegisters from "./PendingRegisters";
 import RegisterDiagnostic from "./RegisterDiagnostic";
 import useSWR from "swr";
 import useSWRMutation from 'swr/mutation'
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 type RegisterData = {
     start_date: string,
@@ -61,12 +62,12 @@ export default function SpecialistRegistersControl() {
 
     const { trigger, data: sendData, error: isError } = useSWRMutation(`http://localhost:8000/mih/${register?.mih_id}`, sendRequest)
 
-    if (error) {
-        console.log(error)
-        return <h1>error</h1>
-    }
-    if (isLoading)
+    if (isLoading) {
         return <SkeletonLoading />
+    }
+    if (error) {
+        return <ErrorPage type="specialist"></ErrorPage>
+    }
 
     if (!registers && data.length > 0)
         setRegisters(data)
@@ -154,6 +155,11 @@ export default function SpecialistRegistersControl() {
         }
 
         await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
+
+        if (isError)
+            return <ErrorPage type="specialist"></ErrorPage>
+
+        console.log(sendData)
 
         const newRegisters = registers?.filter((reg) => reg.mih_id != register.mih_id);
 

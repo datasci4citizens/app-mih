@@ -50,9 +50,7 @@ export default function Register() {
                         <h1 className="text-3xl font-bold">Registro</h1>
 
                         <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                            <Link to="/user/home/profile">
-                                <User2Icon color="black" />
-                            </Link>
+                            <User2Icon color="black" />
                         </Button>
                     </div>
 
@@ -97,7 +95,10 @@ export default function Register() {
                                         Registro enviado: {new Date(register?.start_date ? register?.start_date : 0).toLocaleDateString('pt-BR')}
                                     </CardDescription>
                                     <CardDescription>
-                                        Nivel de dor
+                                        Dor nos dentes: {register?.painLevel == 0 ? "Não possui" : ""}
+                                        {register?.painLevel == 1 ? "Leve" : ""}
+                                        {register?.painLevel == 2 ? "Moderada" : ""}
+                                        {register?.painLevel == 3 ? "Intensa" : ""}
                                     </CardDescription>
                                     <CardDescription>
                                         Apresenta manchas {register?.stain ? "Sim" : "Não"}
@@ -112,28 +113,59 @@ export default function Register() {
                                 </CardContent>
                             </Card>
 
+                            {
+
+                                !register?.diagnosis && (
+
+                                    <h1 className="text-center font-bold text-destructive mt-10">O registro não foi diagnosticado ainda</h1>
+
+                                )
+
+                            }
+
                             <Accordion type="single" collapsible className="w-full">
-                                <AccordionItem value="item-1">
-                                    <AccordionTrigger>Diagnóstico</AccordionTrigger>
+                                {
 
-                                    {
-                                        register?.diagnosis !== null ? (
+                                    register?.diagnosis && (
+                                        <AccordionItem value="item-1">
+                                            <AccordionTrigger>Diagnóstico</AccordionTrigger>
+
+                                            {
+                                                register?.diagnosis !== null ? (
+                                                    <AccordionContent>
+                                                        {register?.diagnosis == "sugestive" ? "Sugestivo de HMI" : ""}
+                                                        {register?.diagnosis == "presence" ? "Presença de HMI" : ""}
+                                                        {register?.diagnosis == "absence" ? "Ausência de HMI" : ""}
+                                                        {register?.diagnosis == "invalid" ? "Fotos inadequadas para o diagnóstivo, por favor enviar um novo registro" : ""}
+
+                                                    </AccordionContent>
+                                                ) : (
+                                                    <AccordionContent>
+                                                        O registro ainda não foi diagnosticado
+                                                    </AccordionContent>
+                                                )
+
+                                            }
+
+                                        </AccordionItem>
+                                    )
+
+                                }
+                                {
+                                    register?.specialistObservations && (
+                                        <AccordionItem value="item-2">
+
+                                            <AccordionTrigger>Observações do especialista</AccordionTrigger>
+
                                             <AccordionContent>
-                                                {register?.diagnosis == "sugestive" ? "Sugestivo de HMI" : ""}
-                                                {register?.diagnosis == "presence" ? "Presença de HMI" : ""}
-                                                {register?.diagnosis == "absence" ? "Ausência de HMI" : ""}
-                                                {register?.diagnosis == "invalid" ? "Fotos inadequadas para o diagnóstivo, por favor enviar um novo registro" : ""}
-
+                                                {register.specialistObservations}
                                             </AccordionContent>
-                                        ) : (
-                                            <AccordionContent>
-                                                O registro ainda não foi diagnosticado
-                                            </AccordionContent>
-                                        )
+                                        </AccordionItem>
 
-                                    }
+                                    )
 
-                                </AccordionItem>
+                                }
+
                             </Accordion>
 
                         </CardContent>

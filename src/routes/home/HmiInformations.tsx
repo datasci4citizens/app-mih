@@ -57,15 +57,13 @@ export default function HmiInformations() {
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to={`/user/home`}>
+                        <Link to="/user/home">
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <Link to="/user/home/profile">
-                            <User2Icon color="black" />
-                        </Link>
+                        <User2Icon color="black" />
                     </Button>
                 </div>
 
