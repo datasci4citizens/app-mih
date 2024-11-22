@@ -141,6 +141,8 @@ export default function SpecialistRegistersControl() {
 
         mutate(undefined, { revalidate: true }); // Atualiza o cache localmente
 
+        console.log(sendData);
+
         if (isError)
             return <ErrorPage type="specialist"></ErrorPage>
 

@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
-import { useEffect } from "react";
 
 type RegisterData = {
     start_date: string,
