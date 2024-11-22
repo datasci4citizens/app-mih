@@ -52,7 +52,7 @@ async function sendRequest(url: string, { arg }: {
 
 
 export default function CreateSpecialist() {
-    const { trigger, data, error } = useSWRMutation('http://127.0.0.1:8000/specialists/', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://localhost:8000/specialists/', sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -67,8 +67,11 @@ export default function CreateSpecialist() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log('=== new values ===')
         console.log(values)
-        const result = await trigger(values)
 
+        const newValue = { ...values, is_allowed: false }
+        const result = await trigger(newValue)
+
+        console.log(error)
         if (error) {
             return <ErrorPage type="user"></ErrorPage>
         }

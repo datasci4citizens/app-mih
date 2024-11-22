@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import { useEffect } from "react";
 
 type RegisterData = {
     start_date: string,
@@ -19,7 +20,7 @@ type RegisterData = {
 
 export default function PendingRegisters() {
 
-    const { registers, selectRegister } = useSpecialistRegistersContext()
+    const { data, selectRegister } = useSpecialistRegistersContext()
 
     return (
 
@@ -42,7 +43,7 @@ export default function PendingRegisters() {
                         <User2Icon color="black" />
                     </Button>
                 </div>
-                {registers?.map((value: RegisterData) => {
+                {data?.map((value: RegisterData) => {
                     return (
                         <Card className="w-[100%] p-0" key={value.mih_id}>
 

@@ -22,8 +22,7 @@ type RegisterData = {
 type RegisterArray = RegisterData[];
 
 interface RegistersContextType {
-    setRegisters: (registers: RegisterArray) => void;
-    registers: RegisterArray | undefined;
+    data: RegisterArray;
     submitRegister: () => void;
     setObservation: (observation: string) => void;
     setDiagnostic: (diagnosis: string) => void;
@@ -56,11 +55,9 @@ export default function SpecialistRegistersControl() {
 
     const [page, setPage] = useState(0);
 
-    const [registers, setRegisters] = useState<RegisterArray | undefined>(undefined)
-
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
-    const { trigger, data: sendData, error: isError } = useSWRMutation(`http://localhost:8000/mih/${register?.mih_id}`, sendRequest)
+    const { trigger, data: sendData, error: isError, isMutating } = useSWRMutation(`http://localhost:8000/mih/${register?.mih_id}`, sendRequest)
 
     if (isLoading) {
         return <SkeletonLoading />
@@ -69,30 +66,14 @@ export default function SpecialistRegistersControl() {
         return <ErrorPage type="specialist"></ErrorPage>
     }
 
-    if (!registers && data.length > 0)
-        setRegisters(data)
+    if (isMutating) {
+        return <SkeletonLoading />
 
-    const handleDiagnosis = async () => {
-
-        try {
-
-            const newData = await fetch('http://127.0.0.1:8000/mih/undiagnosed', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            }).then(res => res.json());
-
-
-            mutate(newData);
-            setRegisters(data);
-        } catch (err) {
-            console.error('Erro ao diagnosticar:', err);
-        }
-    };
-
+    }
 
     function selectRegister(registerId: string) {
 
-        const register = registers?.find(reg => String(reg.mih_id) == registerId)
+        const register = data?.find((reg: RegisterData) => String(reg.mih_id) == registerId)
         setRegister(register)
         setPage(1);
     }
@@ -154,23 +135,16 @@ export default function SpecialistRegistersControl() {
             return undefined;
         }
 
+        console.log(register)
+
         await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
+
+        mutate(undefined, { revalidate: true }); // Atualiza o cache localmente
 
         if (isError)
             return <ErrorPage type="specialist"></ErrorPage>
 
-        console.log(sendData)
-
-        const newRegisters = registers?.filter((reg) => reg.mih_id != register.mih_id);
-
-        setRegisters(newRegisters);
-
-        if (registers !== undefined)
-            if (registers.length < 6)
-                handleDiagnosis()
-
         back()
-
     }
 
     const pages = [
@@ -181,8 +155,7 @@ export default function SpecialistRegistersControl() {
     return (
         <SpecialistRegistersContext.Provider
             value={{
-                setRegisters,
-                registers,
+                data,
                 submitRegister,
                 setObservation,
                 setDiagnostic,

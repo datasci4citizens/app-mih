@@ -29,7 +29,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
 import useSWR from "swr";
@@ -67,8 +66,6 @@ export default function RegisterDiagnostic() {
 
     if (error)
         return <ErrorPage type="specialist"></ErrorPage>
-
-    console.log(data)
 
     return (
 
