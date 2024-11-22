@@ -95,8 +95,6 @@ async function sendRequest(url: string, { arg }: {
     }).then(res => res.json())
 }
 
-const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
-
 function IsLoading() {
 
     return (
@@ -128,9 +126,9 @@ export default function CreateRegister() {
 
     const { patient_id, first_time } = useParams();
 
-    const { trigger, data, error } = useSWRMutation(`http://localhost:8000/mih/${patient_id}`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`http://localhost:8000/${patient_id}/mih`, sendRequest)
 
-    const { data: patientData, error: isError, isLoading } = useSWR(`http://127.0.0.1:8000/patients/${patient_id}`, fetcher)
+    const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
     const [sendData, setSendData] = useState(INIT_DATA)
 

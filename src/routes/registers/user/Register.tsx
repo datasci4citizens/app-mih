@@ -115,9 +115,24 @@ export default function Register() {
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem value="item-1">
                                     <AccordionTrigger>Diagnóstico</AccordionTrigger>
-                                    <AccordionContent>
-                                        O registro ainda não foi diagnosticado
-                                    </AccordionContent>
+
+                                    {
+                                        register?.diagnosis !== null ? (
+                                            <AccordionContent>
+                                                {register?.diagnosis == "sugestive" ? "Sugestivo de HMI" : ""}
+                                                {register?.diagnosis == "presence" ? "Presença de HMI" : ""}
+                                                {register?.diagnosis == "absence" ? "Ausência de HMI" : ""}
+                                                {register?.diagnosis == "invalid" ? "Fotos inadequadas para o diagnóstivo, por favor enviar um novo registro" : ""}
+
+                                            </AccordionContent>
+                                        ) : (
+                                            <AccordionContent>
+                                                O registro ainda não foi diagnosticado
+                                            </AccordionContent>
+                                        )
+
+                                    }
+
                                 </AccordionItem>
                             </Accordion>
 

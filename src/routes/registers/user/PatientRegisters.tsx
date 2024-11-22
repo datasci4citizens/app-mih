@@ -6,13 +6,11 @@ import { useRegistersContext } from "./RegistersControl";
 import useSWR from 'swr';
 import SkeletonLoading from "./SkeletonLoading";
 
-const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
-
 export default function PatientRegisters() {
 
     const { patient, registers, setRegisters, selectRegister, back } = useRegistersContext();
 
-    const { data, error, isLoading } = useSWR(`http://localhost:8000/patients/${patient?.patient_id}/mih`, fetcher)
+    const { data, error, isLoading } = useSWR(`/patients/${patient?.patient_id}/mih`)
 
     if (error)
         return <h1>{error}</h1>
@@ -57,7 +55,11 @@ export default function PatientRegisters() {
                                     <CardDescription>{new Date(value.start_date).toLocaleDateString("pt-BR")}</CardDescription>
                                     {
                                         value.diagnosis && (
-                                            <CardDescription>{value.diagnosis}</CardDescription>
+                                            <CardDescription>
+                                                {value?.diagnosis == "sugestive" ? "Sugestivo de HMI" : ""}
+                                                {value?.diagnosis == "presence" ? "Presença de HMI" : ""}
+                                                {value?.diagnosis == "absence" ? "Ausência de HMI" : ""}
+                                                {value?.diagnosis == "invalid" ? "Fotos inadequadas" : ""}</CardDescription>
                                         )
 
                                     }

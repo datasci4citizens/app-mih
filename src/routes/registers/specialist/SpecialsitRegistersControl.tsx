@@ -33,10 +33,8 @@ interface RegistersContextType {
 
 const SpecialistRegistersContext = createContext<RegistersContextType | undefined>(undefined);
 
-const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
-
 async function sendRequest(url: string, { arg }: {
-    arg: { diagnosis: string }
+    arg: { diagnosis: string, specialistObservations: string }
 }) {
 
 
@@ -53,7 +51,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function SpecialistRegistersControl() {
 
-    const { data, error, isLoading, mutate } = useSWR('http://127.0.0.1:8000/mih/undiagnosed', fetcher);
+    const { data, error, isLoading, mutate } = useSWR('/mih/undiagnosed');
 
     const [page, setPage] = useState(0);
 
@@ -155,7 +153,7 @@ export default function SpecialistRegistersControl() {
             return undefined;
         }
 
-        await trigger({ "diagnosis": register.diagnosis });
+        await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
 
         const newRegisters = registers?.filter((reg) => reg.mih_id != register.mih_id);
 

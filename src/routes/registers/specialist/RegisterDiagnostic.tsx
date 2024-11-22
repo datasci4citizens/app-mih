@@ -35,6 +35,7 @@ import { ArrowLeft, User2Icon } from "lucide-react";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
 import useSWR from "swr";
 import SkeletonLoading from "../user/SkeletonLoading";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
     diagnostic: z.string(),
@@ -110,40 +111,40 @@ export default function RegisterDiagnostic() {
                         <CarouselNext />
                     </Carousel>
 
-                    <Card>
+                    <Card className="min-w-full">
                         <CardHeader>
                             <CardTitle className="text-base">
-                                {data?.patient?.name}
+                                Nome: {data?.patients?.name}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 divide-y-2 divide-primary/20">
                             <CardDescription>
-                                Data de nascimento: {new Date(data?.patient?.birthday || "").toLocaleDateString('pt-BR')}
+                                Data de nascimento: {new Date(data?.patients?.birthday || "").toLocaleDateString('pt-BR')}
                             </CardDescription>
-                            {(data?.patient?.brothersNumber || 0) > 0 &&
+                            {(data?.patients?.brothersNumber || 0) > 0 &&
                                 (
                                     <CardDescription>
-                                        Número de irmãos: {data?.patient?.brothersNumber}
+                                        Número de irmãos: {data?.patients?.brothersNumber}
                                     </CardDescription>
                                 )
                             }
                             <CardDescription>
-                                Teve febre alta ou infecção até os 3 anos: {data?.patient?.highFever ? "Sim" : "Não"}
+                                Febre ou infecção até os 3 anos: {data?.patients?.highFever ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Teve nascimento prematuro: {data?.patient?.premature ? "Sim" : "Não"}
+                                Teve nascimento prematuro: {data?.patients?.premature ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Teve baixo peso ao nascer: {data?.patient?.lowWeight ? "Sim" : "Não"}
+                                Teve baixo peso ao nascer: {data?.patients?.lowWeight ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Tipo de parto: {data?.patient?.deliveryType == "normal" ? "Normal" : "Cesárea"}
+                                Tipo de parto: {data?.patients?.deliveryType == "normal" ? "Normal" : "Cesárea"}
                             </CardDescription>
                             {
-                                data?.patient?.consultType !== "" &&
+                                data?.patients?.consultType !== "" &&
                                 (
                                     <CardDescription>
-                                        Já teve atendimento odontológico {data?.patient?.consultType == "public" ? "público" : "particular"}
+                                        Atendimento odontológico: {data?.patients?.consultType == "public" ? "público" : "particular"}
                                     </CardDescription>
                                 )
                             }
@@ -160,7 +161,7 @@ export default function RegisterDiagnostic() {
                                 Possui manchas nos dentes: {data?.stain ? "Sim" : "Não"}
                             </CardDescription>
                             <CardDescription>
-                                Observações do responsável: {data?.userObservations}
+                                Observações do responsável: <br /> {data?.userObservations}
                             </CardDescription>
                         </CardContent>
                     </Card>
@@ -172,7 +173,7 @@ export default function RegisterDiagnostic() {
                                 control={form.control}
                                 name="diagnostic"
                                 render={({ field }) => (
-                                    <FormItem className="w-[300px]">
+                                    <FormItem className="w-full">
                                         <FormLabel>Diagnóstico</FormLabel>
                                         <Select onValueChange={(e) => {
                                             setDiagnostic(e);
@@ -185,7 +186,7 @@ export default function RegisterDiagnostic() {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="o">Foto inadequada para diagnóstico</SelectItem>
+                                                <SelectItem value="invalid">Foto inadequada para diagnóstico</SelectItem>
                                                 <SelectItem value="sugestive">Sugestivo de HMI</SelectItem>
                                                 <SelectItem value="presence">Presença de HMI</SelectItem>
                                                 <SelectItem value="absence">Ausência de HMI</SelectItem>
@@ -199,10 +200,10 @@ export default function RegisterDiagnostic() {
                                 control={form.control}
                                 name="observations"
                                 render={({ field }) => (
-                                    <FormItem className="w-[300px]">
+                                    <FormItem className="w-full">
                                         <FormLabel>Observações</FormLabel>
                                         <FormControl>
-                                            <Input  {...field} onChange={(e) => {
+                                            <Textarea  {...field} onChange={(e) => {
                                                 setObservation(e.target.value)
                                                 form.setValue("observations", e.target.value)
                                             }} />

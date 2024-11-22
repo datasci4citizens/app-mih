@@ -51,11 +51,10 @@ interface RegistersContextType {
 
 const RegistersContext = createContext<RegistersContextType | undefined>(undefined);
 
-const fetcher = (...args: [RequestInfo, RequestInit?]) => fetch(...args).then(res => res.json())
 
 export default function RegistersControl() {
 
-    const { data, error, isLoading } = useSWR(`http://localhost:8000/users/10/patients/`, fetcher)
+    const { data, error, isLoading } = useSWR(`/users/10/patients/`)
 
     const [page, setPage] = useState(0);
 
