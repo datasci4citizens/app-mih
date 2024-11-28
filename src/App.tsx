@@ -10,27 +10,31 @@ import SpecialistRegistersControl from './routes/registers/specialist/Specialsit
 import CreateRegister from './routes/registers/user/create-register/CreateRegisterForm';
 import RegistersControl from './routes/registers/user/RegistersControl';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
-import CreatePatient from './routes/user/create-user-patient/CreateUser';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import TCLE from './routes/user/create-user-patient/Tcle';
 import SelectUserType from './routes/user/SelectUserType';
 import { SWRConfig } from 'swr';
+import CreateUser from './routes/user/create-user-patient/CreateUser';
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <SelectUserType />
-  },
   {
     path: '/login',
     element: <LoginPage />
+  },
+  {
+    path: '/select',
+    element: <SelectUserType />
   },
   {
     path: '/',
     element: <AuthGuard />,
     children: [
       {
+        path: '/',
+        element: <div></div>
+      },
+      {
         path: '/user/create',
-        element: <CreatePatient />
+        element: <CreateUser />
 
       },
       {

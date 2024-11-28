@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { ArrowLeft, Eye, User2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import useSWR from "swr";
 
 type RegisterData = {
     start_date: string,
@@ -20,6 +21,14 @@ type RegisterData = {
 export default function PendingRegisters() {
 
     const { data, selectRegister } = useSpecialistRegistersContext()
+
+    function getPatientByMih(mih_id: number) {
+
+        const { data, error, isLoading } = useSWR(`/patient/mih/${mih_id}`);
+
+        return data.patient.name
+
+    }
 
     return (
 
@@ -44,7 +53,7 @@ export default function PendingRegisters() {
                 </div>
                 {data?.map((value: RegisterData) => {
                     return (
-                        <Card className="w-[100%] p-0" key={value.mih_id}>
+                        <Card className="w-[100%] p-0" key={getPatientByMih(value.mih_id)}>
 
                             <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
 

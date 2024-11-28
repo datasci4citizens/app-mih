@@ -34,6 +34,7 @@ const formSchema = z.object({
 
 async function sendRequest(url: string, { arg }: {
     arg: {
+        role: string;
         name: string;
         email: string;
         phone_number: string;
@@ -52,7 +53,7 @@ async function sendRequest(url: string, { arg }: {
 
 
 export default function CreateSpecialist() {
-    const { trigger, data, error } = useSWRMutation('http://localhost:8000/specialists/', sendRequest)
+    const { trigger, data, error } = useSWRMutation('http://localhost:8000/users/', sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -68,7 +69,7 @@ export default function CreateSpecialist() {
         console.log('=== new values ===')
         console.log(values)
 
-        const newValue = { ...values, is_allowed: false }
+        const newValue = { ...values, is_allowed: false, role: "specialist" }
         const result = await trigger(newValue)
 
         console.log(error)

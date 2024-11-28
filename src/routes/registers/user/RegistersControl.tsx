@@ -55,7 +55,7 @@ const RegistersContext = createContext<RegistersContextType | undefined>(undefin
 
 export default function RegistersControl() {
 
-    const { data, error, isLoading } = useSWR(`/users/10/patients/`)
+    const { data, error, isLoading } = useSWR(`/users/patients/`)
 
     const [page, setPage] = useState(0);
 

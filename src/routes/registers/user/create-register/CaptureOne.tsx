@@ -62,7 +62,7 @@ export default function CaptureTwo() {
                 }
 
                 <Button className="text-center my-4" type="submit" onClick={() => {
-                    if (sendData.photo1 != "")
+                    if (sendData.photo1)
                         next();
                     else {
                         handleAlert();

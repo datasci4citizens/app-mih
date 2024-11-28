@@ -23,7 +23,7 @@ import { useUser } from '@/lib/hooks/use-user'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
 
 const formSchema = z.object({
-    personInCharge: z.string().min(4, {
+    name: z.string().min(4, {
         message: "Nome muito pequeno.",
     }),
     phone_number: z.string().min(11, {
@@ -45,8 +45,9 @@ const formSchema = z.object({
 
 async function sendRequest(url: string, { arg }: {
     arg: {
-        personInCharge: string;
+        name: string;
         phone_number: string;
+        role: string;
         state: string;
         city: string;
         neighborhood: string;
@@ -58,23 +59,24 @@ async function sendRequest(url: string, { arg }: {
     console.log('=== sending request to ===')
     console.log(url)
     return await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: "include",
         body: JSON.stringify(arg)
     }).then(res => res.json())
 }
 
 
-export default function CreatePatient() {
+export default function CreateUser() {
     const { trigger, data, error } = useSWRMutation('http://localhost:8000/users/', sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            personInCharge: "",
+            name: "",
             phone_number: "",
             state: "",
             city: "",
@@ -86,7 +88,9 @@ export default function CreatePatient() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log('=== new values ===')
         console.log(values)
-        const result = await trigger(values)
+        const newValues = { ...values, role: "responsible" }
+        console.log(newValues)
+        const result = await trigger(newValues)
 
         if (error) {
             return <ErrorPage type="user"></ErrorPage>
@@ -121,7 +125,7 @@ export default function CreatePatient() {
 
                             <FormField
                                 control={form.control}
-                                name="personInCharge"
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className='font-bold'>Nome do responsável*</FormLabel>

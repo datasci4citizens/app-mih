@@ -3,7 +3,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "./CreateRegisterForm";
-import { Camera } from "lucide-react";
+import { Camera, Files } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) {
@@ -16,17 +16,20 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
 
     const handleCapture = (event: any) => {
         const file = event.target.files[0];
+
         if (file) {
             const imageUrl = URL.createObjectURL(file);
             setPhoto(imageUrl);
-            updateFields({ [`photo${photoStep}`]: imageUrl });
+            updateFields({ [`photo${photoStep}`]: file });
         }
     };
 
     useEffect(() => {
 
         const photoKey = `photo${photoStep}` as 'photo1' | 'photo2' | 'photo3';
-        setPhoto(sendData[photoKey]);
+
+        // const photoUrl = URL.createObjectURL(sendData[photoKey])
+        // setPhoto(photoUrl);
 
     });
 

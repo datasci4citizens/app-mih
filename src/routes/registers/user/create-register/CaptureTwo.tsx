@@ -65,7 +65,7 @@ export default function CaptureOne() {
                 }
 
                 <Button className="text-center my-4" type="submit" onClick={() => {
-                    if (sendData.photo2 != "" && sendData.photo3 != "")
+                    if (sendData.photo2 && sendData.photo3)
                         next();
                     else
                         handleAlert()

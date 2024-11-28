@@ -108,15 +108,16 @@ async function sendRequest(url: string, { arg }: {
     return await fetch(url, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
+        credentials: "include",
         body: JSON.stringify(arg)
     }).then(res => res.json())
 }
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/users/${10}/patients`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/users/patients/`, sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({

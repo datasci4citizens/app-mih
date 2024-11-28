@@ -28,9 +28,9 @@ type PatientsData = {
 
 type RegisterData = {
 
-    photo1: string;
-    photo2: string;
-    photo3: string;
+    photo1: any;
+    photo2: any;
+    photo3: any;
     patient: PatientsData | undefined;
     toothache: boolean;
     painLevel: number;
@@ -43,9 +43,9 @@ type RegisterData = {
 
 const INIT_DATA: RegisterData = {
 
-    photo1: "",
-    photo2: "",
-    photo3: "",
+    photo1: null,
+    photo2: null,
+    photo3: null,
     patient: undefined,
     toothache: false,
     painLevel: 0,
@@ -58,6 +58,9 @@ const INIT_DATA: RegisterData = {
 
 type SendData = {
 
+    id1: number;
+    id2: number;
+    id3: number;
     start_date: string;
     painLevel: number;
     sensitivityField: boolean;
@@ -92,6 +95,23 @@ async function sendRequest(url: string, { arg }: {
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: "include",
+        body: JSON.stringify(arg)
+    }).then(res => res.json())
+}
+
+async function sendPhotoRequest(url: string, { arg }: {
+    arg: { extension: string };
+}) {
+    console.log('=== sending request to ===')
+    console.log(url)
+    console.log(arg)
+    return await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: "include",
         body: JSON.stringify(arg)
     }).then(res => res.json())
 }
@@ -128,6 +148,8 @@ export default function CreateRegister() {
     const { patient_id, first_time } = useParams();
 
     const { trigger, data, error } = useSWRMutation(`http://localhost:8000/${patient_id}/mih`, sendRequest)
+
+    const { trigger: triggerPhoto, data: dataPhoto, error: errorPhoto } = useSWRMutation(`http://127.0.0.1:8000/images/`, sendPhotoRequest)
 
     const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
@@ -183,10 +205,42 @@ export default function CreateRegister() {
 
     }
 
+    async function submitImage(file: any) {
+
+        const result = await triggerPhoto({ extension: ".jpg" })
+
+        const url = result.upload_url;
+
+        await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "image/jpeg",
+            },
+            credentials: "include",
+            body: file,
+        }).then(r => {
+
+            console.log(r.blob())
+        }).catch(err => {
+            console.log(err);
+        })
+
+        return result.id;
+
+    }
 
     async function submit() {
 
+
+
+        const id1 = await submitImage(sendData.photo1);
+        const id2 = await submitImage(sendData.photo2);
+        const id3 = await submitImage(sendData.photo3);
+
         let arg: SendData = {
+            "id1": id1,
+            "id2": id2,
+            "id3": id3,
             "start_date": new Date().toISOString(),
             "painLevel": sendData.painLevel,
             "sensitivityField": sendData.sensitivity,
@@ -196,7 +250,6 @@ export default function CreateRegister() {
             "specialistObservations": null,
             "diagnosis": null
         }
-
 
         console.log(arg)
 
