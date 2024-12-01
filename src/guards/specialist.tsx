@@ -1,4 +1,3 @@
-import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { useUser } from "@/lib/hooks/use-user";
 import { Navigate, Outlet } from "react-router-dom";
 

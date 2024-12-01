@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Cog } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function ErrorPage({ type }: { type: string }) {

@@ -3,7 +3,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "./CreateRegisterForm";
-import { Camera, Files } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) {

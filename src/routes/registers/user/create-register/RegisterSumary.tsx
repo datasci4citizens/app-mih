@@ -6,7 +6,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export default function RegisterSumary() {
 
-    const { sendData, back, goTo, submit } = useFormContext();
+    const { sendData, back, goTo, submit, submiting } = useFormContext();
 
     const { patient, toothache, painLevel, sensitivity,
         toothStain, aestheticDiscomfort, userObservations } = { ...sendData }
@@ -21,7 +21,7 @@ export default function RegisterSumary() {
 
                 <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70" disabled={submiting} onClick={back}>
                         <ArrowLeft color="black" />
                     </Button>
                 </div>
@@ -127,7 +127,7 @@ export default function RegisterSumary() {
 
                 </div>
 
-                <Button className="text-center" type={"submit"} onClick={submit}>
+                <Button className="text-center" type={"submit"} disabled={submiting} onClick={submit}>
                     Enviar Registro
                 </Button>
 

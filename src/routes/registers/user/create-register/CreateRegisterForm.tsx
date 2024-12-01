@@ -75,6 +75,7 @@ type SendData = {
 interface FormContextType {
     sendData: RegisterData;
     patient_id: string | undefined;
+    submiting: boolean;
     updateFields: (fields: Partial<RegisterData>) => void;
     next: () => void;
     back: () => void;
@@ -147,9 +148,11 @@ export default function CreateRegister() {
 
     const { patient_id, first_time } = useParams();
 
+    const [submiting, setSubmiting] = useState(false)
+
     const { trigger, data, error } = useSWRMutation(`http://localhost:8000/${patient_id}/mih`, sendRequest)
 
-    const { trigger: triggerPhoto, data: dataPhoto, error: errorPhoto } = useSWRMutation(`http://localhost:8000/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`http://localhost:8000/images/`, sendPhotoRequest)
 
     const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
@@ -231,11 +234,14 @@ export default function CreateRegister() {
 
     async function submit() {
 
-
+        setSubmiting(true);
 
         const id1 = await submitImage(sendData.photo1);
         const id2 = await submitImage(sendData.photo2);
         const id3 = await submitImage(sendData.photo3);
+
+        if (errorPhoto)
+            console.log(errorPhoto);
 
         let arg: SendData = {
             "photo_id1": id1,
@@ -260,6 +266,7 @@ export default function CreateRegister() {
         }
 
         if (result && !error) {
+            setSubmiting(false);
             navigate(`/user/home/`); // Redireciona para a home
         } else {
             console.error('Erro ao enviar dados:', error);
@@ -286,6 +293,7 @@ export default function CreateRegister() {
         <FormContext.Provider value={{
             sendData,
             patient_id,
+            submiting,
             updateFields,
             next,
             back,

@@ -19,7 +19,6 @@ import { Switch } from '@/components/ui/switch.tsx'
 
 import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
-import { useUser } from '@/lib/hooks/use-user'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
 import { mutate } from 'swr'
 

@@ -1,8 +1,8 @@
+import { useUser } from "@/lib/hooks/use-user";
 import { Navigate, Outlet } from "react-router-dom";
-import useSWR from "swr";
 
 export function NoRoleGuard() {
-    const { data, error, isLoading } = useSWR('/user/me')
+    const data = useUser()
 
     if (data.role != null)
         return <Navigate to="/" />

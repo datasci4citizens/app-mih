@@ -4,8 +4,6 @@ import HmiInformations from './routes/home/HmiInformations';
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PatientHomePage from './routes/home/UserHomePage';
 import LoginPage from './routes/login/Login';
-import PendingRegisters from './routes/registers/specialist/PendingRegisters';
-import RegisterDiagnostic from './routes/registers/specialist/RegisterDiagnostic';
 import SpecialistRegistersControl from './routes/registers/specialist/SpecialsitRegistersControl';
 import CreateRegister from './routes/registers/user/create-register/CreateRegisterForm';
 import RegistersControl from './routes/registers/user/RegistersControl';
