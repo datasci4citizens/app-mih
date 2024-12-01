@@ -56,7 +56,7 @@ export default function RegisterSumary() {
                                             <div className="flex w-full justify-end">
                                                 <Edit color="black" onClick={() => goTo(1)}></Edit>
                                             </div>
-                                            <img src={sendData.photo1} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+                                            <img src={URL.createObjectURL(sendData.photo1)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
 
                                         </AccordionContent>
 
@@ -72,9 +72,9 @@ export default function RegisterSumary() {
                                                 <Edit color="black" width={30} onClick={() => goTo(2)}></Edit>
                                             </div>
                                             Molar Direito
-                                            <img src={sendData.photo2} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+                                            <img src={URL.createObjectURL(sendData.photo2)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
                                             Molar esquerdo
-                                            <img src={sendData.photo3} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+                                            <img src={URL.createObjectURL(sendData.photo3)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
 
                                         </AccordionContent>
 

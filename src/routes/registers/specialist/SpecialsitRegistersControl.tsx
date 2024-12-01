@@ -7,6 +7,9 @@ import useSWRMutation from 'swr/mutation'
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 type RegisterData = {
+    photo_id1: number;
+    photo_id2: number;
+    photo_id3: number;
     start_date: string,
     end_date: string,
     painLevel: number,
@@ -36,8 +39,6 @@ const SpecialistRegistersContext = createContext<RegistersContextType | undefine
 async function sendRequest(url: string, { arg }: {
     arg: { diagnosis: string, specialistObservations: string }
 }) {
-
-
     console.log('=== sending request to ===')
     console.log(url)
     return await fetch(url, {
@@ -45,6 +46,7 @@ async function sendRequest(url: string, { arg }: {
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: "include",
         body: JSON.stringify(arg)
     }).then(res => res.json())
 }
@@ -62,7 +64,7 @@ export default function SpecialistRegistersControl() {
     if (isLoading) {
         return <SkeletonLoading />
     }
-    if (error) {
+    if (error || data.detail) {
         return <ErrorPage type="specialist"></ErrorPage>
     }
 
@@ -70,6 +72,8 @@ export default function SpecialistRegistersControl() {
         return <SkeletonLoading />
 
     }
+
+    console.log(data)
 
     function selectRegister(registerId: string) {
 

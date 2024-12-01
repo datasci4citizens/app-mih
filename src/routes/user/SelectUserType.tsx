@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import imgTooth from "@/assets/tooth.png"
+import imgTooth from "@/assets/Icon.svg"
 
 export default function SelectUserType() {
 

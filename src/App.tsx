@@ -15,14 +15,15 @@ import TCLE from './routes/user/create-user-patient/Tcle';
 import SelectUserType from './routes/user/SelectUserType';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
+import { RoleGuard } from './guards/role';
+import { NoRoleGuard } from './guards/norole';
+import { ChoseRoleGuard } from './guards/choserole';
+import { SpecialistGuard } from './guards/specialist';
+import { UserGuard } from './guards/user';
 const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />
-  },
-  {
-    path: '/select',
-    element: <SelectUserType />
   },
   {
     path: '/',
@@ -30,64 +31,86 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <div></div>
-      },
-      {
-        path: '/user/create',
-        element: <CreateUser />
+        element: <RoleGuard />,
+        children: [
+          {
+            path: '/',
+            element: <ChoseRoleGuard />
+          },
+          {
+            path: '/user',
+            element: <UserGuard />,
+            children: [
+              {
+                path: '/user/create/patient',
+                element: <PatientForm />
+              },
+              {
+                path: '/user/home',
+                element: <PatientHomePage />
 
-      },
-      {
-        path: 'user/create/tcle',
-        element: <TCLE />
+              },
+              {
+                path: '/user/home/hmi-informations',
+                element: <HmiInformations />
 
-      },
-      {
-        path: '/user/create/patient',
-        element: <PatientForm />
-      },
-      {
-        path: '/specialist/create',
-        element: <CreateSpecialist />
+              },
+              {
+                path: '/user/registers',
+                element: <RegistersControl />
+              },
+              {
+                path: '/user/registers/create-register/:patient_id/:first_time',
+                element: <CreateRegister />
+              }
+            ]
 
-      },
-      {
-        path: '/user/home',
-        element: <PatientHomePage />
+          },
+          {
 
-      },
-      {
-        path: '/specialist/home',
-        element: <SpecialistHomePage />
+            path: '/specialist',
+            element: <SpecialistGuard />,
+            children: [
 
-      },
-      {
-        path: '/user/home/hmi-informations',
-        element: <HmiInformations />
+              {
+                path: '/specialist/home',
+                element: <SpecialistHomePage />
 
-      },
-      {
-        path: '/user/registers',
-        element: <RegistersControl />
-      },
-      {
-        path: '/user/registers/create-register/:patient_id/:first_time',
-        element: <CreateRegister />
-      },
-      {
+              },
+              {
 
-        path: '/specialist/home/registers-evaluation',
-        element: <SpecialistRegistersControl />
+                path: '/specialist/home/registers-evaluation',
+                element: <SpecialistRegistersControl />
 
+              }
+            ]
+
+          },
+        ]
       },
       {
-        path: '/specialist/home/pending-registers',
-        element: <PendingRegisters />
+        path: "/",
+        element: <NoRoleGuard />,
+        children: [
 
-      },
-      {
-        path: '/specialist/home/register-diagnostic',
-        element: <RegisterDiagnostic />
+          {
+            path: '/user/create',
+            element: <CreateUser />
+          },
+          {
+            path: '/user/create/tcle',
+            element: <TCLE />
+          },
+          {
+            path: '/specialist/create',
+            element: <CreateSpecialist />
+          },
+          {
+            path: '/select',
+            element: <SelectUserType />
+          },
+        ]
+
       }
     ]
   }

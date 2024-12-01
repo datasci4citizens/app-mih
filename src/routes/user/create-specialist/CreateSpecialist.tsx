@@ -19,6 +19,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
+import { mutate } from 'swr'
 
 
 
@@ -43,17 +44,18 @@ async function sendRequest(url: string, { arg }: {
     console.log('=== sending request to ===')
     console.log(url)
     return await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: "include",
         body: JSON.stringify(arg)
     }).then(res => res.json())
 }
 
 
 export default function CreateSpecialist() {
-    const { trigger, data, error } = useSWRMutation('http://localhost:8000/users/', sendRequest)
+    const { trigger, data, error, isMutating } = useSWRMutation('http://localhost:8000/users/', sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -80,10 +82,13 @@ export default function CreateSpecialist() {
         console.log(result)
         console.log(data)
         console.log(error)
-        if (result && !error) {
-            navigate("/specialist/home"); // Redireciona para a home
-        } else {
-            console.error('Erro ao enviar dados:', error);
+        if (!isMutating) {
+            if (result && !error) {
+                await mutate("/user/me", undefined, { revalidate: true })
+                navigate(`/specialist/home`); // Redireciona para a home
+            } else {
+                console.error('Erro ao enviar dados:', error);
+            }
         }
     }
 

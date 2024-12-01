@@ -12,14 +12,13 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 
-    const [photo, setPhoto] = useState<string | undefined>(undefined);
+    const [photo, setPhoto] = useState<any | undefined>(undefined);
 
     const handleCapture = (event: any) => {
         const file = event.target.files[0];
 
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setPhoto(imageUrl);
+            setPhoto(file);
             updateFields({ [`photo${photoStep}`]: file });
         }
     };
@@ -28,8 +27,8 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
 
         const photoKey = `photo${photoStep}` as 'photo1' | 'photo2' | 'photo3';
 
-        // const photoUrl = URL.createObjectURL(sendData[photoKey])
-        // setPhoto(photoUrl);
+        if (sendData[photoKey] && !photo)
+            setPhoto(sendData[photoKey])
 
     });
 
@@ -69,7 +68,7 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
                         </AccordionTrigger>
 
                         <AccordionContent className="flex flex-col items-center justify-center">
-                            <img src={photo} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+                            <img src={URL.createObjectURL(photo)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
 
                         </AccordionContent>
 

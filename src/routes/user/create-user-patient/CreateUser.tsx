@@ -21,6 +21,7 @@ import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/lib/hooks/use-user'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
+import { mutate } from 'swr'
 
 const formSchema = z.object({
     name: z.string().min(4, {
@@ -101,18 +102,16 @@ export default function CreateUser() {
         console.log(data)
         console.log(error);
         if (result && !error) {
-            navigate(`patient`); // Redireciona para a home
+            await mutate("/user/me", undefined, { revalidate: true })
+            navigate(`/user/home`); // Redireciona para a home
         } else {
             console.error('Erro ao enviar dados:', error);
         }
     }
 
-    const user = useUser()
-
     return (
 
         <div>
-            <h1>{user.name}</h1>
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
             <div className='flex min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10'>

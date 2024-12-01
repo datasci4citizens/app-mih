@@ -1,16 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { UserContextProvider } from "@/lib/hooks/use-user";
-import { DatabaseZapIcon } from "lucide-react";
-import { useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import useSWR from "swr";
 
 export function AuthGuard() {
 
     const { data, error, isLoading } = useSWR('/user/me')
-
-    const navigate = useNavigate();
-    const location = useLocation();
 
     if (isLoading)
         return (
@@ -25,10 +21,13 @@ export function AuthGuard() {
 
     console.log(data)
 
-    if (!data || data.detail)
-        navigate("/login")
+    if (error)
+        return <ErrorPage type="login"></ErrorPage>
 
-    return <UserContextProvider value={{ name: "Miguel" }}>
+    if (!data || data.detail)
+        return <Navigate to='/login' />
+
+    return <UserContextProvider value={{ ...data }}>
         <Outlet />
     </UserContextProvider>
 }

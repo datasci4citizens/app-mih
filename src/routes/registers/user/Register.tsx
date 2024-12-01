@@ -63,24 +63,33 @@ export default function Register() {
 
                             <Carousel className="w-full max-w-[80%]">
                                 <CarouselContent>
-                                    {Array.from({ length: 3 }).map((_, index) => (
-                                        <CarouselItem key={index}>
-                                            <div className="p-1">
-                                                <Card>
-                                                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                                                        <span className="text-4xl font-semibold"> IMAGEM {index + 1}</span>
-                                                    </CardContent>
-                                                </Card>
-                                            </div>
-                                        </CarouselItem>
-                                    ))}
+                                    {Array.from({ length: 3 }).map((_, index) => {
+
+                                        const photoKey = `photo_id${index + 1}` as 'photo_id1' | 'photo_id2' | 'photo_id3';
+
+                                        if (register)
+                                            return (
+                                                <CarouselItem key={index} className="min-h-[200px] flex items-center justify-center">
+                                                    <div className="p-1">
+                                                        <img src={`https://${import.meta.env.VITE_MINIO_DOMAIN}/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${register[photoKey]}.jpg`} />
+                                                    </div>
+                                                </CarouselItem>
+                                            )
+                                        else
+                                            return (
+                                                <CarouselItem key={index}>
+                                                    <div className="p-1">
+                                                        <h1>Error</h1>
+                                                    </div>
+                                                </CarouselItem>
+                                            )
+                                    })}
                                 </CarouselContent>
                                 <CarouselPrevious />
                                 <CarouselNext />
                             </Carousel>
 
-
-                            <Card className="min-w-[80%]">
+                            <Card className="min-w-[80%] mt-4">
                                 <CardHeader>
                                     <CardTitle className="text-sm ">
                                         {patient?.name}

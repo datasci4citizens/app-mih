@@ -28,6 +28,14 @@ export default function ErrorPage({ type }: { type: string }) {
                         </Button>
                     </Link>
                 }
+                {
+                    type === "login" &&
+                    <Link to="/login">
+                        <Button>
+                            Retornar
+                        </Button>
+                    </Link>
+                }
             </div>
 
         </div>

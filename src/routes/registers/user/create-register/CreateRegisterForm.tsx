@@ -58,9 +58,9 @@ const INIT_DATA: RegisterData = {
 
 type SendData = {
 
-    id1: number;
-    id2: number;
-    id3: number;
+    photo_id1: number;
+    photo_id2: number;
+    photo_id3: number;
     start_date: string;
     painLevel: number;
     sensitivityField: boolean;
@@ -149,7 +149,7 @@ export default function CreateRegister() {
 
     const { trigger, data, error } = useSWRMutation(`http://localhost:8000/${patient_id}/mih`, sendRequest)
 
-    const { trigger: triggerPhoto, data: dataPhoto, error: errorPhoto } = useSWRMutation(`http://127.0.0.1:8000/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto, data: dataPhoto, error: errorPhoto } = useSWRMutation(`http://localhost:8000/images/`, sendPhotoRequest)
 
     const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
@@ -207,7 +207,7 @@ export default function CreateRegister() {
 
     async function submitImage(file: any) {
 
-        const result = await triggerPhoto({ extension: ".jpg" })
+        const result = await triggerPhoto({ extension: "jpg" })
 
         const url = result.upload_url;
 
@@ -225,7 +225,7 @@ export default function CreateRegister() {
             console.log(err);
         })
 
-        return result.id;
+        return result.image_id;
 
     }
 
@@ -238,9 +238,9 @@ export default function CreateRegister() {
         const id3 = await submitImage(sendData.photo3);
 
         let arg: SendData = {
-            "id1": id1,
-            "id2": id2,
-            "id3": id3,
+            "photo_id1": id1,
+            "photo_id2": id2,
+            "photo_id3": id3,
             "start_date": new Date().toISOString(),
             "painLevel": sendData.painLevel,
             "sensitivityField": sendData.sensitivity,

@@ -117,7 +117,7 @@ async function sendRequest(url: string, { arg }: {
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`http://127.0.0.1:8000/users/patients/`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`http://localhost:8000/users/patients/`, sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({

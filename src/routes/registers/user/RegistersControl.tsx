@@ -25,6 +25,9 @@ type PatientsData = {
 type PatientsArray = PatientsData[];
 
 type RegisterData = {
+    photo_id1: number;
+    photo_id2: number;
+    photo_id3: number;
     start_date: string,
     end_date: string,
     painLevel: number,
@@ -37,14 +40,10 @@ type RegisterData = {
     mih_id: number;
 }
 
-type RegisterArray = RegisterData[];
-
 interface RegistersContextType {
     patientsData: PatientsArray | undefined;
     selectPatient: (patientId: string) => void;
-    setRegisters: (registers: RegisterArray) => void;
-    registers: RegisterArray | undefined;
-    selectRegister: (id: string) => void;
+    selectRegister: (id: string, data: any) => void;
     register: RegisterData | undefined;
     patient: PatientsData | undefined;
     back: () => void;
@@ -60,8 +59,6 @@ export default function RegistersControl() {
     const [page, setPage] = useState(0);
 
     const [patient, setPatient] = useState<PatientsData | undefined>(undefined)
-
-    const [registers, setRegisters] = useState<RegisterArray | undefined>(undefined)
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
@@ -80,9 +77,9 @@ export default function RegistersControl() {
 
     }
 
-    function selectRegister(registerId: string) {
+    function selectRegister(registerId: string, data: any) {
 
-        const register = registers?.find(reg => String(reg.mih_id) == registerId)
+        const register = data?.find((reg: RegisterData) => String(reg.mih_id) == registerId)
         setRegister(register)
         setPage(2);
 
@@ -95,7 +92,6 @@ export default function RegistersControl() {
             if (v != 0) {
                 if (v == 1) {
 
-                    setRegisters(undefined);
                     setPatient(undefined);
                 }
                 else if (v == 2)
@@ -126,8 +122,6 @@ export default function RegistersControl() {
             value={{
                 patientsData,
                 selectPatient,
-                setRegisters,
-                registers,
                 selectRegister,
                 register,
                 patient,
