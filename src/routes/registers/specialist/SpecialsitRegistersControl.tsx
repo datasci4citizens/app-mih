@@ -26,6 +26,7 @@ type RegisterArray = RegisterData[];
 
 interface RegistersContextType {
     data: RegisterArray;
+    submitting: boolean;
     submitRegister: () => void;
     setObservation: (observation: string) => void;
     setDiagnostic: (diagnosis: string) => void;
@@ -57,9 +58,11 @@ export default function SpecialistRegistersControl() {
 
     const [page, setPage] = useState(0);
 
+    const [submitting, setSubmitting] = useState(false);
+
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
-    const { trigger, data: sendData, error: isError, isMutating } = useSWRMutation(`http://localhost:8000/mih/${register?.mih_id}`, sendRequest)
+    const { trigger, error: isError, isMutating } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/mih/${register?.mih_id}`, sendRequest)
 
     if (isLoading) {
         return <SkeletonLoading />
@@ -129,27 +132,23 @@ export default function SpecialistRegistersControl() {
 
     async function submitRegister() {
 
-        if (!register) {
+        setSubmitting(true);
 
+        if (!register || register.diagnosis == null) {
+            setSubmitting(false);
             return undefined;
         }
-
-        if (register.diagnosis == null) {
-
-            return undefined;
-        }
-
-        console.log(register)
 
         await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
 
         mutate(undefined, { revalidate: true }); // Atualiza o cache localmente
 
-        console.log(sendData);
-
-        if (isError)
+        if (isError) {
+            setSubmitting(false);
             return <ErrorPage type="specialist"></ErrorPage>
+        }
 
+        setSubmitting(false);
         back()
     }
 
@@ -162,6 +161,7 @@ export default function SpecialistRegistersControl() {
         <SpecialistRegistersContext.Provider
             value={{
                 data,
+                submitting,
                 submitRegister,
                 setObservation,
                 setDiagnostic,

@@ -21,6 +21,7 @@ import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
 import { mutate } from 'swr'
+import { useState } from 'react'
 
 const formSchema = z.object({
     name: z.string().min(4, {
@@ -70,7 +71,8 @@ async function sendRequest(url: string, { arg }: {
 
 
 export default function CreateUser() {
-    const { trigger, data, error } = useSWRMutation('http://localhost:8000/users/', sendRequest)
+    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/users/`, sendRequest)
+    const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -86,6 +88,7 @@ export default function CreateUser() {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        setSubmitting(true)
         console.log('=== new values ===')
         console.log(values)
         const newValues = { ...values, role: "responsible" }
@@ -102,8 +105,10 @@ export default function CreateUser() {
         console.log(error);
         if (result && !error) {
             await mutate("/user/me", undefined, { revalidate: true })
+            setSubmitting(false)
             navigate(`/user/home`); // Redireciona para a home
         } else {
+            setSubmitting(false)
             console.error('Erro ao enviar dados:', error);
         }
     }
@@ -204,7 +209,7 @@ export default function CreateUser() {
                                 )}
                             />
 
-                            <Button className="w-[100%]" type="submit">Próximo</Button>
+                            <Button className="w-[100%]" type="submit" disabled={submitting}>Próximo</Button>
                         </form>
                     </Form>
                 </Card>

@@ -3,10 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, Edit } from "lucide-react";
 import { useFormContext } from "./CreateRegisterForm";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import loadingGif from "@/assets/gif loading.gif"
 
 export default function RegisterSumary() {
 
-    const { sendData, back, goTo, submit, submiting } = useFormContext();
+    const { sendData, back, goTo, submit, submitting } = useFormContext();
 
     const { patient, toothache, painLevel, sensitivity,
         toothStain, aestheticDiscomfort, userObservations } = { ...sendData }
@@ -21,7 +22,7 @@ export default function RegisterSumary() {
 
                 <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70" disabled={submiting} onClick={back}>
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70" disabled={submitting} onClick={back}>
                         <ArrowLeft color="black" />
                     </Button>
                 </div>
@@ -127,8 +128,23 @@ export default function RegisterSumary() {
 
                 </div>
 
-                <Button className="text-center" type={"submit"} disabled={submiting} onClick={submit}>
-                    Enviar Registro
+                <Button className="text-center gap-3" type={"submit"} disabled={submitting} onClick={submit}>
+                    {
+                        submitting && (
+
+                            <><img src={loadingGif} className="h-8"></img>Enviando</>
+
+                        )
+
+                    }
+                    {
+                        !submitting && (
+
+                            <>Enviar Registro</>
+
+                        )
+
+                    }
                 </Button>
 
             </div>

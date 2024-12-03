@@ -55,7 +55,7 @@ async function sendRequest(url: string, { arg }: {
 
 
 export default function CreateSpecialist() {
-    const { trigger, data, error, isMutating } = useSWRMutation('http://localhost:8000/users/', sendRequest)
+    const { trigger, data, error, isMutating } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/users/`, sendRequest)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({

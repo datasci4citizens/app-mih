@@ -75,7 +75,7 @@ type SendData = {
 interface FormContextType {
     sendData: RegisterData;
     patient_id: string | undefined;
-    submiting: boolean;
+    submitting: boolean;
     updateFields: (fields: Partial<RegisterData>) => void;
     next: () => void;
     back: () => void;
@@ -148,13 +148,13 @@ export default function CreateRegister() {
 
     const { patient_id, first_time } = useParams();
 
-    const [submiting, setSubmiting] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`http://localhost:8000/${patient_id}/mih`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/${patient_id}/mih`, sendRequest)
 
-    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`http://localhost:8000/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/images/`, sendPhotoRequest)
 
-    const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
+    const { data: patientData, error: isError, isLoading } = useSWR(`/ patients / ${patient_id} `)
 
     const [sendData, setSendData] = useState(INIT_DATA)
 
@@ -234,7 +234,7 @@ export default function CreateRegister() {
 
     async function submit() {
 
-        setSubmiting(true);
+        setSubmitting(true);
 
         const id1 = await submitImage(sendData.photo1);
         const id2 = await submitImage(sendData.photo2);
@@ -266,9 +266,10 @@ export default function CreateRegister() {
         }
 
         if (result && !error) {
-            setSubmiting(false);
-            navigate(`/user/home/`); // Redireciona para a home
+            setSubmitting(false);
+            navigate(`/ user / home / `); // Redireciona para a home
         } else {
+            setSubmitting(false);
             console.error('Erro ao enviar dados:', error);
         }
 
@@ -293,7 +294,7 @@ export default function CreateRegister() {
         <FormContext.Provider value={{
             sendData,
             patient_id,
-            submiting,
+            submitting,
             updateFields,
             next,
             back,

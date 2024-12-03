@@ -35,6 +35,7 @@ import useSWR from "swr";
 import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
 import { Textarea } from "@/components/ui/textarea";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
+import loadingGif from "@/assets/gif loading.gif"
 
 const formSchema = z.object({
     diagnostic: z.string(),
@@ -44,7 +45,7 @@ const formSchema = z.object({
 
 export default function RegisterDiagnostic() {
 
-    const { submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
+    const { submitting, submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
 
     const { data, error, isLoading } = useSWR(`/mih/${register?.mih_id}`);
 
@@ -78,7 +79,7 @@ export default function RegisterDiagnostic() {
 
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 
-                    <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                    <Button size={"icon"} onClick={back} disabled={submitting} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <ArrowLeft color="black" />
                     </Button>
 
@@ -220,7 +221,22 @@ export default function RegisterDiagnostic() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Enviar</Button>
+                            <Button type="submit" disabled={submitting}>{
+                                submitting && (
+
+                                    <><img src={loadingGif} className="h-8"></img>Enviando</>
+
+                                )
+
+                            }
+                                {
+                                    !submitting && (
+
+                                        <>Enviar Registro</>
+
+                                    )
+
+                                }</Button>
                         </form>
                     </Form>
 

@@ -40,6 +40,7 @@ import useSWRMutation from 'swr/mutation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Checkbox } from '@/components/ui/checkbox'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
+import { useState } from 'react'
 
 
 const deliveryProblems = [
@@ -117,7 +118,8 @@ async function sendRequest(url: string, { arg }: {
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`http://localhost:8000/users/patients/`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/users/patients/`, sendRequest)
+    const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -139,6 +141,7 @@ export default function PatientForm() {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        setSubmitting(true)
         console.log('=== new values ===')
         console.log(values)
 
@@ -162,8 +165,10 @@ export default function PatientForm() {
 
         console.log(data);
         if (result && !error) {
+            setSubmitting(false)
             navigate(`/user/registers/create-register/${result.patient_id}/first_time`);
         } else {
+            setSubmitting(false)
             console.error('Erro ao enviar dados:', error);
         }
         console.log('=== result ===')
@@ -180,7 +185,7 @@ export default function PatientForm() {
 
                 <div className="flex w-[100%] justify-start items-center px-[30px] mt-2">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={() => navigate("/user/home")}>
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " disabled={submitting} onClick={() => navigate("/user/home")}>
                         <ArrowLeft color="black" />
                     </Button>
                 </div>
@@ -507,7 +512,7 @@ export default function PatientForm() {
                                     </CardContent>
                                 </Card>
 
-                                <Button className=" w-[100%]" type="submit">
+                                <Button className=" w-[100%]" type="submit" disabled={submitting}>
                                     Salvar
                                 </Button>
                             </form>
