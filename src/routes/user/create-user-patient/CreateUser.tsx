@@ -106,7 +106,7 @@ export default function CreateUser() {
         if (result && !error) {
             await mutate("/user/me", undefined, { revalidate: true })
             setSubmitting(false)
-            navigate(`/user/home`); // Redireciona para a home
+            navigate(`/user/create/patient`);
         } else {
             setSubmitting(false)
             console.error('Erro ao enviar dados:', error);
