@@ -196,7 +196,7 @@ export default function PatientForm() {
                     </CardHeader>
                     <CardContent className='flex flex-col items-center justify-center'>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 pb-10">
                                 <Card className='border-none shadow-lg '>
                                     <CardContent className='space-y-3 p-4'>
 

@@ -28,7 +28,7 @@ export default function CaptureTwo() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10">
+            <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10 pb-10">
 
                 <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
                     <Link to="/user/home">
