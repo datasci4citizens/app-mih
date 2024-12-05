@@ -75,7 +75,7 @@ export default function RegisterDiagnostic() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <Card className="max-h-screen p-[30px] border-none rounded-t-3xl -mt-16 shadow-none">
+            <Card className="max-h-screen p-[30px] border-none rounded-t-3xl -mt-16 shadow-none mb-20">
 
                 <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
 

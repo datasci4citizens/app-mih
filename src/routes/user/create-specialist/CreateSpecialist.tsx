@@ -105,7 +105,7 @@ export default function CreateSpecialist() {
                         <CardTitle className='text-center font-extrabold'>Complete o seu cadastro</CardTitle>
                     </CardHeader>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 pb-10">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mb-20">
 
                             <FormField
                                 control={form.control}
