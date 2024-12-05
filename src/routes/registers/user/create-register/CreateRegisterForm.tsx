@@ -154,7 +154,7 @@ export default function CreateRegister() {
 
     const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/images/`, sendPhotoRequest)
 
-    const { data: patientData, error: isError, isLoading } = useSWR(`/ patients / ${patient_id} `)
+    const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
     const [sendData, setSendData] = useState(INIT_DATA)
 
