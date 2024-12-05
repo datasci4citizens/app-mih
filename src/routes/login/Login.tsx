@@ -4,7 +4,7 @@ import toothLogo from "@/assets/Icon.svg"
 const LoginPage = () => {
 
     function login() {
-        window.location.href = `${import.meta.env.VITE_SERVER_URL}auth/login/google`
+        window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/login/google`
     }
 
 
