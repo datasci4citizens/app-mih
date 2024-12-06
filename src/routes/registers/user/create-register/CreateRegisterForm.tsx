@@ -150,7 +150,7 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/${patient_id}/mih`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/${patient_id}/mih/`, sendRequest)
 
     const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/images/`, sendPhotoRequest)
 
@@ -267,7 +267,7 @@ export default function CreateRegister() {
 
         if (result && !error) {
             setSubmitting(false);
-            navigate(`/ user / home / `); // Redireciona para a home
+            navigate(`/user/home/`); // Redireciona para a home
         } else {
             setSubmitting(false);
             console.error('Erro ao enviar dados:', error);
