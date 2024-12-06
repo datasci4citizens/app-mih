@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useForm } from 'react-hook-form'
 
-import { format } from 'date-fns'
+import { format, isAfter, isBefore, startOfDay } from 'date-fns'
 import { cn } from '@/lib/utils'
 
 import { Button } from "@/components/ui/button"
@@ -41,6 +41,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Checkbox } from '@/components/ui/checkbox'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
 import { useState } from 'react'
+import DatePicker from '@/components/ui/date-picker'
 
 
 const deliveryProblems = [
@@ -213,43 +214,24 @@ export default function PatientForm() {
                                                 </FormItem>
                                             )}
                                         />
-                                        <FormField control={form.control} name="birthday"
+                                        <FormField
+                                            control={form.control}
+                                            name="birthday"
                                             render={({ field }) => (
-                                                <FormItem className='text-center'>
-                                                    <FormLabel className='font-bold'>Data de Nascimento da criança*</FormLabel>
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <FormControl>
-                                                                <Button
-                                                                    variant={"outline"}
-                                                                    className={cn(
-                                                                        "w-[240px] pl-3 text-left font-normal",
-                                                                        !field.value && "text-muted-foreground"
-                                                                    )}
-                                                                >
-                                                                    {field.value ? (
-                                                                        format(field.value, "dd/MM/yyyy")
-                                                                    ) : (
-                                                                        <span>Selecione uma data</span>
-                                                                    )}
-                                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                                </Button>
-                                                            </FormControl>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-auto p-0" align="start">
-                                                            <Calendar
-                                                                mode="single"
-                                                                selected={field.value ? new Date(field.value) : undefined} // Garante que seja um Date
-                                                                onSelect={(date) => field.onChange(date)} // Garante que o valor selecionado seja uma data válida
-                                                                disabled={(date) =>
-                                                                    date > new Date() || date < new Date("1900-01-01")
-                                                                }
-                                                                initialFocus
-                                                            />
-                                                        </PopoverContent>
-                                                    </Popover>
+                                                <FormItem>
+                                                    <FormLabel>Data de nascimento*</FormLabel>
+                                                    <DatePicker
+                                                        field={field}
+                                                        disabled={(date) => {
+                                                            const today = startOfDay(new Date());
+                                                            return (isBefore(date, new Date("1900-01-01")) || isAfter(date, today));
+                                                            // isAfter(date, subYears(today, 18))
+                                                        }}
+                                                    />
+                                                    <FormMessage />
                                                 </FormItem>
-                                            )} />
+                                            )}
+                                        />
                                         <FormField
                                             control={form.control}
                                             name="brothers"
