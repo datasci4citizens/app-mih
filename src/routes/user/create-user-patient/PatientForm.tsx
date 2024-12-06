@@ -181,7 +181,7 @@ export default function PatientForm() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <div className='flex flex-col min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10'>
+            <div className='flex flex-col min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10 mb-20'>
 
                 <div className="flex w-[100%] justify-start items-center px-[30px] mt-2">
 
@@ -196,7 +196,7 @@ export default function PatientForm() {
                     </CardHeader>
                     <CardContent className='flex flex-col items-center justify-center'>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 mb-20">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                                 <Card className='border-none shadow-lg '>
                                     <CardContent className='space-y-3 p-4'>
 
