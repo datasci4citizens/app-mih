@@ -15,7 +15,7 @@ export function SpecialistGuard() {
                 <div className="flex flex-col justify-between items-center h-[60%]">
                     <h1 className="text-4xl font-bold text-white text-start">Ops! <br /> Parece que você ainda não tem permissão para acessar a área de especialista </h1>
 
-                    <Link to="/specialist/home">
+                    <Link to="/login">
                         <Button variant={"secondary"} className="text-2xl text-primary">
                             Retornar
                         </Button>
