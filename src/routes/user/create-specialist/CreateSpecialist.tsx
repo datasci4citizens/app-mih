@@ -43,6 +43,8 @@ async function sendRequest(url: string, { arg }: {
 }) {
     console.log('=== sending request to ===')
     console.log(url)
+    console.log('=== request arg ===')
+    console.log(arg)
     return await fetch(url, {
         method: 'PUT',
         headers: {
@@ -72,6 +74,7 @@ export default function CreateSpecialist() {
         console.log(values)
 
         const newValue = { ...values, is_allowed: false, role: "specialist" }
+        console.log(newValue)
         const result = await trigger(newValue)
 
         console.log(error)

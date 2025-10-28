@@ -1,7 +1,7 @@
 import GoogleButton from 'react-google-button';
 import toothLogo from "@/assets/Icon.svg";
 import { useGoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import apiClient from '@/lib/axios';
+import apiClient from "@/lib/axios";
 import { useNavigate } from 'react-router-dom';
 
 const GoogleLoginButton = () => {
