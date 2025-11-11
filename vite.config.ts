@@ -10,4 +10,13 @@ export default defineConfig({
 			'@': path.resolve(__dirname, './src'),
 		},
 	},
+	// server: {
+	// 	proxy: {
+	// 		'/api': {
+	// 			target: 'https://unretiring-terri-unfunded.ngrok-free.dev',
+	// 			changeOrigin: true,
+	// 			rewrite: (path) => path.replace(/^\/api/, ''),
+	// 		},
+	// 	},
+	// },
 });

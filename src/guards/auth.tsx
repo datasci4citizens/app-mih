@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { LogoutButton } from "@/components/ui/logout-button";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { UserContextProvider } from "@/lib/hooks/use-user";
 import { Navigate, Outlet } from "react-router-dom";
@@ -17,15 +18,19 @@ export function AuthGuard() {
             </div>
         )
 
-    console.log('guard data', data)
+    console.log("auth guard data:", data)
+    console.log("auth guard typeof data:", typeof data)
 
     if (error)
         return <ErrorPage type="login"></ErrorPage>
 
-    if (!data || data.detail)
+    if (!data || data.detail || typeof data === 'string') {
+        console.log("AuthGuard: Navigating to /login due to invalid data or HTML response.")
         return <Navigate to='/login' />
+    }
 
     return <UserContextProvider value={{ ...data }}>
+        <LogoutButton />
         <Outlet />
     </UserContextProvider>
 }

@@ -18,6 +18,7 @@ import { NoRoleGuard } from './guards/norole';
 import { ChoseRoleGuard } from './guards/choserole';
 import { SpecialistGuard } from './guards/specialist';
 import { UserGuard } from './guards/user';
+import apiClient from './lib/axios';
 
 const router = createBrowserRouter([
   {
@@ -118,7 +119,7 @@ const router = createBrowserRouter([
 export function App() {
   return (
     <SWRConfig value={{
-      fetcher: (url, args) => fetch(`${import.meta.env.VITE_SERVER_URL}${url}`, { credentials: 'include', ...args }).then(res => res.json())
+      fetcher: (url) => apiClient.get(url).then(res => res.data)
     }}>
       <RouterProvider router={router} />
     </SWRConfig>
