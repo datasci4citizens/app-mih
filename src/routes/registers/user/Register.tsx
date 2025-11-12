@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User2Icon } from "lucide-react";
 import { useRegistersContext } from "./RegistersControl";
+import { MinioImage } from "@/components/ui/minio-image";
 
 export default function Register() {
 
@@ -71,7 +72,7 @@ export default function Register() {
                                             return (
                                                 <CarouselItem key={index} className="min-h-[200px] flex items-center justify-center">
                                                     <div className="p-1">
-                                                        <img src={`https://${import.meta.env.VITE_MINIO_DOMAIN}/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${register[photoKey]}.jpg`} />
+                                                        <MinioImage className="max-h-96 object-contain" path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${register[photoKey]}.jpg`} />
                                                     </div>
                                                 </CarouselItem>
                                             )
