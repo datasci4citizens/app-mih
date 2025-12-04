@@ -131,9 +131,9 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`/${patient_id}/mih/`, sendRequest)
+    const { trigger } = useSWRMutation(`/${patient_id}/mih/`, sendRequest)
 
-    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto } = useSWRMutation(`/images/`, sendPhotoRequest)
 
     const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
@@ -190,38 +190,43 @@ function next() {
     }
 
     async function submitImage(file: any) {
+        try {
+            const result = await triggerPhoto({ extension: "jpg" })
 
-        const result = await triggerPhoto({ extension: "jpg" })
+            const url = result.upload_url;
 
-        const url = result.upload_url;
+            await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "image/jpeg",
+                },
+                body: file,
+            });
 
-        await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "image/jpeg",
-            },
-            body: file,
-        }).then(r => {
-
-        }).catch(err => {
-
-        })
-
-        return result.image_id;
-
+            return result.image_id;
+        } catch (err) {
+            console.error("Error uploading image:", err);
+            throw err; // Re-throw the error so the calling function can handle it
+        }
     }
 
     async function submit() {
 
         setSubmitting(true);
+        let id1, id2, id3;
 
-        const id1 = await submitImage(sendData.photo1);
-        const id2 = await submitImage(sendData.photo2);
-        const id3 = await submitImage(sendData.photo3);
+        try {
+            id1 = await submitImage(sendData.photo1);
+            id2 = await submitImage(sendData.photo2);
+            id3 = await submitImage(sendData.photo3);
+        } catch (photoUploadError) {
+            console.error("Failed to upload one or more photos:", photoUploadError);
+            setSubmitting(false);
+            // Optionally, show a user-friendly error message
+            return;
+        }
 
-        if (errorPhoto)
-
-        let arg: SendData = {
+        const arg: SendData = {
             "photo_id1": id1,
             "photo_id2": id2,
             "photo_id3": id3,
@@ -235,20 +240,15 @@ function next() {
             "diagnosis": null
         }
 
-        const result = await trigger(arg)
-
-        if (error) {
-            return <ErrorPage type="user"></ErrorPage>
-        }
-
-        if (result && !error) {
+        try {
+            await trigger(arg);
             setSubmitting(false);
-            navigate(`/user/home/`); // Redireciona para a home
-        } else {
+            navigate(`/user/home/`);
+        } catch (submitError) {
             setSubmitting(false);
-            console.error('Erro ao enviar dados:', error);
+            console.error('Erro ao enviar dados:', submitError);
+            // Optionally, show a user-friendly error message
         }
-
     }
 
     if (!sendData.patient) {

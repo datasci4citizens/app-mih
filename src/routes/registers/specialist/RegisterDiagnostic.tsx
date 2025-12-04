@@ -58,7 +58,7 @@ export default function RegisterDiagnostic() {
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    function onSubmit(_values: z.infer<typeof formSchema>) {
         submitRegister();
     }
 

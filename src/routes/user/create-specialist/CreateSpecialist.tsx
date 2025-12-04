@@ -40,7 +40,7 @@ async function sendRequest(
 }
 
 export default function CreateSpecialist() {
-	const { trigger, data, error, isMutating } = useSwrMutation(
+	const { trigger, error, isMutating } = useSwrMutation(
 		`${import.meta.env.VITE_SERVER_URL}/users/`,
 		sendRequest,
 	);

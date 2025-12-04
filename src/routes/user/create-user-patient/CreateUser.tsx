@@ -68,7 +68,7 @@ async function sendRequest(url: string, { arg }: {
 }
 
 export default function CreateUser() {
-	const { trigger, data, error } = useSwrMutation(
+	const { trigger, error } = useSwrMutation(
 		`${import.meta.env.VITE_SERVER_URL}/users/`,
 		sendRequest,
 	);

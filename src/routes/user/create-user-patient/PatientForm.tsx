@@ -91,7 +91,7 @@ async function sendRequest(url: string, { arg }: { arg: any }) {
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/users/patients/`, sendRequest)
+    const { trigger, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/users/patients/`, sendRequest)
     const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
 
