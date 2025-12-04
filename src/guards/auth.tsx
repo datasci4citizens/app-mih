@@ -6,10 +6,12 @@ import { Navigate, Outlet } from "react-router-dom";
 import useSWR from "swr";
 
 export function AuthGuard() {
-
-    console.log("auth guard")
+    console.log("AuthGuard: Component mounted and rendering.");
 
     const { data, error, isLoading } = useSWR('/user/me')
+
+    console.log("AuthGuard SWR State:", { data, error, isLoading });
+
 
     if (isLoading)
         return (
