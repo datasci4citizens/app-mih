@@ -12,12 +12,10 @@ const GoogleLoginButton = () => {
 
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
-			console.log('response:', codeResponse);
 			try {
-				const response = await apiClient.post('/auth/login/google', {
+				await apiClient.post('/auth/login/google', {
 					code: codeResponse.code,
 				});
-				console.log('Usuário logado:', response.data);
 
 				navigate('/');
 			} catch (error) {
@@ -39,14 +37,11 @@ const nativeGoogleLogin = async (navigate: (path: string) => void) => {
 				scopes: ['email', 'profile'],
 			},
 		});
-		console.log('Native Google Login Result:', JSON.stringify(login));
 
 		const result = login.result;
-		console.log('result ', result);
-		const response = await apiClient.post('/auth/login/google/native', {
+		await apiClient.post('/auth/login/google/native', {
 			code: (result as any).accessToken.token,
 		});
-		console.log('Usuário logado nativamente:', response.data);
 		navigate('/');
 	} catch (error) {
 		console.error('Error during native Google login:', error);
