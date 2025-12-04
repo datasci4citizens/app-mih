@@ -12,8 +12,9 @@ const GoogleLoginButton = () => {
 
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
+			console.log("GOOGLE RESPONDEU")
 			try {
-				await apiClient.post('/auth/login/google', {
+				await apiClient.post('/auth/login/google/', {
 					code: codeResponse.code,
 				});
 
