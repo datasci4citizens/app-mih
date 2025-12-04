@@ -37,8 +37,6 @@ const formSchema = z.object({
 
 
 }).superRefine((values, ctx) => {
-    console.log(values.toothache)
-    console.log(values.painLevel)
     if (values.toothache && values.painLevel === 0) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -73,7 +71,6 @@ export default function FinishRegisterNew() {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
         next()
     }
 

@@ -98,8 +98,6 @@ async function sendRequest(url: string, { arg }: {
         consultType: "public" | "private" | "";
     }
 }) {
-    console.log('=== sending request to ===')
-    console.log(url)
     return await fetch(url, {
         method: 'POST',
         headers: {
@@ -136,8 +134,6 @@ export default function PatientForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setSubmitting(true)
-        console.log('=== new values ===')
-        console.log(values)
 
         const newValue = {
             name: values.name,
@@ -157,7 +153,6 @@ export default function PatientForm() {
             return <ErrorPage type="user"></ErrorPage>
         }
 
-        console.log(data);
         if (result && !error) {
             setSubmitting(false)
             navigate(`/user/registers/create-register/${result.patient_id}/first_time`);
@@ -165,8 +160,6 @@ export default function PatientForm() {
             setSubmitting(false)
             console.error('Erro ao enviar dados:', error);
         }
-        console.log('=== result ===')
-        console.log(result)
     }
 
     return (
@@ -385,7 +378,6 @@ export default function PatientForm() {
                                                                     } else {
                                                                         form.setValue("deliveryType", "normal");
                                                                     }
-                                                                    console.log(form.watch("deliveryType"))
                                                                 }} />
                                                         </FormControl>
                                                         <FormDescription>Normal</FormDescription>

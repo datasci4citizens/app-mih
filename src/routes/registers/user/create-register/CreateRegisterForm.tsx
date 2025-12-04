@@ -88,9 +88,6 @@ const FormContext = createContext<FormContextType | undefined>(undefined);
 async function sendRequest(url: string, { arg }: {
     arg: SendData;
 }) {
-    console.log('=== sending request to ===')
-    console.log(url)
-    console.log(arg)
     return await fetch(url, {
         method: 'POST',
         headers: {
@@ -104,9 +101,6 @@ async function sendRequest(url: string, { arg }: {
 async function sendPhotoRequest(url: string, { arg }: {
     arg: { extension: string };
 }) {
-    console.log('=== sending request to ===')
-    console.log(url)
-    console.log(arg)
     return await fetch(url, {
         method: 'POST',
         headers: {
@@ -223,9 +217,8 @@ export default function CreateRegister() {
             body: file,
         }).then(r => {
 
-            console.log(r.blob())
         }).catch(err => {
-            console.log(err);
+
         })
 
         return result.image_id;
@@ -241,7 +234,6 @@ export default function CreateRegister() {
         const id3 = await submitImage(sendData.photo3);
 
         if (errorPhoto)
-            console.log(errorPhoto);
 
         let arg: SendData = {
             "photo_id1": id1,
@@ -257,8 +249,6 @@ export default function CreateRegister() {
             "diagnosis": null
         }
 
-        console.log(arg)
-
         const result = await trigger(arg)
 
         if (error) {
@@ -273,7 +263,6 @@ export default function CreateRegister() {
             console.error('Erro ao enviar dados:', error);
         }
 
-        console.log(data)
     }
 
     if (!sendData.patient) {

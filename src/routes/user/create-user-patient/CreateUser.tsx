@@ -57,8 +57,6 @@ async function sendRequest(url: string, { arg }: {
 }) {
 
 
-    console.log('=== sending request to ===')
-    console.log(url)
     return await fetch(url, {
         method: 'PUT',
         headers: {
@@ -89,20 +87,13 @@ export default function CreateUser() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setSubmitting(true)
-        console.log('=== new values ===')
-        console.log(values)
         const newValues = { ...values, role: "responsible" }
-        console.log(newValues)
         const result = await trigger(newValues)
 
         if (error) {
             return <ErrorPage type="user"></ErrorPage>
         }
 
-        console.log('=== result ===')
-        console.log(result)
-        console.log(data)
-        console.log(error);
         if (result && !error) {
             await mutate("/user/me", undefined, { revalidate: true })
             setSubmitting(false)

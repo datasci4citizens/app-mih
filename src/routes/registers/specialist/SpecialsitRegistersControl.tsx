@@ -40,8 +40,6 @@ const SpecialistRegistersContext = createContext<RegistersContextType | undefine
 async function sendRequest(url: string, { arg }: {
     arg: { diagnosis: string, specialistObservations: string }
 }) {
-    console.log('=== sending request to ===')
-    console.log(url)
     return await fetch(url, {
         method: 'PATCH',
         headers: {
@@ -75,8 +73,6 @@ export default function SpecialistRegistersControl() {
         return <SkeletonLoading />
 
     }
-
-    console.log(data)
 
     function selectRegister(registerId: string) {
 

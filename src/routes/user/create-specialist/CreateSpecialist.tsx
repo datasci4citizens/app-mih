@@ -41,8 +41,6 @@ async function sendRequest(url: string, { arg }: {
         phone_number: string;
     }
 }) {
-    console.log('=== sending request to ===')
-    console.log(url)
     return await fetch(url, {
         method: 'PUT',
         headers: {
@@ -68,20 +66,12 @@ export default function CreateSpecialist() {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log('=== new values ===')
-        console.log(values)
-
         const newValue = { ...values, is_allowed: false, role: "specialist" }
         const result = await trigger(newValue)
 
-        console.log(error)
         if (error) {
             return <ErrorPage type="user"></ErrorPage>
         }
-        console.log('=== result ===')
-        console.log(result)
-        console.log(data)
-        console.log(error)
         if (!isMutating) {
             if (result && !error) {
                 await mutate("/user/me", undefined, { revalidate: true })

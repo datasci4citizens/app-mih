@@ -19,8 +19,6 @@ export function AuthGuard() {
 
         )
 
-    console.log(data)
-
     if (error)
         return <ErrorPage type="login"></ErrorPage>
 
