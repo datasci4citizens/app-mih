@@ -12,9 +12,8 @@ const GoogleLoginButton = () => {
 
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
-			console.log("GOOGLE RESPONDEU")
 			try {
-				await apiClient.post('/auth/login/google/', {
+				await apiClient.post('/auth/login/google', {
 					code: codeResponse.code,
 				});
 
@@ -62,6 +61,10 @@ const NativeGoogleLoginButton = () => {
 const LoginPage = () => {
 	useEffect(() => {
 		const initializeSocialLogin = async () => {
+			if (!Capacitor.isNativePlatform()) {
+				console.log("Rodando na Web: Pulando inicialização nativa.");
+				return; 
+			}
 			console.log('initializing social login online please');
 			await SocialLogin.initialize({
 				google: {

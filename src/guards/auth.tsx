@@ -7,6 +7,8 @@ import useSWR from "swr";
 
 export function AuthGuard() {
 
+    console.log("auth guard")
+
     const { data, error, isLoading } = useSWR('/user/me')
 
     if (isLoading)
@@ -18,8 +20,12 @@ export function AuthGuard() {
             </div>
         )
 
-    if (error)
+    console.log("depois user/me")
+
+    if (error) {
+        console.log("error auth guard")
         return <ErrorPage type="login"></ErrorPage>
+    }
 
     if (!data || data.detail || typeof data === 'string') {
         console.log("AuthGuard: Navigating to /login due to invalid data or HTML response.")
