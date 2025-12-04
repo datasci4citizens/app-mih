@@ -13,7 +13,7 @@ const GoogleLoginButton = () => {
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
 			try {
-				const response = await apiClient.post('/auth/login/google', {
+				await apiClient.post('/auth/login/google', {
 					code: codeResponse.code,
 				});
 
@@ -39,7 +39,7 @@ const nativeGoogleLogin = async (navigate: (path: string) => void) => {
 		});
 
 		const result = login.result;
-		const response = await apiClient.post('/auth/login/google/native', {
+		await apiClient.post('/auth/login/google/native', {
 			code: (result as any).accessToken.token,
 		});
 		navigate('/');
