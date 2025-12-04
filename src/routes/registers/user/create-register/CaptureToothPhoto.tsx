@@ -12,25 +12,39 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 
-    const [photo, setPhoto] = useState<any | undefined>(undefined);
+    const [photo, setPhoto] = useState<File | undefined>(undefined);
+    const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
 
-    const handleCapture = (event: any) => {
-        const file = event.target.files[0];
+
+    const handleCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
 
         if (file) {
             setPhoto(file);
             updateFields({ [`photo${photoStep}`]: file });
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
     useEffect(() => {
-
         const photoKey = `photo${photoStep}` as 'photo1' | 'photo2' | 'photo3';
+        const existingPhoto = sendData[photoKey];
 
-        if (sendData[photoKey] && !photo)
-            setPhoto(sendData[photoKey])
+        if (existingPhoto && existingPhoto instanceof File && !previewUrl) {
+            setPhoto(existingPhoto);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(existingPhoto);
+        }
+    }, [sendData, photoStep, previewUrl]);
 
-    });
 
     const handleButtonClick = () => {
 
@@ -59,7 +73,7 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
             </CardHeader>
 
             {
-                photo &&
+                previewUrl &&
                 <Accordion type="single" collapsible className="w-full flex flex-col justify-center">
 
                     <AccordionItem value="captureItem">
@@ -68,7 +82,7 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
                         </AccordionTrigger>
 
                         <AccordionContent className="flex flex-col items-center justify-center">
-                            <img src={URL.createObjectURL(photo)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
+                            <img src={previewUrl} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
 
                         </AccordionContent>
 
