@@ -35,6 +35,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
 import { useState } from 'react'
 import DatePicker from '@/components/ui/date-picker'
+import apiClient from '@/lib/axios'
 
 
 const deliveryProblems = [
@@ -84,28 +85,8 @@ const formSchema = z.object({
     }
 });
 
-async function sendRequest(url: string, { arg }: {
-    arg: {
-        name: string;
-        birthday: Date;
-        highFever: boolean;
-        premature: boolean;
-        deliveryProblems: boolean;
-        deliveryProblemsTypes: string;
-        lowWeight: boolean;
-        deliveryType: "cesarean" | "normal";
-        brothersNumber: number;
-        consultType: "public" | "private" | "";
-    }
-}) {
-    return await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: "include",
-        body: JSON.stringify(arg)
-    }).then(res => res.json())
+async function sendRequest(url: string, { arg }: { arg: any }) {
+    return await apiClient.post(url, arg)
 }
 
 export default function PatientForm() {
@@ -155,7 +136,7 @@ export default function PatientForm() {
 
         if (result && !error) {
             setSubmitting(false)
-            navigate(`/user/registers/create-register/${result.patient_id}/first_time`);
+            navigate(`/user/registers/create-register/${result.data.patient_id}/first_time`);
         } else {
             setSubmitting(false)
             console.error('Erro ao enviar dados:', error);

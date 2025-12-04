@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import CaptureOne from "./CaptureOne"
 import CaptureTwo from "./CaptureTwo"
 import ErrorPage from "@/lib/components_utils/ErrorPage"
+import apiClient from "@/lib/axios"
 
 type PatientsData = {
     name: string,
@@ -88,27 +89,13 @@ const FormContext = createContext<FormContextType | undefined>(undefined);
 async function sendRequest(url: string, { arg }: {
     arg: SendData;
 }) {
-    return await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: "include",
-        body: JSON.stringify(arg)
-    }).then(res => res.json())
+    return apiClient.post(url, arg).then(res => res.data)
 }
 
 async function sendPhotoRequest(url: string, { arg }: {
     arg: { extension: string };
 }) {
-    return await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: "include",
-        body: JSON.stringify(arg)
-    }).then(res => res.json())
+    return apiClient.post(url, arg).then(res => res.data)
 }
 
 function IsLoading() {
@@ -144,9 +131,9 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/${patient_id}/mih/`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`/${patient_id}/mih/`, sendRequest)
 
-    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/images/`, sendPhotoRequest)
 
     const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
 
@@ -172,7 +159,7 @@ export default function CreateRegister() {
 
     }
 
-    function next() {
+function next() {
 
         setCurrentStepIndex(i => {
 
@@ -213,7 +200,6 @@ export default function CreateRegister() {
             headers: {
                 "Content-Type": "image/jpeg",
             },
-            credentials: "include",
             body: file,
         }).then(r => {
 
