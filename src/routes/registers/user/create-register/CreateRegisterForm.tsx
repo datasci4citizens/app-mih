@@ -159,7 +159,7 @@ export default function CreateRegister() {
 
     }
 
-function next() {
+    function next() {
 
         setCurrentStepIndex(i => {
 

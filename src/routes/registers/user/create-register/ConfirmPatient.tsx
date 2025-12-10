@@ -18,7 +18,7 @@ export default function ConfirmPatient() {
 
             <div className="flex flex-col items-center justify-center pt-[30px] rounded-t-3xl -mt-16 bg-white">
 
-                <div className="flex w-[100%] justify-between items-center px-[30px] mt-2 mb-10">
+                <div className="flex w-[100%] justify-between items-center px-[30px] mt-2">
 
                     <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to={`/user/home`}>
@@ -36,7 +36,7 @@ export default function ConfirmPatient() {
                 <Card className="shadow-none border-none">
                     <CardHeader className="text-center">
                         <CardTitle>
-                            Você deseja criar agora um resgitro para a criança abaixo ?
+                            Você deseja criar agora um registro para a criança abaixo ?
                         </CardTitle>
                     </CardHeader>
 

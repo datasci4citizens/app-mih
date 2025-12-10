@@ -52,22 +52,22 @@ export default function HmiInformations() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <Card className="flex flex-col border-none shadow-none items-center p-[30px] justify-start rounded-t-3xl -mt-16 bg-white">
+            <Card className="flex flex-col border-none shadow-none items-center p-[30px] pt-0 justify-start rounded-t-3xl -mt-16 bg-white">
 
-                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
+                <div className="relative flex w-full items-center justify-center mt-3">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                    <Button size={"icon"} className="absolute left-0 top-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to="/user/home">
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <User2Icon color="black" />
-                    </Button>
-                </div>
+                    <CardHeader className="w-full mb-5 text-3xl font-semi-bold text-center">Informações sobre <b>HMI</b></CardHeader>
 
-                <CardHeader className="w-full mb-5 text-3xl font-semi-bold text-center">Informações sobre <b>HMI</b></CardHeader>
+                    {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <User2Icon color="black" />
+                    </Button> */}
+                </div>
 
                 <div className="mb-2 flex gap-2 text-center text-sm text-muted-foreground max-w-[80%]">
                     {

@@ -85,18 +85,20 @@ export default function FinishRegisterNew() {
 
             <div className='flex flex-col items-start justify-center pt-[30px] rounded-t-3xl -mt-16 bg-white'>
 
-                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
+                <div className="relative flex w-full items-center justify-center px-[30px] mt-2">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
+                    <Button size={"icon"} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
                         <ArrowLeft color="black" />
                     </Button>
+
+                    <h1 className="text-2xl font-extrabold">Terminar seu registro</h1>
                 </div>
 
                 <Card className='w-[100%] border-none'>
-                    <CardHeader>
+                    {/* <CardHeader>
                         <CardTitle className='text-center font-extrabold mb-10'>Terminar seu registro</CardTitle>
-                    </CardHeader>
-                    <CardContent className='flex flex-col items-center justify-center'>
+                    </CardHeader> */}
+                    <CardContent className='flex flex-col items-center justify-center mt-10'>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <FormField

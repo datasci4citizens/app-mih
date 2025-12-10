@@ -221,7 +221,7 @@ export default function CreateUser() {
 								)}
 							/>
 
-							<Button className="w-[100%]" type="submit" disabled={submitting}>
+							<Button className="w-[100%] hover:scale-1" type="submit" disabled={submitting}>
 								Próximo
 							</Button>
 						</form>

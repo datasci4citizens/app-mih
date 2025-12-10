@@ -28,9 +28,9 @@ export default function PatientRegisters() {
                 <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
                 <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
-                    <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
+                    <div className="relative flex w-full items-center justify-center mt-2">
 
-                        <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <Button size={"icon"} onClick={back} className="absolute left-0 bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
 
                             <ArrowLeft color="black" />
 
@@ -38,9 +38,9 @@ export default function PatientRegisters() {
 
                         <h1 className="text-3xl font-bold">Registros</h1>
 
-                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                             <User2Icon color="black" />
-                        </Button>
+                        </Button> */}
                     </div>
                     {data.mih?.map((value: any, i: number) => {
                         return (<Card className="w-[100%] p-0" key={value.mih_id}>

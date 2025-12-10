@@ -156,21 +156,23 @@ export default function PatientForm() {
 
             <div className='flex flex-col min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10 mb-20'>
 
-                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2">
+                <div className="relative flex w-full items-center justify-center px-[30px] mt-2 mb-10">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " disabled={submitting} onClick={() => navigate("/user/home")}>
+                    <Button size={"icon"} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " disabled={submitting} onClick={() => navigate("/user/home")}>
                         <ArrowLeft color="black" />
                     </Button>
+
+                    <h1 className="text-2xl font-extrabold">Cadastro da criança</h1>
                 </div>
 
                 <Card className='w-full border-none'>
-                    <CardHeader>
+                    {/* <CardHeader>
                         <CardTitle className='text-center font-extrabold'>Cadastro da criança</CardTitle>
-                    </CardHeader>
+                    </CardHeader> */}
                     <CardContent className='flex flex-col items-center justify-center'>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                                <Card className='border-none shadow-lg '>
+                                <Card className='border-none shadow-lg' hoverScale={true}>
                                     <CardContent className='space-y-3 p-4'>
 
                                         <FormField
@@ -246,7 +248,7 @@ export default function PatientForm() {
                                         )}
                                     </CardContent>
                                 </Card>
-                                <Card className='border-none shadow-lg '>
+                                <Card className='border-none shadow-lg' hoverScale={true}>
                                     <CardContent className='space-y-3 p-4'>
                                         <FormField
                                             control={form.control}
@@ -397,7 +399,7 @@ export default function PatientForm() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className='border-none shadow-lg '>
+                                <Card className='border-none shadow-lg' hoverScale={true}>
                                     <CardContent className='space-y-3 p-4'>
 
                                         <FormField

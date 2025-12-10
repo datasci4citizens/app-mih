@@ -20,14 +20,14 @@ export default function RegisterSumary() {
 
             <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10 mb-20">
 
-                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
-
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70" disabled={submitting} onClick={back}>
+                <div className="relative flex w-full items-center justify-center px-[30px] mt-2 mb-5">
+                    <Button size={"icon"} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70" disabled={submitting} onClick={back}>
                         <ArrowLeft color="black" />
                     </Button>
-                </div>
-                <h1 className="font-bold text-4xl">Sumário</h1>
 
+                    <h1 className="font-bold text-4xl">Sumário</h1>
+                </div>
+                
                 <div className="w-full px-[30px] space-y-4">
                     <Card className="w-full">
                         <CardHeader className="flex flex-row items-center justify-center">

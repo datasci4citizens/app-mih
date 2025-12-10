@@ -1,12 +1,17 @@
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes, forwardRef } from 'react';
 
-const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-	({ className, ...props }, ref) => (
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+	hoverScale?: boolean;
+}
+
+const Card = forwardRef<HTMLDivElement, CardProps>(
+	({ className, hoverScale, ...props }, ref) => (
 		<div
 			ref={ref}
 			className={cn(
 				'rounded-lg border bg-card text-card-foreground shadow-sm',
+				hoverScale && 'hover:scale-[1.02] transition-transform duration-100',
 				className,
 			)}
 			{...props}
@@ -49,6 +54,7 @@ const CardDescription = forwardRef<
 		ref={ref}
 		className={cn('text-muted-foreground text-sm', className)}
 		{...props}
+		
 	/>
 ));
 CardDescription.displayName = 'CardDescription';

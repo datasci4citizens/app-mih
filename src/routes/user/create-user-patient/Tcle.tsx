@@ -37,7 +37,7 @@ export default function TCLE() {
                         </CardDescription>
 
                         <Button className="mt-4">
-                            Acessar o TCLE compelto
+                            Acessar o TCLE completo
                         </Button>
                         <Link to="/user/create">
                             <Button className="mt-2">

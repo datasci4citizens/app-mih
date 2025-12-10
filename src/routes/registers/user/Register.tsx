@@ -39,9 +39,9 @@ export default function Register() {
             <div className=" items-center justify-between pt-[30px] rounded-t-3xl -mt-16 bg-white">
 
                 <div className="w-[100%] mt-2">
-                    <div className="flex w-[100%] justify-between items-center px-[30px] mb-10">
+                    <div className="relative flex w-full items-center justify-center px-[30px]">
 
-                        <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <Button size={"icon"} onClick={back} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
 
                             <ArrowLeft color="black" />
 
@@ -49,9 +49,9 @@ export default function Register() {
 
                         <h1 className="text-3xl font-bold">Registro</h1>
 
-                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                             <User2Icon color="black" />
-                        </Button>
+                        </Button> */}
                     </div>
 
                     <Card className="w-[100%] p-[20px] border-none shadow-none">

@@ -16,9 +16,9 @@ export default function Patients() {
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
             <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
-                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
+                <div className="relative flex w-full items-center justify-center mt-2">
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                    <Button size={"icon"} className="absolute left-0 bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <Link to={`/user/home`}>
                             <ArrowLeft color="black" />
                         </Link>
@@ -26,9 +26,9 @@ export default function Patients() {
 
                     <h1 className="text-3xl font-bold">Crianças</h1>
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                    {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
                         <User2Icon color="black" />
-                    </Button>
+                    </Butth1on> */}
                 </div>
                 {patientsData?.map((patient) =>
 
@@ -43,7 +43,7 @@ export default function Patients() {
                                     <CardDescription>Data de nascimento: {new Date(patient.birthday).toLocaleDateString('pt-BR')}</CardDescription>
                                 </div>
 
-                                <Button className="gap-2 w-full rounded-t-none" onClick={() => selectPatient(String(patient.patient_id))}>
+                                <Button className="gap-2 w-full hover:scale-1 rounded-t-none" onClick={() => selectPatient(String(patient.patient_id))}>
                                     <h1>Registros</h1>
                                     <BookPlus />
                                 </Button>
@@ -54,9 +54,11 @@ export default function Patients() {
 
                         </CardContent>
                     </Card>
-                )
+                )}
 
-                }
+                <Button className="text-center" type="submit">
+                    <Link to={`/user/create/patient`}>Nova Criança</Link>
+                </Button>
 
             </div>
         </div>

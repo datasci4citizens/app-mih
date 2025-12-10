@@ -12,12 +12,16 @@ export default function SelectUserType() {
             <img src={imgTooth}></img>
 
             <div className="flex flex-col gap-2 w-[40%]">
-                <Button className="bg-white hover:bg-white gap-[5px]">
-                    <Link to="/user/create/tcle" className="text-black font-semibold">Sou Paciente</Link>
-                </Button>
-                <Button className="bg-white hover:bg-white gap-[5px]">
-                    <Link to="/specialist/create" className="text-black font-semibold">Sou Dentista</Link>
-                </Button>
+                <Link to="/user/create/tcle" className="w-full">
+                    <Button className="bg-white hover:bg-white gap-[5px] text-black font-semibold w-full">
+                        Sou Paciente
+                    </Button>
+                </Link>
+                <Link to="/specialist/create" className="w-full">
+                    <Button className="bg-white hover:bg-white gap-[5px] text-black font-semibold w-full">
+                        Sou Dentista
+                    </Button>
+                </Link>
             </div>
 
         </div>

@@ -29,15 +29,16 @@ export default function CaptureOne() {
 
             <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10 pb-10">
 
-                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
-
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
+                <div className="relative flex w-full items-center justify-center px-[30px] mt-2">
+                    <Button size={"icon"} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
                         <ArrowLeft color="black" />
                     </Button>
+
+                    <h1 className="font-bold text-xl"> Tutorial para a fotografia</h1>
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-1">
-                    <h1 className="font-bold text-xl"> Tutorial para a fotografia</h1>
+                    
                     <video
                         src={molarVideo}
                         controls
