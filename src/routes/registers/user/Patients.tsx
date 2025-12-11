@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookPlus, User2Icon } from "lucide-react";
+import { ArrowLeft, BookPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRegistersContext } from "./RegistersControl";
 

@@ -10,7 +10,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ArrowLeft, BookPlusIcon, FileQuestion, HeartHandshake, HeartPulse, Hospital, Info, User2Icon } from "lucide-react"
+import { ArrowLeft, BookPlusIcon, FileQuestion, HeartHandshake, HeartPulse, Hospital, Info } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react";
 

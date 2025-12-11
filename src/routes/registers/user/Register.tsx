@@ -22,7 +22,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User2Icon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRegistersContext } from "./RegistersControl";
 import { MinioImage } from "@/components/ui/minio-image";
 
