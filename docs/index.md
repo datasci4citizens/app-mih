@@ -3,7 +3,7 @@ layout: default
 title: Bem-vindo
 ---
 
-# Bem-vindo ao SAÚDE!
+# Bem-vindo ao Molar Check!
 
 {% include_relative README.md %}
 

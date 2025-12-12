@@ -1,3 +1,5 @@
+# Molar Check - Frontend
+
 ## 🦷 Sobre o Projeto
 
 Este é o repositório do **front-end** para o **Molar Check**, um sistema dedicado à identificação da Hipomineralização Molar-Incisivo (HMI).
