@@ -30,7 +30,7 @@ const WebLogin = () => {
 		onSuccess: async (codeResponse) => {
 			//console.log('response:', codeResponse);
 			try {
-				const response = await apiClient.post('/auth/login/google', {
+				await apiClient.post('/auth/login/google', {
 					code: codeResponse.code,
 				});
 				//console.log('Usuário logado:', response.data);
@@ -67,7 +67,7 @@ const NativeLogin = () => {
 
 			const result = login.result;
 			//console.log('result ', result);
-			const response = await apiClient.post('/auth/login/google/native', {
+			await apiClient.post('/auth/login/google/native', {
 				code: (result as any).accessToken.token,
 			});
 			//console.log('Usuário logado nativamente:', response.data);

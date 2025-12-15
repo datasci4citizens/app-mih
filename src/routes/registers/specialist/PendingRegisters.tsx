@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Eye, User2Icon } from "lucide-react";
+import { ArrowLeft, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
 import useSWR from "swr";

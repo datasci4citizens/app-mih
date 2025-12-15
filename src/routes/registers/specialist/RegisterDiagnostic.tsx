@@ -29,7 +29,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, User2Icon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
 import useSWR from "swr";
 import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
