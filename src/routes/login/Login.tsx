@@ -28,12 +28,12 @@ const WebLogin = () => {
 	const navigate = useNavigate();
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
-			console.log('response:', codeResponse);
+			//console.log('response:', codeResponse);
 			try {
 				const response = await apiClient.post('/auth/login/google', {
 					code: codeResponse.code,
 				});
-				console.log('Usuário logado:', response.data);
+				//console.log('Usuário logado:', response.data);
 				navigate('/');
 			} catch (error) {
 				console.error('Erro ao logar:', error);
@@ -63,14 +63,14 @@ const NativeLogin = () => {
 					scopes: ['email', 'profile'],
 				},
 			});
-			console.log('Native Google Login Result:', JSON.stringify(login));
+			//console.log('Native Google Login Result:', JSON.stringify(login));
 
 			const result = login.result;
-			console.log('result ', result);
+			//console.log('result ', result);
 			const response = await apiClient.post('/auth/login/google/native', {
 				code: (result as any).accessToken.token,
 			});
-			console.log('Usuário logado nativamente:', response.data);
+			//console.log('Usuário logado nativamente:', response.data);
 			navigate('/');
 		} catch (error) {
 			console.error('Error during native Google login:', error);

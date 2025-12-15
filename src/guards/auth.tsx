@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogoutButton } from "@/components/ui/logout-button";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { UserContextProvider } from "@/lib/hooks/use-user";
 import { Navigate, Outlet } from "react-router-dom";
@@ -18,8 +17,8 @@ export function AuthGuard() {
             </div>
         )
 
-    console.log("auth guard data:", data)
-    console.log("auth guard typeof data:", typeof data)
+    //console.log("auth guard data:", data)
+    //console.log("auth guard typeof data:", typeof data)
 
     if (error)
         return <ErrorPage type="login"></ErrorPage>
@@ -30,7 +29,6 @@ export function AuthGuard() {
     }
 
     return <UserContextProvider value={{ ...data }}>
-        <LogoutButton />
         <Outlet />
     </UserContextProvider>
 }

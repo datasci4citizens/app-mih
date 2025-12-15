@@ -16,19 +16,16 @@ export default function Patients() {
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
             <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
-                <div className="relative flex w-full items-center justify-center mt-2">
-
-                    <Button size={"icon"} className="absolute left-0 bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                <div className="flex w-full items-center justify-between mt-2">
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0">
                         <Link to={`/user/home`}>
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
 
-                    <h1 className="text-3xl font-bold">Crianças</h1>
+                    <h1 className="text-3xl font-bold text-center mx-2">Crianças</h1>
 
-                    {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <User2Icon color="black" />
-                    </Butth1on> */}
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
                 {patientsData?.map((patient) =>
 

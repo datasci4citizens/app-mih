@@ -52,21 +52,20 @@ export default function HmiInformations() {
 
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
-            <Card className="flex flex-col border-none shadow-none items-center p-[30px] pt-0 justify-start rounded-t-3xl -mt-16 bg-white">
+            <Card className="flex flex-col border-none shadow-none items-center p-[30px] pt-[10px] justify-start rounded-t-3xl -mt-16 bg-white">
 
-                <div className="relative flex w-full items-center justify-center mt-3">
-
-                    <Button size={"icon"} className="absolute left-0 top-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                <div className="flex w-full items-center justify-between mt-5 mb-10">
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0">
                         <Link to="/user/home">
                             <ArrowLeft color="black" />
                         </Link>
                     </Button>
 
-                    <CardHeader className="w-full mb-5 text-3xl font-semi-bold text-center">Informações sobre <b>HMI</b></CardHeader>
+                    <CardHeader className="p-0 text-2xl sm:text-3xl font-semi-bold text-center mx-2">
+                        Informações sobre <b>HMI</b>
+                    </CardHeader>
 
-                    {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <User2Icon color="black" />
-                    </Button> */}
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
 
                 <div className="mb-2 flex gap-2 text-center text-sm text-muted-foreground max-w-[80%]">
@@ -200,8 +199,8 @@ export default function HmiInformations() {
                             </Card>
                         </CarouselItem>
                     </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious className="hidden sm:flex" />
+                    <CarouselNext className="hidden sm:flex" />
                 </Carousel>
 
             </Card >

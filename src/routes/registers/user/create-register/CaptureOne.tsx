@@ -30,14 +30,16 @@ export default function CaptureTwo() {
 
             <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10 pb-10">
 
-                <div className="relative flex w-full items-center justify-center px-[30px] mt-2">
-                    <Link to="/user/home" className="absolute left-[30px]">
-                        <Button size={"icon"} variant={"destructive"}>
+                <div className="flex w-full items-center justify-between px-[30px] mt-2">
+                    <Link to="/user/home">
+                        <Button size={"icon"} variant={"destructive"} className="shrink-0">
                             <X />
                         </Button>
                     </Link>
 
-                    <h1 className="font-bold text-xl"> Tutorial para a fotografia</h1>
+                    <h1 className="font-bold text-xl text-center mx-2"> Tutorial para a fotografia</h1>
+
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-1">

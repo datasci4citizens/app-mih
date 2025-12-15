@@ -85,13 +85,15 @@ export default function FinishRegisterNew() {
 
             <div className='flex flex-col items-start justify-center pt-[30px] rounded-t-3xl -mt-16 bg-white'>
 
-                <div className="relative flex w-full items-center justify-center px-[30px] mt-2">
+                <div className="flex w-full items-center justify-between px-[30px] mt-2">
 
-                    <Button size={"icon"} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0" onClick={back}>
                         <ArrowLeft color="black" />
                     </Button>
 
-                    <h1 className="text-2xl font-extrabold">Terminar seu registro</h1>
+                    <h1 className="text-2xl font-extrabold text-center mx-2">Terminar seu registro</h1>
+
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
 
                 <Card className='w-[100%] border-none'>

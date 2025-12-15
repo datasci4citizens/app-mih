@@ -78,17 +78,15 @@ export default function RegisterDiagnostic() {
 
             <Card className="max-h-screen p-[30px] border-none rounded-t-3xl -mt-16 shadow-none mb-20">
 
-                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
+                <div className="flex w-full items-center justify-between mt-2 mb-10">
 
-                    <Button size={"icon"} onClick={back} disabled={submitting} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                    <Button size={"icon"} onClick={back} disabled={submitting} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0">
                         <ArrowLeft color="black" />
                     </Button>
 
-                    <h1 className="text-3xl font-bold">Avaliações</h1>
+                    <h1 className="text-3xl font-bold text-center mx-2">Avaliações</h1>
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <User2Icon color="black" />
-                    </Button>
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
 
                 <CardContent className="flex flex-col items-center p-[20px] ">

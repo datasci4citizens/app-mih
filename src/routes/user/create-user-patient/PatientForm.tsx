@@ -156,13 +156,14 @@ export default function PatientForm() {
 
             <div className='flex flex-col min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10 mb-20'>
 
-                <div className="relative flex w-full items-center justify-center px-[30px] mt-2 mb-10">
-
-                    <Button size={"icon"} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " disabled={submitting} onClick={() => navigate("/user/home")}>
+                <div className="flex w-full items-center justify-between px-[30px] mt-2 mb-10">
+                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0" disabled={submitting} onClick={() => navigate("/user/home")}>
                         <ArrowLeft color="black" />
                     </Button>
 
-                    <h1 className="text-2xl font-extrabold">Cadastro da criança</h1>
+                    <h1 className="text-2xl font-extrabold text-center">Cadastro da criança</h1>
+
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
 
                 <Card className='w-full border-none'>

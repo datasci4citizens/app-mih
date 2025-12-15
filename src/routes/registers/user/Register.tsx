@@ -39,19 +39,17 @@ export default function Register() {
             <div className=" items-center justify-between pt-[30px] rounded-t-3xl -mt-16 bg-white">
 
                 <div className="w-[100%] mt-2">
-                    <div className="relative flex w-full items-center justify-center px-[30px]">
+                    <div className="flex w-full items-center justify-between px-[30px]">
 
-                        <Button size={"icon"} onClick={back} className="absolute left-[30px] bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0">
 
                             <ArrowLeft color="black" />
 
                         </Button>
 
-                        <h1 className="text-3xl font-bold">Registro</h1>
+                        <h1 className="text-3xl font-bold text-center mx-2">Registro</h1>
 
-                        {/* <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                            <User2Icon color="black" />
-                        </Button> */}
+                        <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                     </div>
 
                     <Card className="w-[100%] p-[20px] border-none shadow-none">

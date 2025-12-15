@@ -42,19 +42,17 @@ export default function PendingRegisters() {
             <div className="bg-[#0C4A6E] h-32 w-full"></div>
 
             <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
-                <div className="flex w-[100%] justify-between items-center mt-2 mb-10">
+                <div className="flex w-full items-center justify-between mt-2 mb-10">
 
                     <Link to="/specialist/home">
-                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0">
                             <ArrowLeft color="black" />
                         </Button>
                     </Link>
 
-                    <h1 className="text-3xl font-bold">Avaliações</h1>
+                    <h1 className="text-3xl font-bold text-center mx-2">Avaliações</h1>
 
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                        <User2Icon color="black" />
-                    </Button>
+                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
                 </div>
                 {data?.map((value: RegisterData) => {
                     return (

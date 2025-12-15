@@ -17,11 +17,10 @@ export function LogoutButton() {
     return (
         <Button
             onClick={handleLogout}
-            variant="ghost"
             size="icon"
-            className="fixed top-20 right-4"
+            className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0"
         >
-            <LogOut className="h-6 w-6" />
+            <LogOut className="h-6 w-6" color="black" />
         </Button>
     );
 }

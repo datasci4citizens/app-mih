@@ -5,7 +5,7 @@ export function RoleGuard() {
 
     const data = useUser()
 
-    console.log("role guard ", data)
+    //console.log("role guard ", data)
 
     if (data.role == null)
         return <Navigate to="/select" />
