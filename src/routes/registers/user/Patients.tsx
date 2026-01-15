@@ -1,66 +1,156 @@
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookPlus } from "lucide-react";
+import { User, Plus, Edit2, Trash2, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRegistersContext } from "./RegistersControl";
+import { useState } from "react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ChevronLeft } from "lucide-react";
+import { ToyBackground } from "@/components/ui/toy-background";
+
+
+function calculateAge(birthday: string): number {
+    const birthDate = new Date(birthday);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
 
 export default function Patients() {
-
     const { patientsData, selectPatient } = useRegistersContext();
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+    const handleDeleteClick = (patientId: number) => {
+        setSelectedPatientId(String(patientId));
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        // TODO: Implement delete API call when endpoint is available
+        console.log("Delete patient:", selectedPatientId);
+        setDeleteDialogOpen(false);
+        setSelectedPatientId(null);
+    };
 
     return (
+        <div className="min-h-screen h-full relative bg-[#A0E7E5]">
+            <ToyBackground />
 
-        <div className="min-h-screen max-h-screen overflow-auto">
-
-            <div className="bg-[#0C4A6E] h-32 w-full"></div>
-
-            <div className="flex flex-col items-center justify-between p-[30px] rounded-t-3xl -mt-16 bg-white gap-[30px]">
-                <div className="flex w-full items-center justify-between mt-2">
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0">
-                        <Link to={`/user/home`}>
-                            <ArrowLeft color="black" />
-                        </Link>
-                    </Button>
-
-                    <h1 className="text-3xl font-bold text-center mx-2">Crianças</h1>
-
-                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
+            <div className="min-h-screen h-full flex flex-col relative z-10">
+                {/* Header */}
+                <div className="px-6 pt-6 pb-4 flex items-center gap-4">
+                    <Link to="/user/home">
+                        <button className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors">
+                            <ChevronLeft size={28} />
+                        </button>
+                    </Link>
+                    <h1 className="text-xl font-bold text-gray-800">Gerenciar Crianças</h1>
                 </div>
-                {patientsData?.map((patient) =>
 
-                    <Card className="w-[100%] p-0" key={patient.patient_id}>
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto">
+                    <div className="min-h-full p-6 pb-20">
+                        <div className="w-full max-w-md md:max-w-4xl mx-auto space-y-4">
 
-                        <CardContent className="flex flex-col max-h-[450px] overflow-y-scroll p-0 gap-[10px]">
+                            {/* Add New Child Button */}
+                            <Link to="/user/create/patient">
+                                <button className="w-full bg-white/80 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-3 text-gray-700 font-bold border-2 border-dashed border-gray-300 hover:border-[#A0E7E5] hover:bg-white hover:text-[#A0E7E5] transition-all group shadow-sm">
+                                    <div className="bg-gray-100 p-2 rounded-full group-hover:bg-[#A0E7E5]/10 transition-colors">
+                                        <Plus size={24} />
+                                    </div>
+                                    <span className="text-lg">Adicionar Nova Criança</span>
+                                </button>
+                            </Link>
 
-                            <Card className="px-0 py-0 flex flex-col items-center justify-between">
+                            {/* Children Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {patientsData?.map((patient) => {
+                                    const age = calculateAge(patient.birthday);
 
-                                <div className="m-2 text-center">
-                                    <CardTitle className="text-lg">{patient.name}</CardTitle>
-                                    <CardDescription>Data de nascimento: {new Date(patient.birthday).toLocaleDateString('pt-BR')}</CardDescription>
-                                </div>
+                                    return (
+                                        <div
+                                            key={patient.patient_id}
+                                            className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02]"
+                                        >
+                                            {/* Avatar */}
+                                            <div className="w-16 h-16 bg-gradient-to-br from-[#A0E7E5] to-[#8EC9BB] p-1 rounded-full shadow-md flex-shrink-0">
+                                                <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                                                    <User size={32} className="text-[#A0E7E5]" strokeWidth={2.5} />
+                                                </div>
+                                            </div>
 
-                                <Button className="gap-2 w-full hover:scale-1 rounded-t-none" onClick={() => selectPatient(String(patient.patient_id))}>
-                                    <h1>Registros</h1>
-                                    <BookPlus />
-                                </Button>
+                                            {/* Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-bold text-gray-800 text-xl truncate">{patient.name}</h3>
+                                                <p className="text-gray-500 font-medium text-sm">{age} anos</p>
+                                            </div>
 
-
-
-                            </Card>
-
-                        </CardContent>
-                    </Card>
-                )}
-
-                <Button className="text-center" type="submit">
-                    <Link to={`/user/create/patient`}>Nova Criança</Link>
-                </Button>
-
+                                            {/* Actions */}
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    onClick={() => selectPatient(String(patient.patient_id))}
+                                                    className="p-2 text-gray-400 hover:text-[#A0E7E5] hover:bg-[#A0E7E5]/10 rounded-xl transition-colors"
+                                                    title="Ver Registros"
+                                                >
+                                                    <Calendar size={20} />
+                                                </button>
+                                                <Link to={`/user/edit/patient/${patient.patient_id}`}>
+                                                    <button
+                                                        className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-colors"
+                                                        title="Editar"
+                                                    >
+                                                        <Edit2 size={20} />
+                                                    </button>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDeleteClick(patient.patient_id)}
+                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                                                    title="Deletar"
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Deletar Criança</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tem certeza que deseja deletar esta criança? Esta ação não pode ser desfeita e todos os registros associados serão perdidos.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleConfirmDelete}
+                            className="bg-red-500 hover:bg-red-600"
+                        >
+                            Deletar
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
-
-
-    )
-
+    );
 }
