@@ -19,6 +19,7 @@ import { ChoseRoleGuard } from './guards/choserole';
 import { SpecialistGuard } from './guards/specialist';
 import { UserGuard } from './guards/user';
 import apiClient from './lib/axios';
+import AllRegisters from './routes/registers/user/AllRegisters';
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
                 path: '/user/home/hmi-informations',
                 element: <HmiInformations />
 
+              },
+              {
+                path: '/user/all-registers',
+                element: <AllRegisters />
               },
               {
                 path: '/user/registers',

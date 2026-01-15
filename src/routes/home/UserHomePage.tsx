@@ -102,8 +102,6 @@ export default function PatientHomePage() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const [isMediumOrLarger, setIsMediumOrLarger] = useState(window.innerWidth >= 768);
-
   const tips = [
     "O uso de pasta com flúor é recomendado desde o primeiro dente.",
     "Evite compartilhar talheres com o bebê para prevenir a transmissão de bactérias.",
@@ -196,7 +194,7 @@ export default function PatientHomePage() {
 
             {/* Grid Layout para Desktop */}
             <div className="px-6 pb-6">
-              {isMediumOrLarger && <HmiInformationCarousel />}
+              <HmiInformationCarousel />
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 mt-4 md:mt-8">
 
                 {/* Coluna Esquerda (Novo Registro) */}
@@ -220,7 +218,7 @@ export default function PatientHomePage() {
 
                 {/* Coluna Direita (Cards) */}
                 <div className="lg:col-span-2 grid grid-cols-2 gap-4 md:gap-6">
-                  <button onClick={() => navigate('/user/registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
+                  <button onClick={() => navigate('/user/all-registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-500 mb-2 group-hover:bg-orange-200 transition-colors">
                       <ImageIcon size={20} className="md:w-6 md:h-6" />
                     </div>
