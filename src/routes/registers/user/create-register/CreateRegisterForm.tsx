@@ -175,7 +175,7 @@ export default function CreateRegister() {
 
         setCurrentStepIndex(i => {
 
-            if (currentStepIndex <= 1)
+            if (currentStepIndex <= 0)
                 return i;
             else
                 return i - 1;

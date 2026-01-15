@@ -1,83 +1,99 @@
-import { Button } from "@/components/ui/button";
 import CaptureToothPhoto from "./CaptureToothPhoto";
-import { X } from "lucide-react";
+import { ChevronLeft, Play, ArrowRight } from "lucide-react";
 import { useFormContext } from "./CreateRegisterForm";
-import { Link } from "react-router-dom";
-import { Card, CardTitle } from "@/components/ui/card";
-import frontToothVideo from "@/assets/frontToothTutorial.mp4"
+import frontToothVideo from "@/assets/frontToothTutorial.mp4";
+import { ActionButton } from "@/components/ui/action-button";
+import { ToyBackground } from "@/components/ui/toy-background";
 import { useState } from "react";
 
-export default function CaptureTwo() {
+export default function CaptureOne() {
 
-    const { sendData, next } = useFormContext();
-
-    const [alert, setAlert] = useState(false)
+    const { sendData, next, back } = useFormContext();
+    const [showVideo, setShowVideo] = useState(false);
+    const [alert, setAlert] = useState(false);
 
     function handleAlert() {
-
-        setAlert(true)
-
+        setAlert(true);
         setTimeout(() => {
-            setAlert(false)
-        }, 3000)
-
+            setAlert(false);
+        }, 3000);
     }
 
     return (
-        <div className="min-h-screen max-h-screen overflow-auto">
+        <div className="w-full min-h-screen bg-[#A0E7E5] relative overflow-auto">
+            <ToyBackground />
 
-            <div className="bg-[#0C4A6E] h-32 w-full"></div>
-
-            <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10 pb-10">
-
-                <div className="flex w-full items-center justify-between px-[30px] mt-2">
-                    <Link to="/user/home">
-                        <Button size={"icon"} variant={"destructive"} className="shrink-0">
-                            <X />
-                        </Button>
-                    </Link>
-
-                    <h1 className="font-bold text-xl text-center mx-2"> Tutorial para a fotografia</h1>
-
-                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
+            <div className="relative z-10 min-h-screen flex flex-col pb-10">
+                {/* Header */}
+                <div className="px-6 pt-6 pb-4 flex items-center gap-4">
+                    <button onClick={back} className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors">
+                        <ChevronLeft size={28} />
+                    </button>
+                    <h1 className="text-xl font-bold text-gray-800">Foto dos Dentes da Frente</h1>
                 </div>
 
-                <div className="flex flex-col items-center justify-center gap-1">
-                    <video
-                        src={frontToothVideo}
-                        controls
-                        className="w-[90%] h-auto mt-4 rounded-lg shadow-lg"
-                    />
+                {/* Content */}
+                <div className="flex-1 flex items-center justify-center px-6">
+                    <div className="w-full max-w-md">
+                        <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl space-y-6">
+
+                            {/* Tutorial Section */}
+                            <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="font-bold text-blue-800">Como tirar a foto?</h3>
+                                    <button
+                                        onClick={() => setShowVideo(!showVideo)}
+                                        className="text-blue-600 text-sm font-semibold flex items-center gap-1"
+                                    >
+                                        {showVideo ? 'Ocultar' : 'Ver Tutorial'}
+                                        <Play size={14} fill="currentColor" />
+                                    </button>
+                                </div>
+                                {showVideo && (
+                                    <div className="rounded-xl overflow-hidden shadow-lg mt-2 bg-black">
+                                        <video
+                                            src={frontToothVideo}
+                                            controls
+                                            className="w-full h-48 object-contain"
+                                        />
+                                    </div>
+                                )}
+                                {!showVideo && (
+                                    <p className="text-sm text-blue-600/80">
+                                        Assista o vídeo para aprender a melhor forma de fotografar.
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Photo Capture Component */}
+                            <CaptureToothPhoto photoStep={"1"} />
+
+                            {/* Alert Message */}
+                            {alert && (
+                                <p className="text-red-500 text-center font-semibold text-sm animate-in fade-in duration-200">
+                                    Tire a foto acima primeiro para prosseguir
+                                </p>
+                            )}
+
+                            {/* Action Button */}
+                            <div className="pt-2">
+                                <ActionButton
+                                    onClick={() => {
+                                        if (sendData.photo1)
+                                            next();
+                                        else
+                                            handleAlert();
+                                    }}
+                                    icon={ArrowRight}
+                                    disabled={!sendData.photo1}
+                                >
+                                    Próxima Foto
+                                </ActionButton>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <Card className="w-[90%] flex flex-col justify-center items-center">
-                    <CardTitle className="text-2xl mt-4">Foto dos dentes frontais</CardTitle>
-                    <CaptureToothPhoto photoStep={"1"} />
-                </Card>
-
-                {
-                    alert && (
-
-                        <h1 className="text-destructive"> Tire a foto acima primeiro para prosseguir </h1>
-
-                    )
-
-                }
-
-                <Button className="text-center my-4" type="submit" onClick={() => {
-                    if (sendData.photo1)
-                        next();
-                    else {
-                        handleAlert();
-                    }
-                }}>
-                    Próxima etapa
-                </Button>
-
             </div>
         </div>
-
     )
-
-
 }

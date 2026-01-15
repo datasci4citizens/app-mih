@@ -1,18 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "./CreateRegisterForm";
-import { Camera } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Camera, RefreshCw, Check } from "lucide-react";
 
 export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) {
 
     const { sendData, updateFields } = useFormContext();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
-
-    const [photo, setPhoto] = useState<File | undefined>(undefined);
     const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
 
 
@@ -20,7 +14,6 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
         const file = event.target.files?.[0];
 
         if (file) {
-            setPhoto(file);
             updateFields({ [`photo${photoStep}`]: file });
 
             const reader = new FileReader();
@@ -36,7 +29,6 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
         const existingPhoto = sendData[photoKey];
 
         if (existingPhoto && existingPhoto instanceof File && !previewUrl) {
-            setPhoto(existingPhoto);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreviewUrl(reader.result as string);
@@ -47,53 +39,62 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
 
 
     const handleButtonClick = () => {
-
         inputRef.current?.click();
-
     };
 
     return (
+        <div className="w-full">
+            <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCapture}
+                className="hidden"
+                ref={inputRef}
+            />
 
-        <Card className="flex flex-col justify-center items-center w-[90%] p-2 border-none shadow-none  ">
+            {/* Large capture area with dashed border */}
+            <div
+                className="relative w-full aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 flex flex-col items-center justify-center group cursor-pointer"
+                onClick={handleButtonClick}
+            >
+                {previewUrl ? (
+                    <>
+                        {/* Photo Preview */}
+                        <img src={previewUrl} alt="Foto capturada" className="w-full h-full object-cover" />
 
-            <CardHeader>
+                        {/* Overlay on hover to retake */}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleButtonClick();
+                                }}
+                                className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-white/30 transition-colors"
+                            >
+                                <RefreshCw size={18} />
+                                Tirar Outra
+                            </button>
+                        </div>
 
-                <Input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handleCapture}
-                    className="hidden"
-                    ref={inputRef}
-                />
-                <Button onClick={handleButtonClick} className="gap-2">
-                    {photo ? "Tirar outra foto" : "Tirar foto"} <Camera />
-                </Button>
-
-            </CardHeader>
-
-            {
-                previewUrl &&
-                <Accordion type="single" collapsible className="w-full flex flex-col justify-center">
-
-                    <AccordionItem value="captureItem">
-                        <AccordionTrigger className="font-bold text-primary text-base">
-                            Prévia da foto
-                        </AccordionTrigger>
-
-                        <AccordionContent className="flex flex-col items-center justify-center">
-                            <img src={previewUrl} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
-
-                        </AccordionContent>
-
-                    </AccordionItem>
-
-                </Accordion>
-            }
-
-
-        </Card>
-
+                        {/* Check badge */}
+                        <div className="absolute top-3 right-3 bg-green-500 text-white p-1.5 rounded-full shadow-md">
+                            <Check size={16} strokeWidth={3} />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {/* Empty state - tap to capture */}
+                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mb-3 group-hover:bg-[#A0E7E5]/10 transition-colors">
+                            <Camera size={32} className="text-gray-400 group-hover:text-[#A0E7E5] transition-colors" />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-400 group-hover:text-[#A0E7E5] transition-colors">
+                            Toque para Capturar
+                        </span>
+                    </>
+                )}
+            </div>
+        </div>
     )
-
 }
