@@ -1,11 +1,9 @@
 import { ChevronLeft, Calendar, AlertCircle, CheckCircle2, Plus, XCircle } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useRegistersContext } from "./RegistersControl";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useSWR from 'swr';
 import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { ToyBackground } from "@/components/ui/toy-background";
-
 // Map diagnosis to risk level with visual styling
 const getDiagnosisInfo = (diagnosis: string | null) => {
     switch (diagnosis) {
@@ -53,13 +51,15 @@ const getDiagnosisInfo = (diagnosis: string | null) => {
 };
 
 export default function PatientRegisters() {
-    const { patient, selectRegister, back } = useRegistersContext();
-    const { data, error, isLoading } = useSWR(`/patients/${patient?.patient_id}/mih`);
+    const { patientId } = useParams<{ patientId: string }>();
+    const navigate = useNavigate();
+    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/patients/${patientId}`);
+    const { data, error, isLoading } = useSWR(`/patients/${patientId}/mih`);
 
-    if (isLoading) {
+    if (isLoading || patientLoading) {
         return <SkeletonLoading />;
     }
-    if (error) {
+    if (error || patientError) {
         return <ErrorPage type="user"></ErrorPage>;
     }
 
@@ -74,7 +74,7 @@ export default function PatientRegisters() {
                 {/* Header */}
                 <div className="px-6 pt-6 pb-4 flex items-center gap-4">
                     <button
-                        onClick={back}
+                        onClick={() => navigate('/user/patients')}
                         className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors"
                     >
                         <ChevronLeft size={28} />
@@ -113,7 +113,7 @@ export default function PatientRegisters() {
                                     return (
                                         <div
                                             key={record.mih_id}
-                                            onClick={() => selectRegister(String(record.mih_id), data.mih)}
+                                            onClick={() => navigate(`/user/patients/${patientId}/${record.mih_id}`)}
                                             className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] cursor-pointer"
                                         >
                                             {/* Icon with badge */}
@@ -154,7 +154,7 @@ export default function PatientRegisters() {
                                 <Link to={`/user/registers/create-register/${patient?.patient_id}/new`}>
                                     <button className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all">
                                         <Plus size={20} />
-                                        <span>Novo Registro</span>
+                                        <span>Novo Registro para {patient?.name}</span>
                                     </button>
                                 </Link>
                             </div>

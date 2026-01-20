@@ -1,8 +1,11 @@
 import { ChevronLeft, AlertCircle, Thermometer, FileText, Stethoscope, User as UserIcon } from "lucide-react";
-import { useRegistersContext } from "./RegistersControl";
+import { useParams, useNavigate } from "react-router-dom";
 import { ToyBackground } from "@/components/ui/toy-background";
 import { MinioImage } from "@/components/ui/minio-image";
 import { useState } from "react";
+import useSWR from 'swr';
+import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 // InfoItem component for displaying questionnaire data
 interface InfoItemProps {
@@ -50,11 +53,25 @@ const getPainLevelLabel = (level: number) => {
 };
 
 export default function Register() {
-    const { register, patient, back } = useRegistersContext();
+    const { patientId, registerId } = useParams<{ patientId: string; registerId: string }>();
+    const navigate = useNavigate();
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
+    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/patients/${patientId}`);
+    const { data, error, isLoading } = useSWR(`/patients/${patientId}/mih`);
+
+    if (isLoading || patientLoading) {
+        return <SkeletonLoading />;
+    }
+
+    if (error || patientError) {
+        return <ErrorPage type="user"></ErrorPage>;
+    }
+
+    const register = data?.mih?.find((r: any) => r.mih_id === Number(registerId));
+
     if (!register || !patient) {
-        return null;
+        return <ErrorPage type="user"></ErrorPage>;
     }
 
     const diagnosisStyle = getDiagnosisStyle(register.diagnosis);
@@ -69,7 +86,7 @@ export default function Register() {
                 {/* Header */}
                 <div className="px-6 pt-6 pb-4 flex items-center gap-4">
                     <button
-                        onClick={back}
+                        onClick={() => navigate(-1)}
                         className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors"
                     >
                         <ChevronLeft size={28} />

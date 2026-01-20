@@ -6,7 +6,9 @@ import PatientHomePage from './routes/home/UserHomePage';
 import LoginPage from './routes/login/Login';
 import SpecialistRegistersControl from './routes/registers/specialist/SpecialsitRegistersControl';
 import CreateRegister from './routes/registers/user/create-register/CreateRegisterForm';
-import RegistersControl from './routes/registers/user/RegistersControl';
+import Patients from './routes/registers/user/Patients';
+import PatientRegisters from './routes/registers/user/PatientRegisters';
+import Register from './routes/registers/user/Register';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import TCLE from './routes/user/create-user-patient/Tcle';
@@ -57,12 +59,20 @@ const router = createBrowserRouter([
 
               },
               {
-                path: '/user/all-registers',
+                path: '/user/registers',
                 element: <AllRegisters />
               },
               {
-                path: '/user/registers',
-                element: <RegistersControl />
+                path: '/user/patients',
+                element: <Patients />
+              },
+              {
+                path: '/user/patients/:patientId',
+                element: <PatientRegisters />
+              },
+              {
+                path: '/user/patients/:patientId/:registerId',
+                element: <Register />
               },
               {
                 path: '/user/registers/create-register/:patient_id/:first_time',

@@ -1,6 +1,6 @@
 import { User, Plus, Edit2, Trash2, Calendar } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useRegistersContext } from "./RegistersControl";
+import { Link, useNavigate } from "react-router-dom";
+import useSWR from 'swr';
 import { useState } from "react";
 import {
     AlertDialog,
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft } from "lucide-react";
 import { ToyBackground } from "@/components/ui/toy-background";
+import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
+import ErrorPage from "@/lib/components_utils/ErrorPage";
 
 
 function calculateAge(birthday: string): number {
@@ -28,7 +30,8 @@ function calculateAge(birthday: string): number {
 }
 
 export default function Patients() {
-    const { patientsData, selectPatient } = useRegistersContext();
+    const navigate = useNavigate();
+    const { data: patientsData, error, isLoading } = useSWR('/users/patients/');
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
@@ -43,6 +46,14 @@ export default function Patients() {
         setDeleteDialogOpen(false);
         setSelectedPatientId(null);
     };
+
+    if (isLoading) {
+        return <SkeletonLoading />;
+    }
+
+    if (error) {
+        return <ErrorPage type="user"></ErrorPage>;
+    }
 
     return (
         <div className="min-h-screen h-full relative bg-[#A0E7E5]">
@@ -76,7 +87,7 @@ export default function Patients() {
 
                             {/* Children Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {patientsData?.map((patient) => {
+                                {patientsData?.map((patient: any) => {
                                     const age = calculateAge(patient.birthday);
 
                                     return (
@@ -100,7 +111,7 @@ export default function Patients() {
                                             {/* Actions */}
                                             <div className="flex items-center gap-1">
                                                 <button
-                                                    onClick={() => selectPatient(String(patient.patient_id))}
+                                                    onClick={() => navigate(`/user/patients/${patient.patient_id}`)}
                                                     className="p-2 text-gray-400 hover:text-[#A0E7E5] hover:bg-[#A0E7E5]/10 rounded-xl transition-colors"
                                                     title="Ver Registros"
                                                 >

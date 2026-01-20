@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 import FinishRegisterNew from "./FinishRegisterNew"
 import RegisterSumary from "./RegisterSumary"
 import useSWRMutation from "swr/mutation"
@@ -143,6 +143,23 @@ export default function CreateRegister() {
 
     const navigate = useNavigate();
 
+    // Reset patient data when patient_id changes
+    useEffect(() => {
+        if (patientData) {
+            setSendData({
+                ...INIT_DATA,
+                patient: patientData
+            });
+            // Only skip confirmation step if explicitly coming from a place that should skip it
+            // For now, we always show confirmation unless first_time is explicitly "new"
+            if (first_time === "new") {
+                setCurrentStepIndex(1);
+            } else {
+                setCurrentStepIndex(0);
+            }
+        }
+    }, [patient_id, patientData, first_time]);
+
     if (isLoading) {
         return <IsLoading />
     }
@@ -256,11 +273,7 @@ export default function CreateRegister() {
         console.log(data)
     }
 
-    if (!sendData.patient) {
-        updateFields({ patient: patientData })
-        if (first_time == "new")
-            next()
-    }
+
 
     const steps = [
         <ConfirmPatient />,

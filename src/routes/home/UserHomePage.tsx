@@ -1,4 +1,5 @@
 import { ToyBackground } from "@/components/ui/toy-background";
+import { PatientSelectModal } from "@/components/ui/patient-select-modal";
 import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
@@ -96,11 +97,13 @@ const HmiInformationCarousel = () => {
 export default function PatientHomePage() {
 
   const { data: user } = useSWR('/user/me')
+  const { data: patientsData } = useSWR('/users/patients/')
   const navigate = useNavigate();
 
   const [currentTip, setCurrentTip] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showPatientModal, setShowPatientModal] = useState(false);
 
   const tips = [
     "O uso de pasta com flúor é recomendado desde o primeiro dente.",
@@ -200,7 +203,7 @@ export default function PatientHomePage() {
                 {/* Coluna Esquerda (Novo Registro) */}
                 <div className="lg:col-span-1">
                   <button
-                    onClick={() => navigate(`/user/registers/create-register/${user?.id}/true`)}
+                    onClick={() => setShowPatientModal(true)}
                     className="w-full h-40 md:h-48 lg:h-full rounded-3xl p-5 md:p-6 relative overflow-hidden shadow-lg transform transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col items-start justify-between bg-gradient-to-br from-[#FF8A65] to-[#FFB394] group"
                   >
                     <div className="flex flex-col items-start gap-2 z-10">
@@ -218,7 +221,7 @@ export default function PatientHomePage() {
 
                 {/* Coluna Direita (Cards) */}
                 <div className="lg:col-span-2 grid grid-cols-2 gap-4 md:gap-6">
-                  <button onClick={() => navigate('/user/all-registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
+                  <button onClick={() => navigate('/user/registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-500 mb-2 group-hover:bg-orange-200 transition-colors">
                       <ImageIcon size={20} className="md:w-6 md:h-6" />
                     </div>
@@ -228,7 +231,7 @@ export default function PatientHomePage() {
                     </div>
                   </button>
 
-                  <button onClick={() => navigate('/user/registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
+                  <button onClick={() => navigate('/user/patients')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-500 mb-2 group-hover:bg-blue-200 transition-colors">
                       <Users size={20} className="md:w-6 md:h-6" />
                     </div>
@@ -263,6 +266,16 @@ export default function PatientHomePage() {
           </div>
         </div>
       </div>
+
+      {/* Patient Selection Modal */}
+      <PatientSelectModal
+        open={showPatientModal}
+        onOpenChange={setShowPatientModal}
+        onSelectPatient={(patientId) => {
+          navigate(`/user/registers/create-register/${patientId}/confirm`);
+        }}
+        patients={patientsData}
+      />
     </div>
   );
 }

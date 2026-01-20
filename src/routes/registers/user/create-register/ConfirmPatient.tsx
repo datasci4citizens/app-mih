@@ -1,9 +1,12 @@
 import { ArrowRight, ChevronLeft, Calendar, Users, Thermometer, Baby, Weight, Activity, Stethoscope } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormContext } from "./CreateRegisterForm";
 import { ActionButton } from "@/components/ui/action-button";
 import { ToyBackground } from "@/components/ui/toy-background";
+import { PatientSelectModal } from "@/components/ui/patient-select-modal";
+import { useState } from "react";
+import useSWR from "swr";
 
 // InfoItem component for displaying patient data
 interface InfoItemProps {
@@ -27,6 +30,9 @@ const InfoItem = ({ icon: Icon, label, value }: InfoItemProps) => (
 export default function ConfirmPatient() {
 
     const { sendData, updateFields, next } = useFormContext();
+    const { data: allPatientsData } = useSWR('/users/patients/');
+    const [showPatientModal, setShowPatientModal] = useState(false);
+    const navigate = useNavigate();
 
     const { patient } = { ...sendData };
 
@@ -108,11 +114,12 @@ export default function ConfirmPatient() {
 
                             {/* Action Buttons */}
                             <div className="pt-2 space-y-3 md:flex md:space-y-0 md:gap-4 md:justify-end">
-                                <Link to="/user/home" className="w-full md:w-auto md:min-w-[200px]">
-                                    <button className="w-full py-3 text-gray-500 font-bold text-sm hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">
-                                        Trocar Criança
-                                    </button>
-                                </Link>
+                                <button
+                                    onClick={() => setShowPatientModal(true)}
+                                    className="w-full md:w-auto md:min-w-[200px] py-3 text-gray-500 font-bold text-sm hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+                                >
+                                    Trocar Criança
+                                </button>
                                 <div className="w-full md:w-auto md:min-w-[250px]">
                                     <ActionButton
                                         onClick={() => {
@@ -130,6 +137,16 @@ export default function ConfirmPatient() {
                     </div>
                 </div>
             </div>
+
+            {/* Patient Selection Modal */}
+            <PatientSelectModal
+                open={showPatientModal}
+                onOpenChange={setShowPatientModal}
+                onSelectPatient={(patientId) => {
+                    navigate(`/user/registers/create-register/${patientId}/confirm`);
+                }}
+                patients={allPatientsData}
+            />
         </div>
     )
 }

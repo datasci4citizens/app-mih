@@ -1,9 +1,10 @@
 import { ChevronLeft, Calendar, AlertCircle, CheckCircle2, Plus, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useSWR from 'swr';
 import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { ToyBackground } from "@/components/ui/toy-background";
+import { PatientSelectModal } from "@/components/ui/patient-select-modal";
 import { useEffect, useState } from "react";
 import apiClient from "@/lib/axios";
 
@@ -75,6 +76,8 @@ export default function AllRegisters() {
     const [allRegisters, setAllRegisters] = useState<RegisterWithPatient[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [showPatientModal, setShowPatientModal] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!patientsData) return;
@@ -88,6 +91,7 @@ export default function AllRegisters() {
                         if (response.data?.mih && Array.isArray(response.data.mih)) {
                             return response.data.mih.map((register: Register) => ({
                                 ...register,
+                                patient_id: patient.patient_id,
                                 patientName: patient.name
                             }));
                         }
@@ -182,9 +186,9 @@ export default function AllRegisters() {
                                             const Icon = diagnosisInfo.icon;
 
                                             return (
-                                                <Link
+                                                <div
                                                     key={register.mih_id}
-                                                    to="/user/registers"
+                                                    onClick={() => navigate(`/user/patients/${register.patient_id}/${register.mih_id}`)}
                                                     className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] cursor-pointer"
                                                 >
                                                     {/* Icon with badge */}
@@ -219,19 +223,20 @@ export default function AllRegisters() {
                                                     <div className="self-center">
                                                         <ChevronLeft size={20} className="text-gray-300 rotate-180" />
                                                     </div>
-                                                </Link>
+                                                </div>
                                             );
                                         })}
                                     </div>
 
                                     {/* Add New Register Button */}
                                     <div className="mt-6">
-                                        <Link to="/user/registers">
-                                            <button className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all">
-                                                <Plus size={20} />
-                                                <span>Novo Registro</span>
-                                            </button>
-                                        </Link>
+                                        <button
+                                            onClick={() => setShowPatientModal(true)}
+                                            className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all"
+                                        >
+                                            <Plus size={20} />
+                                            <span>Novo Registro</span>
+                                        </button>
                                     </div>
                                 </>
                             )}
@@ -239,6 +244,16 @@ export default function AllRegisters() {
                     </div>
                 </div>
             </div>
+
+            {/* Patient Selection Modal */}
+            <PatientSelectModal
+                open={showPatientModal}
+                onOpenChange={setShowPatientModal}
+                onSelectPatient={(patientId) => {
+                    navigate(`/user/registers/create-register/${patientId}/confirm`);
+                }}
+                patients={patientsData}
+            />
         </div>
     );
 }
