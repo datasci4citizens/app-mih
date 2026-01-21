@@ -111,7 +111,9 @@ export default function FinishRegisterNew() {
     };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(values);
+        }
         next()
     }
 

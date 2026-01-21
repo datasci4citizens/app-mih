@@ -60,7 +60,9 @@ export default function RegisterDiagnostic() {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         submitRegister();
-        console.log(values)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(values)
+        }
     }
 
     if (isLoading)

@@ -1,14 +1,4 @@
-import React from 'react';
-
-// Using the colors from tailwind config by reference or hardcoded for the SVG pattern
-// Since SVG patterns inside JSX might not easily access tailwind config variables without helper, 
-// I will use the hex codes matching the tailwind config for the SVG elements, 
-// and tailwind classes for the container.
-
-const COLORS = {
-  primary: '#A0E7E5',    // mih-primary
-  white: '#FFFFFF',
-};
+import { COLORS } from '@/lib/constants';
 
 export const ToyBackground = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">

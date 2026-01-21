@@ -219,10 +219,13 @@ export default function CreateRegister() {
             },
             body: file,
         }).then(r => {
-
-            console.log(r.ok)
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(r.ok)
+            }
         }).catch(err => {
-            console.log(err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(err);
+            }
         })
 
         return result.image_id;
@@ -237,8 +240,9 @@ export default function CreateRegister() {
         const id2 = await submitImage(sendData.photo2);
         const id3 = await submitImage(sendData.photo3);
 
-        if (errorPhoto)
+        if (errorPhoto && import.meta.env.VITE_DEV_MODE === 'true') {
             console.log(errorPhoto);
+        }
 
         let arg: SendData = {
             "photo_id1": id1,
@@ -254,7 +258,9 @@ export default function CreateRegister() {
             "diagnosis": null
         }
 
-        console.log(arg)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(arg)
+        }
 
         const result = await trigger(arg)
 
@@ -267,10 +273,14 @@ export default function CreateRegister() {
             navigate(`/user/home/`); // Redireciona para a home
         } else {
             setSubmitting(false);
-            console.error('Erro ao enviar dados:', error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Erro ao enviar dados:', error);
+            }
         }
 
-        console.log(data)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(data)
+        }
     }
 
 

@@ -1,137 +1,28 @@
-import { ChevronLeft, Calendar, AlertCircle, CheckCircle2, Plus, User } from "lucide-react";
+import { ChevronLeft, Calendar, Plus, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import useSWR from 'swr';
 import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { ToyBackground } from "@/components/ui/toy-background";
 import { PatientSelectModal } from "@/components/ui/patient-select-modal";
-import { useEffect, useState } from "react";
-import apiClient from "@/lib/axios";
+import { useState } from "react";
+import { useAllRegisters } from "@/lib/hooks/useAllRegisters";
+import { usePatients } from "@/lib/hooks/usePatients";
+import { getDiagnosisInfo } from "@/lib/utils/diagnosis";
 
-// Map diagnosis to risk level with visual styling
-const getDiagnosisInfo = (diagnosis: string | null) => {
-    switch (diagnosis) {
-        case "presence":
-            return {
-                label: "Presença de HMI",
-                risk: "Alto",
-                color: "text-red-500",
-                bg: "bg-red-50",
-                icon: AlertCircle
-            };
-        case "sugestive":
-            return {
-                label: "Sugestivo de HMI",
-                risk: "Médio",
-                color: "text-yellow-500",
-                bg: "bg-yellow-50",
-                icon: AlertCircle
-            };
-        case "absence":
-            return {
-                label: "Ausência de HMI",
-                risk: "Baixo",
-                color: "text-green-500",
-                bg: "bg-green-50",
-                icon: CheckCircle2
-            };
-        case "invalid":
-            return {
-                label: "Fotos inadequadas",
-                risk: "Inválido",
-                color: "text-gray-500",
-                bg: "bg-gray-50",
-                icon: AlertCircle
-            };
-        default:
-            return {
-                label: "Aguardando diagnóstico",
-                risk: "Pendente",
-                color: "text-orange-500",
-                bg: "bg-orange-50",
-                icon: AlertCircle
-            };
-    }
-};
-
-interface Patient {
-    name: string;
-    birthday: string;
-    patient_id: number;
-}
-
-interface Register {
-    mih_id: number;
-    start_date: string;
-    diagnosis: string | null;
-    patient_id: number;
-}
-
-interface RegisterWithPatient extends Register {
-    patientName: string;
-}
 
 export default function AllRegisters() {
-    const { data: patientsData, error: patientsError, isLoading: patientsLoading } = useSWR<Patient[]>(`/users/patients/`);
-    const [allRegisters, setAllRegisters] = useState<RegisterWithPatient[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const { allRegisters, loading, error, totalRegisters, undiagnosedCount } = useAllRegisters();
+    const { patients } = usePatients();
     const [showPatientModal, setShowPatientModal] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!patientsData) return;
-
-        const fetchAllRegisters = async () => {
-            try {
-                setLoading(true);
-                const promises = patientsData.map(async (patient) => {
-                    try {
-                        const response = await apiClient.get(`/patients/${patient.patient_id}/mih`);
-                        if (response.data?.mih && Array.isArray(response.data.mih)) {
-                            return response.data.mih.map((register: Register) => ({
-                                ...register,
-                                patient_id: patient.patient_id,
-                                patientName: patient.name
-                            }));
-                        }
-                        return [];
-                    } catch (err) {
-                        console.error(`Error fetching registers for patient ${patient.patient_id}:`, err);
-                        return [];
-                    }
-                });
-
-                const results = await Promise.all(promises);
-                const flattenedRegisters = results.flat();
-
-                // Sort by date (most recent first)
-                flattenedRegisters.sort((a, b) =>
-                    new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-                );
-
-                setAllRegisters(flattenedRegisters);
-                setLoading(false);
-            } catch (err) {
-                console.error('Error fetching all registers:', err);
-                setError(true);
-                setLoading(false);
-            }
-        };
-
-        fetchAllRegisters();
-    }, [patientsData]);
-
-    if (patientsLoading || loading) {
+    if (loading) {
         return <SkeletonLoading />;
     }
 
-    if (patientsError || error) {
+    if (error) {
         return <ErrorPage type="user"></ErrorPage>;
     }
-
-    const totalRegisters = allRegisters.length;
-    const undiagnosedCount = allRegisters.filter(r => !r.diagnosis).length;
 
     return (
         <div className="min-h-screen h-full relative bg-[#A0E7E5]">
@@ -252,8 +143,9 @@ export default function AllRegisters() {
                 onSelectPatient={(patientId) => {
                     navigate(`/user/registers/create-register/${patientId}/confirm`);
                 }}
-                patients={patientsData}
+                patients={patients}
             />
         </div>
     );
 }
+

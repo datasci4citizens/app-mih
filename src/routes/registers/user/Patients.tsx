@@ -1,6 +1,5 @@
 import { User, Plus, Edit2, Trash2, Calendar } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import useSWR from 'swr';
 import { useState } from "react";
 import {
     AlertDialog,
@@ -16,22 +15,15 @@ import { ChevronLeft } from "lucide-react";
 import { ToyBackground } from "@/components/ui/toy-background";
 import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
+import { usePatients } from "@/lib/hooks/usePatients";
+import { calculateAge } from "@/lib/utils/date";
 
 
-function calculateAge(birthday: string): number {
-    const birthDate = new Date(birthday);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
-}
+
 
 export default function Patients() {
     const navigate = useNavigate();
-    const { data: patientsData, error, isLoading } = useSWR('/users/patients/');
+    const { patients, isLoading, error } = usePatients();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
@@ -42,7 +34,9 @@ export default function Patients() {
 
     const handleConfirmDelete = async () => {
         // TODO: Implement delete API call when endpoint is available
-        console.log("Delete patient:", selectedPatientId);
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log("Delete patient:", selectedPatientId);
+        }
         setDeleteDialogOpen(false);
         setSelectedPatientId(null);
     };
@@ -87,7 +81,7 @@ export default function Patients() {
 
                             {/* Children Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {patientsData?.map((patient: any) => {
+                                {patients?.map((patient: any) => {
                                     const age = calculateAge(patient.birthday);
 
                                     return (

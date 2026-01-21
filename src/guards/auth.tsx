@@ -24,7 +24,9 @@ export function AuthGuard() {
         return <ErrorPage type="login"></ErrorPage>
 
     if (!data || data.detail || typeof data === 'string') {
-        console.log("AuthGuard: Navigating to /login due to invalid data or HTML response.")
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log("AuthGuard: Navigating to /login due to invalid data or HTML response.")
+        }
         return <Navigate to='/login' />
     }
 

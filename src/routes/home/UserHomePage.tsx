@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { useSWRConfig } from "swr";
 import apiClient from "@/lib/axios";
+import { COLORS } from "@/lib/constants";
 
 import {
   Camera,
@@ -26,17 +27,7 @@ import {
   Settings
 } from 'lucide-react';
 
-// --- PALETA DE CORES ---
-const COLORS = {
-  primary: '#A0E7E5',    // Menta (Fundo Principal)
-  secondary: '#FF8A65',  // Coral (Ação/CTA)
-  highlight: '#F2CF59',  // Amarelo (Destaque/Estrelas)
-  peach: '#F8CA9D',      // Pêssego (Cartões secundários)
-  sage: '#C5D7C0',       // Verde Sálvia (Cartões terciários)
-  white: '#FFFFFF',
-  text: '#2D3748',       // Cinza escuro
-  textLight: '#718096'
-};
+
 
 const carouselItems = [
   { icon: <Info />, title: "O que é HMI?", content: "Hipomineralização Molar-Incisivo (HMI) é uma condição que afeta o esmalte dos dentes, principalmente os primeiros molares permanentes e, às vezes, os incisivos. O esmalte não se desenvolve corretamente enquanto os dentes estão se formando." },

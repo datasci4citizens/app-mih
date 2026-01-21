@@ -116,8 +116,10 @@ export default function PatientForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setSubmitting(true)
-        console.log('=== new values ===')
-        console.log(values)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log('=== new values ===')
+            console.log(values)
+        }
 
         const newValue = {
             name: values.name,
@@ -137,16 +139,22 @@ export default function PatientForm() {
             return <ErrorPage type="user"></ErrorPage>
         }
 
-        console.log(data);
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(data);
+        }
         if (result && !error) {
             setSubmitting(false)
             navigate(`/user/registers/create-register/${result.data.patient_id}/first_time`);
         } else {
             setSubmitting(false)
-            console.error('Erro ao enviar dados:', error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Erro ao enviar dados:', error);
+            }
         }
-        console.log('=== result ===')
-        console.log(result)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log('=== result ===')
+            console.log(result)
+        }
     }
 
     return (
@@ -367,7 +375,9 @@ export default function PatientForm() {
                                                                         } else {
                                                                             form.setValue("deliveryType", "normal");
                                                                         }
-                                                                        console.log(form.watch("deliveryType"))
+                                                                        if (import.meta.env.VITE_DEV_MODE === 'true') {
+                                                                            console.log(form.watch("deliveryType"))
+                                                                        }
                                                                     }} />
                                                             </FormControl>
                                                             <FormDescription>Normal</FormDescription>
