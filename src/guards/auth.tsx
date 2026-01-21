@@ -17,8 +17,10 @@ export function AuthGuard() {
             </div>
         )
 
-    //console.log("auth guard data:", data)
-    //console.log("auth guard typeof data:", typeof data)
+    if (import.meta.env.VITE_DEV_MODE === 'true') {
+        console.log("auth guard data:", data);
+        console.log("auth guard typeof data:", typeof data);
+    }
 
     if (error)
         return <ErrorPage type="login"></ErrorPage>

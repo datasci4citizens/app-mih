@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch.tsx'
 
-// import useSWRMutation from 'swr/mutation'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from "lucide-react"
 import { ToyBackground } from "@/components/ui/toy-background"

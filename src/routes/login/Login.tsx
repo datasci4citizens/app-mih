@@ -72,12 +72,16 @@ const WebLogin = () => {
 	const navigate = useNavigate();
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
-			//console.log('response:', codeResponse);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.log('response:', codeResponse);
+			}
 			try {
-				await apiClient.post('/auth/login/google', {
+				const response = await apiClient.post('/auth/login/google', {
 					code: codeResponse.code,
 				});
-				//console.log('Usuário logado:', response.data);
+				if (import.meta.env.VITE_DEV_MODE === 'true') {
+					console.log('Usuário logado:', response.data);
+				}
 				navigate('/');
 			} catch (error) {
 				console.error('Erro ao logar:', error);
@@ -100,21 +104,29 @@ const NativeLogin = () => {
 				},
 			});
 
-			console.log('trying to login');
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.log('trying to login');
+			}
 			const login = await SocialLogin.login({
 				provider: 'google',
 				options: {
 					scopes: ['email', 'profile'],
 				},
 			});
-			//console.log('Native Google Login Result:', JSON.stringify(login));
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.log('Native Google Login Result:', JSON.stringify(login));
+			}
 
 			const result = login.result;
-			//console.log('result ', result);
-			await apiClient.post('/auth/login/google/native', {
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.log('result ', result);
+			}
+			const response = await apiClient.post('/auth/login/google/native', {
 				code: (result as any).accessToken.token,
 			});
-			//console.log('Usuário logado nativamente:', response.data);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.log('Usuário logado nativamente:', response.data);
+			}
 			navigate('/');
 		} catch (error) {
 			console.error('Error during native Google login:', error);

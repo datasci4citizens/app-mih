@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import imgTooth from '@/assets/Icon.svg';
+import apiClient from '@/lib/axios';
 
 const formSchema = z.object({
 	name: z.string().min(4, {
@@ -61,14 +62,7 @@ async function sendRequest(
 		};
 	},
 ) {
-	return await fetch(url, {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		credentials: 'include',
-		body: JSON.stringify(arg),
-	}).then((res) => res.json());
+	return await apiClient.put(url, arg);
 }
 
 export default function CreateUser() {
@@ -107,7 +101,9 @@ export default function CreateUser() {
 			navigate(`/user/home`);
 		} else {
 			setSubmitting(false);
-			console.error('Erro ao enviar dados:', error);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Erro ao enviar dados:', error);
+			}
 		}
 	}
 

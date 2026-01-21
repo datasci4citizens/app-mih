@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Form,
 	FormControl,
@@ -15,12 +14,15 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ToyBackground } from '@/components/ui/toy-background';
 
 import ErrorPage from '@/lib/components_utils/ErrorPage';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
+import imgTooth from '@/assets/Icon.svg';
+import { useState } from 'react';
 
 const formSchema = z.object({
 	name: z.string().min(4, {
@@ -29,7 +31,9 @@ const formSchema = z.object({
 	phone_number: z.string().min(11, {
 		message: 'O telefone deve ter no mínimo 11 dígitos.',
 	}),
-	email: z.string(),
+	email: z.string().email({
+		message: 'E-mail inválido.',
+	}),
 });
 
 async function sendRequest(
@@ -44,6 +48,7 @@ export default function CreateSpecialist() {
 		`${import.meta.env.VITE_SERVER_URL}/users/`,
 		sendRequest,
 	);
+	const [submitting, setSubmitting] = useState(false);
 	const navigate = useNavigate();
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -56,6 +61,7 @@ export default function CreateSpecialist() {
 	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
+		setSubmitting(true);
 		if (import.meta.env.VITE_DEV_MODE === 'true') {
 			console.log('=== new values ===');
 			console.log(values);
@@ -71,6 +77,7 @@ export default function CreateSpecialist() {
 			console.log(error);
 		}
 		if (error) {
+			setSubmitting(false);
 			return <ErrorPage type="user"></ErrorPage>;
 		}
 		if (import.meta.env.VITE_DEV_MODE === 'true') {
@@ -79,11 +86,13 @@ export default function CreateSpecialist() {
 			console.log(data);
 			console.log(error);
 		}
-		if (!isMutating) {
-			if (result && !error) {
+		if (!isMutating && !error) {
+			if (result) {
 				await mutate('/user/me', undefined, { revalidate: true });
-				navigate(`/specialist/home`); // Redireciona para a home
+				setSubmitting(false);
+				navigate(`/specialist/home`);
 			} else {
+				setSubmitting(false);
 				if (import.meta.env.VITE_DEV_MODE === 'true') {
 					console.error('Erro ao enviar dados:', error);
 				}
@@ -92,63 +101,92 @@ export default function CreateSpecialist() {
 	}
 
 	return (
-		<div>
-			<div className="bg-[#0C4A6E] h-32 w-full"></div>
+		<div className="w-full min-h-screen bg-[#A0E7E5] relative">
+			<ToyBackground />
+			<div className="relative z-10 flex flex-col items-center justify-start min-h-screen px-6 py-12">
+				{/* Logo */}
+				<img
+					src={imgTooth}
+					alt="Logo Molar Check"
+					className="w-24 h-24 md:w-32 md:h-32 object-contain mb-4 drop-shadow-lg animate-in fade-in duration-500"
+				/>
 
-			<div className="flex min-h-screen items-center justify-center rounded-t-3xl -mt-16 bg-white">
-				<Card className="w-[90%] border-none overflow-auto max-h-screen">
-					<CardHeader>
-						<CardTitle className="text-center font-extrabold">
-							Complete o seu cadastro
-						</CardTitle>
-					</CardHeader>
+				{/* App Title */}
+				<h1
+					className="text-3xl md:text-4xl font-bold text-white mb-8 tracking-tight drop-shadow-lg text-center"
+					style={{ fontFamily: 'Nunito, sans-serif' }}
+				>
+					Cadastro Especialista
+				</h1>
+
+				{/* Main Form Card */}
+				<div className="w-full max-w-2xl bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+
 					<Form {...form}>
-						<form
-							onSubmit={form.handleSubmit(onSubmit)}
-							className="space-y-3 mb-20"
-						>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+							{/* Name Field */}
 							<FormField
 								control={form.control}
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Nome completo</FormLabel>
+										<FormLabel className="font-bold text-gray-700">
+											Nome completo*
+										</FormLabel>
 										<FormControl>
-											<Input placeholder="Nome" {...field} />
+											<Input
+												placeholder="Nome completo"
+												{...field}
+												className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+											/>
 										</FormControl>
-										<FormDescription>
+										<FormDescription className="text-xs">
 											Insira o seu nome completo
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
+
+							{/* Email Field */}
 							<FormField
 								control={form.control}
 								name="email"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>E-mail</FormLabel>
+										<FormLabel className="font-bold text-gray-700">E-mail*</FormLabel>
 										<FormControl>
-											<Input placeholder="Email de cadastro" {...field} />
+											<Input
+												placeholder="Email de cadastro"
+												{...field}
+												className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+											/>
 										</FormControl>
-										<FormDescription>
-											Insira o email usado no login com o google
+										<FormDescription className="text-xs">
+											Insira o email usado no login com o Google
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
+
+							{/* Phone Field */}
 							<FormField
 								control={form.control}
 								name="phone_number"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Numero de telefone</FormLabel>
+										<FormLabel className="font-bold text-gray-700">
+											Número de telefone*
+										</FormLabel>
 										<FormControl>
-											<Input placeholder="Telefone" {...field} />
+											<Input
+												placeholder="Telefone"
+												{...field}
+												className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+											/>
 										</FormControl>
-										<FormDescription>
+										<FormDescription className="text-xs">
 											Insira o telefone para contato
 										</FormDescription>
 										<FormMessage />
@@ -156,12 +194,17 @@ export default function CreateSpecialist() {
 								)}
 							/>
 
-							<Button className=" w-[100%]" type="submit">
-								Próximo
+							{/* Submit Button */}
+							<Button
+								className="w-full transform transition-all duration-150 active:scale-95 hover:-translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.1)] active:shadow-[0_1px_0_rgba(0,0,0,0.1)] active:translate-y-1 rounded-2xl py-6 font-bold text-white text-lg bg-gradient-to-br from-[#FF8A65] to-[#FFB394]"
+								type="submit"
+								disabled={submitting}
+							>
+								{submitting ? 'Enviando...' : 'Próximo'}
 							</Button>
 						</form>
 					</Form>
-				</Card>
+				</div>
 			</div>
 		</div>
 	);
