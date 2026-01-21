@@ -1,10 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-
 import { useForm } from 'react-hook-form';
-
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import {
 	Form,
 	FormControl,
@@ -15,13 +12,17 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch.tsx';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ToyBackground } from '@/components/ui/toy-background';
+import { TcleModal } from '@/components/ui/tcle-modal';
+import { Info } from 'lucide-react';
 
 import ErrorPage from '@/lib/components_utils/ErrorPage';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
+import imgTooth from '@/assets/Icon.svg';
 
 const formSchema = z.object({
 	name: z.string().min(4, {
@@ -60,8 +61,6 @@ async function sendRequest(
 		};
 	},
 ) {
-	console.log('=== sending request to ===');
-	console.log(url);
 	return await fetch(url, {
 		method: 'PUT',
 		headers: {
@@ -73,11 +72,12 @@ async function sendRequest(
 }
 
 export default function CreateUser() {
-	const { trigger, data, error } = useSwrMutation(
+	const { trigger, error } = useSwrMutation(
 		`${import.meta.env.VITE_SERVER_URL}/users/`,
 		sendRequest,
 	);
 	const [submitting, setSubmitting] = useState(false);
+	const [showTcleModal, setShowTcleModal] = useState(false);
 	const navigate = useNavigate();
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -94,20 +94,13 @@ export default function CreateUser() {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		setSubmitting(true);
-		console.log('=== new values ===');
-		console.log(values);
 		const newValues = { ...values, role: 'responsible' };
-		console.log(newValues);
 		const result = await trigger(newValues);
 
 		if (error) {
 			return <ErrorPage type="user"></ErrorPage>;
 		}
 
-		console.log('=== result ===');
-		console.log(result);
-		console.log(data);
-		console.log(error);
 		if (result && !error) {
 			await mutate('/user/me');
 			setSubmitting(false);
@@ -119,115 +112,206 @@ export default function CreateUser() {
 	}
 
 	return (
-		<div>
-			<div className="bg-[#0C4A6E] h-32 w-full"></div>
+		<div className="w-full min-h-screen bg-[#A0E7E5] relative">
+			<ToyBackground />
+			<div className="relative z-10 flex flex-col items-center justify-start min-h-screen px-6 py-12">
+				{/* Logo */}
+				<img
+					src={imgTooth}
+					alt="Logo Molar Check"
+					className="w-24 h-24 md:w-32 md:h-32 object-contain mb-4 drop-shadow-lg animate-in fade-in duration-500"
+				/>
 
-			<div className="flex min-h-screen items-start justify-center rounded-t-3xl -mt-16 bg-white pt-10">
-				<Card className="w-[90%] border-none overflow-auto max-h-screen">
-					<CardHeader>
-						<CardTitle className="text-center font-extrabold">
-							Cadastro responsável
-						</CardTitle>
-					</CardHeader>
+				{/* App Title */}
+				<h1
+					className="text-3xl md:text-4xl font-bold text-white mb-8 tracking-tight drop-shadow-lg text-center"
+					style={{ fontFamily: 'Nunito, sans-serif' }}
+				>
+					Cadastro Responsável
+				</h1>
+
+				{/* Main Form Card */}
+				<div className="w-full max-w-2xl bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+
 					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+							{/* Name Field */}
 							<FormField
 								control={form.control}
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className="font-bold">
+										<FormLabel className="font-bold text-gray-700">
 											Nome do responsável*
 										</FormLabel>
 										<FormControl>
-											<Input placeholder="Nome do responsável" {...field} />
+											<Input
+												placeholder="Nome do responsável"
+												{...field}
+												className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
+
+							{/* Phone Field */}
 							<FormField
 								control={form.control}
 								name="phone_number"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel className="font-bold">
-											Numero de telefone*
+										<FormLabel className="font-bold text-gray-700">
+											Número de telefone*
 										</FormLabel>
 										<FormControl>
-											<Input placeholder="Telefone" {...field} />
+											<Input
+												placeholder="Telefone"
+												{...field}
+												className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+											/>
 										</FormControl>
-										<FormDescription>
+										<FormDescription className="text-xs">
 											Insira o telefone para contato
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-							<FormField
-								control={form.control}
-								name="state"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="font-bold">Estado*</FormLabel>
-										<FormControl>
-											<Input placeholder="Estado onde mora" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="city"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="font-bold">Cidade*</FormLabel>
-										<FormControl>
-											<Input placeholder="Cidade onde mora" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="neighborhood"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="font-bold">Bairro*</FormLabel>
-										<FormControl>
-											<Input placeholder="Bairro onde mora" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
+
+							{/* Location Fields - Grid */}
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+								{/* State Field */}
+								<FormField
+									control={form.control}
+									name="state"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className="font-bold text-gray-700">Estado*</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="Estado"
+													{...field}
+													className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								{/* City Field */}
+								<FormField
+									control={form.control}
+									name="city"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className="font-bold text-gray-700">Cidade*</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="Cidade"
+													{...field}
+													className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								{/* Neighborhood Field */}
+								<FormField
+									control={form.control}
+									name="neighborhood"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel className="font-bold text-gray-700">Bairro*</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="Bairro"
+													{...field}
+													className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+
+							{/* TCLE Information Section */}
+							<div className="bg-cyan-50 p-5 rounded-2xl border border-cyan-200 space-y-3">
+								<div className="flex items-start gap-3">
+									<Info className="w-6 h-6 text-cyan-600 flex-shrink-0 mt-0.5" />
+									<div className="flex-1">
+										<h3 className="font-bold text-gray-800 mb-2">
+											Convite para Participação em Pesquisa
+										</h3>
+										<p className="text-sm text-gray-700 leading-relaxed">
+											Você é convidado(a) a participar de uma pesquisa científica
+											desenvolvida por Dentistas da <strong>FOP - Unicamp</strong> para
+											melhorar o tratamento de HMI.
+										</p>
+										<p className="text-sm text-gray-700 leading-relaxed mt-2">
+											Caso concorde, coletaremos dados de forma <strong>anônima</strong> sobre
+											o uso da plataforma. Seus dados pessoais (nome, e-mail, telefone)
+											<strong> não serão armazenados</strong> para a pesquisa.
+										</p>
+										<p className="text-sm font-semibold text-cyan-700 mt-3">
+											✨ Participe, você ajudará a criar uma plataforma sempre melhor!
+										</p>
+									</div>
+								</div>
+							</div>
+
+							{/* TCLE Acceptance Checkbox */}
 							<FormField
 								control={form.control}
 								name="accept_tcle"
 								render={({ field }) => (
-									<FormItem className="flex gap-[10px] items-center justify-center">
+									<FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border border-gray-200 rounded-xl">
 										<FormControl>
-											<Switch
+											<Checkbox
 												checked={field.value}
 												onCheckedChange={field.onChange}
+												className="mt-0.5"
 											/>
 										</FormControl>
-										<FormLabel className="font-bold">
-											Li e aceito os termos TLCE
-										</FormLabel>
+										<div className="space-y-1 leading-none">
+											<FormLabel className="font-semibold text-gray-800">
+												Li e aceito os termos TCLE
+											</FormLabel>
+											<FormDescription className="text-xs">
+												<button
+													type="button"
+													onClick={() => setShowTcleModal(true)}
+													className="text-[#FF8A65] hover:text-[#FF8A65]/80 font-medium underline"
+												>
+													Ver TCLE completo
+												</button>
+											</FormDescription>
+											<FormMessage />
+										</div>
 									</FormItem>
 								)}
 							/>
 
-							<Button className="w-[100%] hover:scale-1" type="submit" disabled={submitting}>
-								Próximo
+							{/* Submit Button */}
+							<Button
+								className="w-full transform transition-all duration-150 active:scale-95 hover:-translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.1)] active:shadow-[0_1px_0_rgba(0,0,0,0.1)] active:translate-y-1 rounded-2xl py-6 font-bold text-white text-lg bg-gradient-to-br from-[#FF8A65] to-[#FFB394]"
+								type="submit"
+								disabled={submitting}
+							>
+								{submitting ? 'Enviando...' : 'Próximo'}
 							</Button>
 						</form>
 					</Form>
-				</Card>
+				</div>
 			</div>
+
+			{/* TCLE Modal */}
+			<TcleModal open={showTcleModal} onOpenChange={setShowTcleModal} />
 		</div>
 	);
 }

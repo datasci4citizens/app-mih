@@ -3,6 +3,8 @@ import { PatientSelectModal } from "@/components/ui/patient-select-modal";
 import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
+import { useSWRConfig } from "swr";
+import apiClient from "@/lib/axios";
 
 import {
   Camera,
@@ -99,6 +101,7 @@ export default function PatientHomePage() {
   const { data: user } = useSWR('/user/me')
   const { data: patientsData } = useSWR('/users/patients/')
   const navigate = useNavigate();
+  const { mutate } = useSWRConfig();
 
   const [currentTip, setCurrentTip] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -115,6 +118,13 @@ export default function PatientHomePage() {
 
   const nextTip = () => {
     setCurrentTip((prev) => (prev + 1) % tips.length);
+  };
+
+  const handleLogout = async () => {
+    await apiClient.post("/auth/logout");
+    mutate("/user/me", null);
+    localStorage.clear();
+    navigate("/login");
   };
 
   return (
@@ -150,7 +160,7 @@ export default function PatientHomePage() {
                     <span className="font-medium">Configurações</span>
                   </button>
                   <div className="h-px bg-gray-100 my-1"></div>
-                  <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
+                  <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
                     <LogOut size={18} />
                     <span className="font-medium">Sair</span>
                   </button>

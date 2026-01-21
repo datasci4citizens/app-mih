@@ -11,7 +11,6 @@ import PatientRegisters from './routes/registers/user/PatientRegisters';
 import Register from './routes/registers/user/Register';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
-import TCLE from './routes/user/create-user-patient/Tcle';
 import SelectUserType from './routes/user/SelectUserType';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
@@ -111,10 +110,6 @@ const router = createBrowserRouter([
           {
             path: '/user/create',
             element: <CreateUser />
-          },
-          {
-            path: '/user/create/tcle',
-            element: <TCLE />
           },
           {
             path: '/specialist/create',
