@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch.tsx'
+import { ToggleField } from '@/components/ui/toggle-field'
 
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft } from "lucide-react"
@@ -218,23 +218,19 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="brothers"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <FormLabel className='font-bold'>Tem irmãos</FormLabel>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Não</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value}
-                                                                    onCheckedChange={(checked) => {
-                                                                        field.onChange(checked);
-                                                                        if (!checked) {
-                                                                            form.setValue("brothersNumber", "");
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormDescription>Sim</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="Tem irmãos?"
+                                                                value={field.value}
+                                                                onChange={(checked) => {
+                                                                    field.onChange(checked);
+                                                                    if (!checked) {
+                                                                        form.setValue("brothersNumber", "");
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />
@@ -262,22 +258,19 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="deliveryProblems"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <FormLabel className='font-bold'>A mãe teve problemas durante a gravidez ?</FormLabel>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Não</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value}
-                                                                    onCheckedChange={(checked) => {
-                                                                        field.onChange(checked);
-                                                                        if (!checked) {
-                                                                            form.setValue("deliveryProblemsTypes", []);
-                                                                        }
-                                                                    }} />
-                                                            </FormControl>
-                                                            <FormDescription>Sim</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="A mãe teve problemas durante a gravidez?"
+                                                                value={field.value}
+                                                                onChange={(checked) => {
+                                                                    field.onChange(checked);
+                                                                    if (!checked) {
+                                                                        form.setValue("deliveryProblemsTypes", []);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />
@@ -339,20 +332,14 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="premature"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <div className='flex flex-col justify-center items-center space-y-1'>
-                                                            <FormLabel className='font-bold'>Teve parto prematuro ? </FormLabel>
-                                                            <FormDescription className='text-xs'>(antes de 37 semanas de gestação)</FormDescription>
-                                                        </div>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Não</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value}
-                                                                    onCheckedChange={field.onChange} />
-                                                            </FormControl>
-                                                            <FormDescription>Sim</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="Teve parto prematuro? (antes de 37 semanas)"
+                                                                value={field.value}
+                                                                onChange={field.onChange}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />
@@ -360,27 +347,23 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="deliveryType"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <FormLabel className='font-bold'>Tipo de parto</FormLabel>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Cesárea</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value === "normal" ? true : false}
-                                                                    onCheckedChange={(checked) => {
-                                                                        field.onChange(checked);
-                                                                        if (!checked) {
-                                                                            form.setValue("deliveryType", "cesarean");
-                                                                        } else {
-                                                                            form.setValue("deliveryType", "normal");
-                                                                        }
-                                                                        if (import.meta.env.VITE_DEV_MODE === 'true') {
-                                                                            console.log(form.watch("deliveryType"))
-                                                                        }
-                                                                    }} />
-                                                            </FormControl>
-                                                            <FormDescription>Normal</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="Tipo de parto: Normal?"
+                                                                value={field.value === "normal"}
+                                                                onChange={(checked) => {
+                                                                    if (checked) {
+                                                                        form.setValue("deliveryType", "normal");
+                                                                    } else {
+                                                                        form.setValue("deliveryType", "cesarean");
+                                                                    }
+                                                                    if (import.meta.env.VITE_DEV_MODE === 'true') {
+                                                                        console.log(form.watch("deliveryType"));
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />
@@ -388,20 +371,14 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="lowWeight"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <div className='flex flex-col justify-center items-center space-y-1'>
-                                                            <FormLabel className='font-bold'>A criança teve baixo peso ao nascer ?</FormLabel>
-                                                            <FormDescription className='text-xs'>(abaixo de 2,5kg)</FormDescription>
-                                                        </div>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Não</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value}
-                                                                    onCheckedChange={field.onChange} />
-                                                            </FormControl>
-                                                            <FormDescription>Sim</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="Baixo peso ao nascer? (abaixo de 2,5kg)"
+                                                                value={field.value}
+                                                                onChange={field.onChange}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />
@@ -416,17 +393,14 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="highFever"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <FormLabel className='font-bold text-center'>A criança já teve febre alta ou infecção até os 3 anos ?</FormLabel>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Não</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value}
-                                                                    onCheckedChange={field.onChange} />
-                                                            </FormControl>
-                                                            <FormDescription>Sim</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="Já teve febre alta ou infecção até os 3 anos?"
+                                                                value={field.value}
+                                                                onChange={field.onChange}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />
@@ -434,22 +408,19 @@ export default function PatientForm() {
                                                 control={form.control}
                                                 name="consultDentist"
                                                 render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                                        <FormLabel className='font-bold'>A criança já teve consulta com dentista ?</FormLabel>
-                                                        <div className='flex gap-[15px] items-center justify-center'>
-                                                            <FormDescription>Não</FormDescription>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    checked={field.value}
-                                                                    onCheckedChange={(checked) => {
-                                                                        field.onChange(checked);
-                                                                        if (!checked) {
-                                                                            form.setValue("consultType", "");
-                                                                        }
-                                                                    }} />
-                                                            </FormControl>
-                                                            <FormDescription>Sim</FormDescription>
-                                                        </div>
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="Já teve consulta com dentista?"
+                                                                value={field.value}
+                                                                onChange={(checked) => {
+                                                                    field.onChange(checked);
+                                                                    if (!checked) {
+                                                                        form.setValue("consultType", "");
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </FormControl>
                                                     </FormItem>
                                                 )}
                                             />

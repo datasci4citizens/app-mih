@@ -14,12 +14,14 @@ export const ToggleField = ({
     className = ""
 }: ToggleFieldProps) => {
     return (
-        <div className={cn("bg-gray-50 p-4 rounded-xl flex items-center justify-between", className)}>
-            <label className="text-sm font-semibold text-gray-700">{label}</label>
-            <div className="flex bg-gray-200 rounded-lg p-1">
+        <div
+            onClick={() => onChange(!value)}
+            className={cn("p-4 rounded-xl flex items-center justify-between cursor-pointer transition-colors hover:bg-gray-50/50", className)}
+        >
+            <label className="text-sm font-semibold text-gray-700 cursor-pointer pointer-events-none">{label}</label>
+            <div className="flex bg-gray-200 rounded-lg p-1 pointer-events-none">
                 <button
                     type="button"
-                    onClick={() => onChange(false)}
                     className={cn(
                         "px-4 py-1.5 rounded-md text-sm font-bold transition-all",
                         !value
@@ -31,7 +33,6 @@ export const ToggleField = ({
                 </button>
                 <button
                     type="button"
-                    onClick={() => onChange(true)}
                     className={cn(
                         "px-4 py-1.5 rounded-md text-sm font-bold transition-all",
                         value
