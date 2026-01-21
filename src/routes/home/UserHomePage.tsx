@@ -137,35 +137,37 @@ export default function PatientHomePage() {
         }}>
           <div className="max-w-screen-lg mx-auto">
             {/* Header Funcional */}
-            <div className="pt-8 md:pt-12 pb-4 md:pb-8 px-6 flex justify-between items-center relative">
-              <div className="flex items-center gap-3 cursor-pointer" onClick={(e) => {
-                e.stopPropagation();
-                setShowUserMenu(!showUserMenu);
-                setShowNotifications(false);
-              }}>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors">
-                  <User size={20} className="md:w-6 md:h-6" />
+            <div className="pt-8 md:pt-12 pb-4 md:pb-8 px-6 flex justify-between items-center">
+              <div className="relative">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={(e) => {
+                  e.stopPropagation();
+                  setShowUserMenu(!showUserMenu);
+                  setShowNotifications(false);
+                }}>
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors">
+                    <User size={20} className="md:w-6 md:h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-xs md:text-sm opacity-90 font-medium">Bem-vindo(a),</h2>
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">{user?.name ?? '...'}!</h1>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xs md:text-sm opacity-90 font-medium">Bem-vindo(a),</h2>
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">{user?.name ?? '...'}!</h1>
-                </div>
-              </div>
 
-              {/* User Menu Popover */}
-              {showUserMenu && (
-                <div className="absolute top-28 left-6 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 text-gray-700 transition-colors">
-                    <Settings size={18} />
-                    <span className="font-medium">Configurações</span>
-                  </button>
-                  <div className="h-px bg-gray-100 my-1"></div>
-                  <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
-                    <LogOut size={18} />
-                    <span className="font-medium">Sair</span>
-                  </button>
-                </div>
-              )}
+                {/* User Menu Popover */}
+                {showUserMenu && (
+                  <div className="absolute top-14 left-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 text-gray-700 transition-colors">
+                      <Settings size={18} />
+                      <span className="font-medium">Configurações</span>
+                    </button>
+                    <div className="h-px bg-gray-100 my-1"></div>
+                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
+                      <LogOut size={18} />
+                      <span className="font-medium">Sair</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div className="relative">
                 <button
