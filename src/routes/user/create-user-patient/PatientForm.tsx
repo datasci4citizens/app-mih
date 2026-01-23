@@ -180,7 +180,7 @@ export default function PatientForm() {
                         <div className="w-full max-w-md md:max-w-4xl mx-auto">
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                                    <Card className='border-none shadow-lg' hoverScale={true}>
+                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl' hoverScale={true}>
                                         <CardContent className='space-y-3 p-4'>
 
                                             <FormField

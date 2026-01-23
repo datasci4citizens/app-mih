@@ -147,11 +147,11 @@ export default function PatientHomePage() {
                 {/* User Menu Popover */}
                 {showUserMenu && (
                   <div className="absolute top-14 left-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 text-gray-700 transition-colors">
+                    {/* <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 text-gray-700 transition-colors">
                       <Settings size={18} />
                       <span className="font-medium">Configurações</span>
                     </button>
-                    <div className="h-px bg-gray-100 my-1"></div>
+                    <div className="h-px bg-gray-100 my-1"></div> */}
                     <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
                       <LogOut size={18} />
                       <span className="font-medium">Sair</span>
@@ -171,7 +171,6 @@ export default function PatientHomePage() {
                 >
                   <Bell size={20} className="md:w-6 md:h-6" />
                 </button>
-                <div className="absolute top-0 right-0 w-3 h-3 bg-red-400 rounded-full border-2 border-[#A0E7E5]"></div>
 
                 {/* Notifications Popover */}
                 {showNotifications && (
@@ -179,18 +178,6 @@ export default function PatientHomePage() {
                     <h3 className="font-bold text-gray-800 mb-3">Notificações</h3>
                     <div className="space-y-3">
                       <div className="flex gap-3 items-start p-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-blue-400 flex-shrink-0"></div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">Novo diagnóstico disponível</p>
-                          <p className="text-xs text-gray-500">Filho 1 - Molar Direito</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-3 items-start p-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
-                        <div className="w-2 h-2 mt-2 rounded-full bg-green-400 flex-shrink-0"></div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">Registro concluído</p>
-                          <p className="text-xs text-gray-500">Cadastro atualizado com sucesso</p>
-                        </div>
                       </div>
                     </div>
                   </div>
