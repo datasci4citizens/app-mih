@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthGuard } from './guards/auth';
-import HmiInformations from './routes/home/HmiInformations';
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PatientHomePage from './routes/home/UserHomePage';
 import LoginPage from './routes/login/Login';
@@ -50,11 +49,6 @@ const router = createBrowserRouter([
               {
                 path: '/user/home',
                 element: <PatientHomePage />
-
-              },
-              {
-                path: '/user/home/hmi-informations',
-                element: <HmiInformations />
 
               },
               {

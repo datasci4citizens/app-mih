@@ -22,7 +22,8 @@ import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
 import imgTooth from '@/assets/Icon.svg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUser } from '@/lib/hooks/use-user';
 
 const formSchema = z.object({
 	name: z.string().min(4, {
@@ -44,6 +45,7 @@ async function sendRequest(
 }
 
 export default function CreateSpecialist() {
+	const user = useUser();
 	const { trigger, data, error, isMutating } = useSwrMutation(
 		`${import.meta.env.VITE_SERVER_URL}/users/`,
 		sendRequest,
@@ -54,11 +56,27 @@ export default function CreateSpecialist() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			name: '',
-			email: '',
+			name: user.name || '',
+			email: user.email || '',
 			phone_number: '',
 		},
 	});
+
+	// Update form values if user data loads after initial render
+	useEffect(() => {
+		if (user.email) {
+			form.setValue('email', user.email);
+		}
+		if (user.name) {
+			// Only set name if it's empty to allow user editing if they started typing/or if we want to force it initially
+			// But simpler to just reset/setValue if the user context updates. 
+			// Let's rely on defaultValues for initial mount if data is present, 
+			// and this effect for async updates.
+			if (form.getValues('name') === '') {
+				form.setValue('name', user.name);
+			}
+		}
+	}, [user, form]);
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		setSubmitting(true);
@@ -159,11 +177,12 @@ export default function CreateSpecialist() {
 											<Input
 												placeholder="Email de cadastro"
 												{...field}
-												className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+												disabled={true}
+												className="border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed focus:border-gray-300 focus:ring-0"
 											/>
 										</FormControl>
 										<FormDescription className="text-xs">
-											Insira o email usado no login com o Google
+											Email vinculado à sua conta Google
 										</FormDescription>
 										<FormMessage />
 									</FormItem>

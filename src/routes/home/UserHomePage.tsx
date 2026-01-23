@@ -174,13 +174,12 @@ export default function PatientHomePage() {
 
                 {/* Notifications Popover */}
                 {showNotifications && (
-                  <div className="absolute top-14 right-0 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <h3 className="font-bold text-gray-800 mb-3">Notificações</h3>
-                    <div className="space-y-3">
-                      <div className="flex gap-3 items-start p-2 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer">
-                      </div>
+                    <div className="absolute top-14 right-0 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <h3 className="font-bold text-gray-800 mb-3">Notificações</h3>
+                        <div className="text-center text-gray-400 py-4 text-sm">
+                            Nenhuma notificação nova
+                        </div>
                     </div>
-                  </div>
                 )}
               </div>
             </div>

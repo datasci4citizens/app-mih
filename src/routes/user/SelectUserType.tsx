@@ -1,9 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import imgTooth from "@/assets/Icon.svg";
 import { ToyBackground } from "@/components/ui/toy-background";
-import { User, Stethoscope } from "lucide-react";
+import { User, Stethoscope, LogOut } from "lucide-react";
+import apiClient from "@/lib/axios";
+import { useSWRConfig } from "swr";
 
 export default function SelectUserType() {
+    const navigate = useNavigate();
+    const { mutate } = useSWRConfig();
+
+    const handleLogout = async () => {
+        await apiClient.post("/auth/logout");
+        mutate("/user/me", null);
+        localStorage.clear();
+        navigate("/login");
+    };
+
     return (
         <div className="w-full h-screen bg-[#A0E7E5] relative">
             <ToyBackground />
@@ -70,6 +82,14 @@ export default function SelectUserType() {
                         </button>
                     </Link>
                 </div>
+
+                <button
+                    onClick={handleLogout}
+                    className="mt-8 flex items-center gap-2 bg-white text-cyan-600 font-bold transition-all animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 hover:bg-gray-50"
+                >
+                    <LogOut size={20} />
+                    Trocar de conta
+                </button>
             </div>
         </div>
     );
