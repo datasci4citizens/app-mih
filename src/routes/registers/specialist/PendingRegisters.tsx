@@ -66,33 +66,40 @@ export default function PendingRegisters() {
         <div className="w-full bg-[#A0E7E5] min-h-screen relative">
             <ToyBackground />
 
-            <div className="relative z-10 p-6 max-w-7xl mx-auto h-full flex flex-col">
+            <div className="min-h-screen h-full flex flex-col relative z-10">
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-8 pt-4">
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
                     <Link to="/specialist/home">
-                        <Button size="icon" className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-sm transition-colors">
+                        <Button size="icon" className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors">
                             <ArrowLeft size={24} />
                         </Button>
                     </Link>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800 drop-shadow-sm">Avaliações Pendentes</h1>
+                    <h1 className="text-xl font-bold text-gray-800">Avaliações Pendentes</h1>
                 </div>
 
-                {/* List Content */}
-                {(!data || data.length === 0) ? (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center opacity-60">
-                        <div className="bg-white/30 p-8 rounded-full mb-4">
-                            <Calendar size={64} className="text-white" />
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto">
+                    <div className="p-6 pb-20">
+                        <div className="max-w-7xl mx-auto">
+                            {/* List Content */}
+                            {(!data || data.length === 0) ? (
+                                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-60">
+                                    <div className="bg-white/30 p-8 rounded-full mb-4">
+                                        <Calendar size={64} className="text-white" />
+                                    </div>
+                                    <h2 className="text-xl font-bold text-teal-900">Tudo em dia!</h2>
+                                    <p className="text-teal-800">Nenhum registro pendente de avaliação.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {data?.map((value: RegisterData) => (
+                                        <RegisterCard key={value.mih_id} value={value} selectRegister={selectRegister} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        <h2 className="text-xl font-bold text-teal-900">Tudo em dia!</h2>
-                        <p className="text-teal-800">Nenhum registro pendente de avaliação.</p>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                        {data?.map((value: RegisterData) => (
-                            <RegisterCard key={value.mih_id} value={value} selectRegister={selectRegister} />
-                        ))}
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     )

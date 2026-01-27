@@ -162,7 +162,7 @@ export default function PatientForm() {
             <div className="min-h-screen h-full flex flex-col relative z-10">
 
                 {/* Header */}
-                <div className="px-6 pt-6 pb-4 flex items-center gap-4">
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
                     <button
                         onClick={() => navigate(-1)}
                         className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors"

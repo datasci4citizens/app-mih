@@ -110,7 +110,7 @@ export default function CreateUser() {
 	return (
 		<div className="w-full min-h-screen bg-[#A0E7E5] relative">
 			<ToyBackground />
-			<div className="relative z-10 flex flex-col items-center justify-start min-h-screen px-6 py-12">
+			<div className="relative z-10 flex flex-col items-center justify-start min-h-screen px-6" style={{ paddingTop: 'max(env(safe-area-inset-top), 3rem)', paddingBottom: '3rem' }}>
 				{/* Logo */}
 				<img
 					src={imgTooth}

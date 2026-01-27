@@ -84,12 +84,9 @@ export default function Register() {
 
             <div className="min-h-screen h-full flex flex-col relative z-10">
                 {/* Header */}
-                <div className="px-6 pt-6 pb-4 flex items-center gap-4">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors"
-                    >
-                        <ChevronLeft size={28} />
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
+                    <button onClick={() => navigate(-1)} className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center">
+                        <ChevronLeft size={24} />
                     </button>
                     <h1 className="text-xl font-bold text-gray-800">Detalhes do Registro</h1>
                 </div>

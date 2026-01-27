@@ -80,12 +80,12 @@ export default function RegisterDiagnostic() {
                 <div className="max-w-5xl mx-auto space-y-6">
 
                     {/* Header */}
-                    <div className="flex items-center gap-4 pt-4">
+                    <div className="flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1rem)' }}>
                         <Button
                             size="icon"
                             onClick={back}
                             disabled={submitting}
-                            className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-sm transition-colors"
+                            className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors"
                         >
                             <ArrowLeft size={24} />
                         </Button>

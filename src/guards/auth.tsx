@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import LoadingInfos from "@/lib/components_utils/LoadingInfos";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { UserContextProvider } from "@/lib/hooks/use-user";
 import { Navigate, Outlet } from "react-router-dom";
@@ -9,21 +9,19 @@ export function AuthGuard() {
     const { data, error, isLoading } = useSWR('/user/me')
 
     if (isLoading)
-        return (
-            <div className="min-h-screen relative flex justify-center items-center">
-                <div className="z-10 h-[100px] w-[50%] bg-primary text-white border-4 rounded-xl overflow-visible flex items-center justify-center"> <Skeleton className="font-bold text-xl bg-white/0">Carregando</Skeleton>
-
-                </div>
-            </div>
-        )
+        return <LoadingInfos />
 
     if (import.meta.env.VITE_DEV_MODE === 'true') {
         console.log("auth guard data:", data);
         console.log("auth guard typeof data:", typeof data);
     }
 
-    if (error)
+    if (error) {
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log("AuthGuard: Error occurred, showing error page", error);
+        }
         return <ErrorPage type="login"></ErrorPage>
+    }
 
     if (!data || data.detail || typeof data === 'string') {
         if (import.meta.env.VITE_DEV_MODE === 'true') {

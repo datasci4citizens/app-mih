@@ -44,10 +44,10 @@ export default function ConfirmPatient() {
 
             <div className="relative z-10 min-h-screen flex flex-col">
                 {/* Header */}
-                <div className="px-6 pt-6 pb-4 flex items-center gap-4">
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
                     <Link to={`/user/home`}>
-                        <button className="text-gray-600 hover:bg-gray-100/50 p-2 rounded-lg transition-colors">
-                            <ChevronLeft size={28} />
+                        <button className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center">
+                            <ChevronLeft size={24} />
                         </button>
                     </Link>
                     <h1 className="text-xl font-bold text-gray-800">Confirmar Dados</h1>

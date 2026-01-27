@@ -35,17 +35,17 @@ export default function SpecialistHomePage() {
                     if (showUserMenu) setShowUserMenu(false);
                     if (showNotifications) setShowNotifications(false);
                 }}>
-                    <div className="max-w-screen-lg mx-auto">
+                    <div className="max-w-screen-lg mx-auto min-h-full grid grid-rows-[auto_1fr_auto]">
                         {/* Header Funcional */}
-                        <div className="pt-8 md:pt-12 pb-4 md:pb-8 px-6 flex justify-between items-center">
+                        <div className="pb-6 md:pb-10 px-6 flex justify-between items-center" style={{ paddingTop: 'max(env(safe-area-inset-top), 2rem)' }}>
                             <div className="relative">
                                 <div className="flex items-center gap-3 cursor-pointer" onClick={(e) => {
                                     e.stopPropagation();
                                     setShowUserMenu(!showUserMenu);
                                     setShowNotifications(false);
                                 }}>
-                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors">
-                                        <User size={20} className="md:w-6 md:h-6" />
+                                    <div className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors shadow-lg">
+                                        <User size={22} className="md:w-7 md:h-7" />
                                     </div>
                                     <div>
                                         <h2 className="text-xs md:text-sm opacity-90 font-medium">Bem-vindo(a),</h2>
@@ -71,9 +71,9 @@ export default function SpecialistHomePage() {
                                         setShowNotifications(!showNotifications);
                                         setShowUserMenu(false);
                                     }}
-                                    className="w-10 h-10 md:w-12 md:h-12 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors"
+                                    className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors shadow-lg"
                                 >
-                                    <Bell size={20} className="md:w-6 md:h-6" />
+                                    <Bell size={22} className="md:w-7 md:h-7" />
                                 </button>
 
                                 {/* Notifications Popover */}
@@ -88,9 +88,9 @@ export default function SpecialistHomePage() {
                             </div>
                         </div>
 
-                        {/* Grid Layout para Desktop */}
-                        <div className="px-6 pb-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8 mt-4 md:mt-8">
+                        {/* Conteúdo Principal - Centralizado na linha do meio */}
+                        <div className="flex flex-col justify-center px-6 pb-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
 
                                 {/* Card Avaliações Pendentes */}
                                 <button
@@ -136,6 +136,9 @@ export default function SpecialistHomePage() {
 
                             </div>
                         </div>
+
+                        {/* Elemento Fantasma - Mesma altura do header para balancear o layout */}
+                        <div className="pb-6 md:pb-10" style={{ paddingTop: 'max(env(safe-area-inset-top), 2rem)' }} aria-hidden="true"></div>
                     </div>
                 </div>
             </div>
