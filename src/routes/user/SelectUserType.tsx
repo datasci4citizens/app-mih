@@ -19,7 +19,7 @@ export default function SelectUserType() {
     return (
         <div className="w-full h-screen bg-[#A0E7E5] relative">
             <ToyBackground />
-            <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
+            <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6">
                 {/* Logo */}
                 <img
                     src={imgTooth}
