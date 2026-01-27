@@ -13,6 +13,9 @@ import PatientForm from './routes/user/create-user-patient/PatientForm';
 import SelectUserType from './routes/user/SelectUserType';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
+import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Fullscreen } from '@boengli/capacitor-fullscreen';
 import { RoleGuard } from './guards/role';
 import { NoRoleGuard } from './guards/norole';
 import { ChoseRoleGuard } from './guards/choserole';
@@ -121,6 +124,18 @@ const router = createBrowserRouter([
 ]);
 
 export function App() {
+  useEffect(() => {
+    const activateImmersiveMode = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Fullscreen.activateImmersiveMode();
+        } catch (error) {
+          console.error('Failed to activate immersive mode:', error);
+        }
+      }
+    };
+    activateImmersiveMode();
+  }, []);
   return (
     <SWRConfig value={{
       fetcher: (url) => apiClient.get(url).then(res => res.data)

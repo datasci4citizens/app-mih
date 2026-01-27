@@ -23,8 +23,7 @@ import {
   BookPlusIcon,
   FileQuestion,
   ChevronRight,
-  LogOut,
-  Settings
+  LogOut
 } from 'lucide-react';
 
 
@@ -56,13 +55,17 @@ const HmiInformationCarousel = () => {
       </div>
       <div className="relative">
         <div className="bg-gray-50 border border-gray-200 p-4 md:p-5 rounded-2xl mb-3 md:mb-4 h-[140px] md:h-[200px] transition-all duration-300 overflow-y-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-gray-800 text-lg">{carouselItems[currentItem].title}</h3>
-            <div className="text-cyan-500">{carouselItems[currentItem].icon}</div>
-          </div>
-          <p className="text-gray-600 text-sm animate-in fade-in duration-300 key={currentItem}">
-            {carouselItems[currentItem].content}
-          </p>
+          {carouselItems[currentItem] && (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-gray-800 text-lg">{carouselItems[currentItem].title}</h3>
+                <div className="text-cyan-500">{carouselItems[currentItem].icon}</div>
+              </div>
+              <p className="text-gray-600 text-sm animate-in fade-in duration-300 key={currentItem}">
+                {carouselItems[currentItem].content}
+              </p>
+            </>
+          )}
         </div>
         <div className="flex justify-between items-center mt-4">
           <button onClick={prevItem} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
@@ -121,12 +124,13 @@ export default function PatientHomePage() {
   return (
     <div className="w-full bg-[#A0E7E5]">
       {<ToyBackground />}
-      <div className="w-full h-screen relative overflow-y-auto">
+      <div className="w-full h-screen relative">
         <div className="relative z-10 h-full overflow-y-auto" onClick={() => {
           if (showUserMenu) setShowUserMenu(false);
           if (showNotifications) setShowNotifications(false);
         }}>
-          <div className="max-w-screen-lg mx-auto">
+          {/* Grid com 3 linhas: header, conteúdo, fantasma */}
+          <div className="max-w-screen-lg mx-auto min-h-full grid grid-rows-[auto_1fr_auto]">
             {/* Header Funcional */}
             <div className="pt-8 md:pt-12 pb-4 md:pb-8 px-6 flex justify-between items-center">
               <div className="relative">
@@ -174,20 +178,21 @@ export default function PatientHomePage() {
 
                 {/* Notifications Popover */}
                 {showNotifications && (
-                    <div className="absolute top-14 right-0 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                        <h3 className="font-bold text-gray-800 mb-3">Notificações</h3>
-                        <div className="text-center text-gray-400 py-4 text-sm">
-                            Nenhuma notificação nova
-                        </div>
+                  <div className="absolute top-14 right-0 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <h3 className="font-bold text-gray-800 mb-3">Notificações</h3>
+                    <div className="text-center text-gray-400 py-4 text-sm">
+                      Nenhuma notificação nova
                     </div>
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Grid Layout para Desktop */}
-            <div className="px-6 pb-6">
+            {/* Conteúdo Principal - Centralizado na linha do meio */}
+            <div className="flex flex-col justify-center px-6 pb-6">
               <HmiInformationCarousel />
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 mt-4 md:mt-8">
+
 
                 {/* Coluna Esquerda (Novo Registro) */}
                 <div className="lg:col-span-1">
@@ -252,19 +257,22 @@ export default function PatientHomePage() {
                 </div>
               </div>
             </div>
+
+            {/* Elemento Fantasma - Mesma altura do header para balancear o layout */}
+            <div className="pt-8 md:pt-12 pb-4 md:pb-8" aria-hidden="true"></div>
           </div>
         </div>
-      </div>
 
-      {/* Patient Selection Modal */}
-      <PatientSelectModal
-        open={showPatientModal}
-        onOpenChange={setShowPatientModal}
-        onSelectPatient={(patientId) => {
-          navigate(`/user/registers/create-register/${patientId}/confirm`);
-        }}
-        patients={patientsData}
-      />
+        {/* Patient Selection Modal */}
+        <PatientSelectModal
+          open={showPatientModal}
+          onOpenChange={setShowPatientModal}
+          onSelectPatient={(patientId) => {
+            navigate(`/user/registers/create-register/${patientId}/confirm`);
+          }}
+          patients={patientsData}
+        />
+      </div>
     </div>
   );
 }
