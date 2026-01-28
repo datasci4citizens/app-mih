@@ -71,7 +71,7 @@ export default function CaptureToothPhoto({ photoStep }: { photoStep: string }) 
                                     e.stopPropagation();
                                     handleButtonClick();
                                 }}
-                                className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-white/30 transition-colors"
+                                className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-white/30 transition-all active:scale-95"
                             >
                                 <RefreshCw size={18} />
                                 Tirar Outra

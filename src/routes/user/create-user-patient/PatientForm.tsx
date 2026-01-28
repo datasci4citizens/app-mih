@@ -179,7 +179,7 @@ export default function PatientForm() {
                         <div className="w-full max-w-md md:max-w-4xl mx-auto">
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl' hoverScale={true}>
+                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
                                         <CardContent className='space-y-3 p-4'>
 
                                             <FormField
@@ -251,7 +251,7 @@ export default function PatientForm() {
                                             )}
                                         </CardContent>
                                     </Card>
-                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl' hoverScale={true}>
+                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
                                         <CardContent className='space-y-3 p-4'>
                                             <FormField
                                                 control={form.control}
@@ -385,7 +385,7 @@ export default function PatientForm() {
                                         </CardContent>
                                     </Card>
 
-                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl' hoverScale={true}>
+                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
                                         <CardContent className='space-y-3 p-4'>
 
                                             <FormField

@@ -1,17 +1,5 @@
-import { User, Plus, Edit2, Trash2, Calendar } from "lucide-react";
+import { User, Plus, ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { ChevronLeft } from "lucide-react";
 import { ToyBackground } from "@/components/ui/toy-background";
 import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
 import ErrorPage from "@/lib/components_utils/ErrorPage";
@@ -24,22 +12,8 @@ import { calculateAge } from "@/lib/utils/date";
 export default function Patients() {
     const navigate = useNavigate();
     const { patients, isLoading, error } = usePatients();
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
-    const handleDeleteClick = (patientId: number) => {
-        setSelectedPatientId(String(patientId));
-        setDeleteDialogOpen(true);
-    };
 
-    const handleConfirmDelete = async () => {
-        // TODO: Implement delete API call when endpoint is available
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log("Delete patient:", selectedPatientId);
-        }
-        setDeleteDialogOpen(false);
-        setSelectedPatientId(null);
-    };
 
     if (isLoading) {
         return <SkeletonLoading />;
@@ -57,7 +31,7 @@ export default function Patients() {
                 {/* Header */}
                 <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
                     <Link to="/user/home">
-                        <button className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center">
+                        <button className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-all active:scale-95 flex items-center justify-center">
                             <ChevronLeft size={24} />
                         </button>
                     </Link>
@@ -71,7 +45,7 @@ export default function Patients() {
 
                             {/* Add New Child Button */}
                             <Link to="/user/create/patient">
-                                <button className="w-full bg-white/80 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-3 text-gray-700 font-bold border-2 border-dashed border-gray-300 hover:border-[#A0E7E5] hover:bg-white hover:text-[#A0E7E5] transition-all group shadow-sm">
+                                <button className="w-full bg-white/80 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-3 text-gray-700 font-bold border-2 border-dashed border-gray-300 hover:border-[#A0E7E5] hover:bg-white hover:text-[#A0E7E5] transition-all active:scale-95 group shadow-sm">
                                     <div className="bg-gray-100 p-2 rounded-full group-hover:bg-[#A0E7E5]/10 transition-colors">
                                         <Plus size={24} />
                                     </div>
@@ -85,9 +59,10 @@ export default function Patients() {
                                     const age = calculateAge(patient.birthday);
 
                                     return (
-                                        <div
+                                        <button
                                             key={patient.patient_id}
-                                            className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02]"
+                                            onClick={() => navigate(`/user/patients/${patient.patient_id}`)}
+                                            className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] active:scale-95 w-full"
                                         >
                                             {/* Avatar */}
                                             <div className="w-16 h-16 bg-gradient-to-br from-[#A0E7E5] to-[#8EC9BB] p-1 rounded-full shadow-md flex-shrink-0">
@@ -97,37 +72,16 @@ export default function Patients() {
                                             </div>
 
                                             {/* Info */}
-                                            <div className="flex-1 min-w-0">
+                                            <div className="flex-1 min-w-0 text-left">
                                                 <h3 className="font-bold text-gray-800 text-xl truncate">{patient.name}</h3>
                                                 <p className="text-gray-500 font-medium text-sm">{age} anos</p>
                                             </div>
 
-                                            {/* Actions */}
-                                            <div className="flex items-center gap-1">
-                                                <button
-                                                    onClick={() => navigate(`/user/patients/${patient.patient_id}`)}
-                                                    className="p-2 text-gray-400 hover:text-[#A0E7E5] hover:bg-[#A0E7E5]/10 rounded-xl transition-colors"
-                                                    title="Ver Registros"
-                                                >
-                                                    <Calendar size={20} />
-                                                </button>
-                                                <Link to={`/user/edit/patient/${patient.patient_id}`}>
-                                                    <button
-                                                        className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-colors"
-                                                        title="Editar"
-                                                    >
-                                                        <Edit2 size={20} />
-                                                    </button>
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDeleteClick(patient.patient_id)}
-                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
-                                                    title="Deletar"
-                                                >
-                                                    <Trash2 size={20} />
-                                                </button>
+                                            {/* Arrow */}
+                                            <div className="self-center">
+                                                <ChevronLeft size={20} className="text-gray-300 rotate-180" />
                                             </div>
-                                        </div>
+                                        </button>
                                     );
                                 })}
                             </div>
@@ -135,27 +89,6 @@ export default function Patients() {
                     </div>
                 </div>
             </div>
-
-            {/* Delete Confirmation Dialog */}
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Deletar Criança</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Tem certeza que deseja deletar esta criança? Esta ação não pode ser desfeita e todos os registros associados serão perdidos.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleConfirmDelete}
-                            className="bg-red-500 hover:bg-red-600"
-                        >
-                            Deletar
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
     );
 }

@@ -32,7 +32,7 @@ export default function AllRegisters() {
                 {/* Header */}
                 <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
                     <Link to="/user/home">
-                        <button className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center">
+                        <button className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-all active:scale-95 flex items-center justify-center">
                             <ChevronLeft size={24} />
                         </button>
                     </Link>
@@ -63,7 +63,7 @@ export default function AllRegisters() {
                                 <div className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-sm border border-gray-100 text-center">
                                     <p className="text-gray-500 mb-4">Nenhum registro encontrado</p>
                                     <Link to="/user/registers">
-                                        <button className="bg-[#A0E7E5] text-white px-6 py-2 rounded-xl font-bold hover:bg-[#8EC9BB] transition-colors">
+                                        <button className="bg-[#A0E7E5] text-white px-6 py-2 rounded-xl font-bold hover:bg-[#8EC9BB] transition-all active:scale-95">
                                             Criar Primeiro Registro
                                         </button>
                                     </Link>
@@ -80,7 +80,7 @@ export default function AllRegisters() {
                                                 <div
                                                     key={register.mih_id}
                                                     onClick={() => navigate(`/user/patients/${register.patient_id}/${register.mih_id}`)}
-                                                    className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] cursor-pointer"
+                                                    className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer"
                                                 >
                                                     {/* Icon with badge */}
                                                     <div className={`w-16 h-16 ${diagnosisInfo.bg} rounded-2xl flex items-center justify-center flex-shrink-0 relative`}>
@@ -123,7 +123,7 @@ export default function AllRegisters() {
                                     <div className="mt-6">
                                         <button
                                             onClick={() => setShowPatientModal(true)}
-                                            className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all"
+                                            className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all active:scale-95"
                                         >
                                             <Plus size={20} />
                                             <span>Novo Registro</span>

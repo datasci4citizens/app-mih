@@ -75,7 +75,7 @@ export default function PatientRegisters() {
                 <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
                     <button
                         onClick={() => navigate('/user/patients')}
-                        className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center"
+                        className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-all active:scale-95 flex items-center justify-center"
                     >
                         <ChevronLeft size={24} />
                     </button>
@@ -114,7 +114,7 @@ export default function PatientRegisters() {
                                         <div
                                             key={record.mih_id}
                                             onClick={() => navigate(`/user/patients/${patientId}/${record.mih_id}`)}
-                                            className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] cursor-pointer"
+                                            className="bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer"
                                         >
                                             {/* Icon with badge */}
                                             <div className={`w-16 h-16 ${diagnosisInfo.bg} rounded-2xl flex items-center justify-center flex-shrink-0 relative`}>
@@ -152,7 +152,7 @@ export default function PatientRegisters() {
                             {/* Add New Register Button */}
                             <div className="mt-6">
                                 <Link to={`/user/registers/create-register/${patient?.patient_id}/new`}>
-                                    <button className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all">
+                                    <button className="w-full bg-white/60 backdrop-blur-sm p-4 rounded-2xl flex items-center justify-center gap-2 text-gray-600 font-bold border-2 border-dashed border-gray-300 hover:bg-white hover:border-[#A0E7E5] hover:text-[#A0E7E5] transition-all active:scale-95">
                                         <Plus size={20} />
                                         <span>Novo Registro para {patient?.name}</span>
                                     </button>

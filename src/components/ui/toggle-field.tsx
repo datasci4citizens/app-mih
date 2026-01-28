@@ -16,7 +16,7 @@ export const ToggleField = ({
     return (
         <div
             onClick={() => onChange(!value)}
-            className={cn("p-4 rounded-xl flex items-center justify-between cursor-pointer transition-colors hover:bg-gray-50/50", className)}
+            className={cn("p-4 rounded-xl flex items-center justify-between cursor-pointer transition-all hover:bg-gray-50/50 active:scale-[0.98]", className)}
         >
             <label className="text-sm font-semibold text-gray-700 cursor-pointer pointer-events-none">{label}</label>
             <div className="flex bg-gray-200 rounded-lg p-1 pointer-events-none">

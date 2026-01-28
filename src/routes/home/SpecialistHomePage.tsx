@@ -56,7 +56,7 @@ export default function SpecialistHomePage() {
                                 {/* User Menu Popover */}
                                 {showUserMenu && (
                                     <div className="absolute top-14 left-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
+                                        <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-all active:scale-95">
                                             <LogOut size={18} />
                                             <span className="font-medium">Sair</span>
                                         </button>
@@ -71,7 +71,7 @@ export default function SpecialistHomePage() {
                                         setShowNotifications(!showNotifications);
                                         setShowUserMenu(false);
                                     }}
-                                    className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors shadow-lg"
+                                    className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-all active:scale-95 shadow-lg"
                                 >
                                     <Bell size={22} className="md:w-7 md:h-7" />
                                 </button>

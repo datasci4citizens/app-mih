@@ -68,7 +68,7 @@ const HmiInformationCarousel = () => {
           )}
         </div>
         <div className="flex justify-between items-center mt-4">
-          <button onClick={prevItem} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
+          <button onClick={prevItem} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-all active:scale-95">
             <ChevronLeft size={24} />
           </button>
           <div className="flex gap-2">
@@ -76,11 +76,11 @@ const HmiInformationCarousel = () => {
               <button
                 key={index}
                 onClick={() => setCurrentItem(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${currentItem === index ? 'bg-cyan-500 w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 active:scale-95 ${currentItem === index ? 'bg-cyan-500 w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
               ></button>
             ))}
           </div>
-          <button onClick={nextItem} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
+          <button onClick={nextItem} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-all active:scale-95">
             <ChevronRight size={24} />
           </button>
         </div>
@@ -139,7 +139,7 @@ export default function PatientHomePage() {
                   setShowUserMenu(!showUserMenu);
                   setShowNotifications(false);
                 }}>
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors shadow-lg">
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-all active:scale-95 shadow-lg">
                     <User size={22} className="md:w-7 md:h-7" />
                   </div>
                   <div>
@@ -156,7 +156,7 @@ export default function PatientHomePage() {
                       <span className="font-medium">Configurações</span>
                     </button>
                     <div className="h-px bg-gray-100 my-1"></div> */}
-                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-colors">
+                    <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-all active:scale-95">
                       <LogOut size={18} />
                       <span className="font-medium">Sair</span>
                     </button>
@@ -171,7 +171,7 @@ export default function PatientHomePage() {
                     setShowNotifications(!showNotifications);
                     setShowUserMenu(false);
                   }}
-                  className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-colors shadow-lg"
+                  className="w-12 h-12 md:w-14 md:h-14 bg-white/40 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/60 transition-all active:scale-95 shadow-lg"
                 >
                   <Bell size={22} className="md:w-7 md:h-7" />
                 </button>
@@ -215,7 +215,7 @@ export default function PatientHomePage() {
 
                 {/* Coluna Direita (Cards) */}
                 <div className="lg:col-span-2 grid grid-cols-2 gap-4 md:gap-6">
-                  <button onClick={() => navigate('/user/registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
+                  <button onClick={() => navigate('/user/registers')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] active:scale-95 group">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-500 mb-2 group-hover:bg-orange-200 transition-colors">
                       <ImageIcon size={20} className="md:w-6 md:h-6" />
                     </div>
@@ -225,7 +225,7 @@ export default function PatientHomePage() {
                     </div>
                   </button>
 
-                  <button onClick={() => navigate('/user/patients')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] group">
+                  <button onClick={() => navigate('/user/patients')} className="h-40 md:h-48 rounded-3xl p-4 md:p-6 relative overflow-hidden shadow-lg flex flex-col justify-between items-start text-left bg-white transition-transform hover:scale-[1.02] active:scale-95 group">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-500 mb-2 group-hover:bg-blue-200 transition-colors">
                       <Users size={20} className="md:w-6 md:h-6" />
                     </div>
@@ -236,7 +236,7 @@ export default function PatientHomePage() {
                   </button>
 
                   <div
-                    className="col-span-2 rounded-3xl p-4 md:p-6 flex items-center gap-4 md:gap-5 shadow-lg bg-white border-l-4 cursor-pointer transition-all hover:shadow-xl hover:bg-gray-50"
+                    className="col-span-2 rounded-3xl p-4 md:p-6 flex items-center gap-4 md:gap-5 shadow-lg bg-white border-l-4 cursor-pointer transition-all hover:shadow-xl hover:bg-gray-50 active:scale-90"
                     style={{ borderLeftColor: COLORS.highlight }}
                     onClick={nextTip}
                   >
