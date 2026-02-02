@@ -1,24 +1,28 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthGuard } from './guards/auth';
-import HmiInformations from './routes/home/HmiInformations';
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PatientHomePage from './routes/home/UserHomePage';
 import LoginPage from './routes/login/Login';
 import SpecialistRegistersControl from './routes/registers/specialist/SpecialsitRegistersControl';
 import CreateRegister from './routes/registers/user/create-register/CreateRegisterForm';
-import RegistersControl from './routes/registers/user/RegistersControl';
+import Patients from './routes/registers/user/Patients';
+import PatientRegisters from './routes/registers/user/PatientRegisters';
+import Register from './routes/registers/user/Register';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
-import TCLE from './routes/user/create-user-patient/Tcle';
 import SelectUserType from './routes/user/SelectUserType';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
+import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Fullscreen } from '@boengli/capacitor-fullscreen';
 import { RoleGuard } from './guards/role';
 import { NoRoleGuard } from './guards/norole';
 import { ChoseRoleGuard } from './guards/choserole';
 import { SpecialistGuard } from './guards/specialist';
 import { UserGuard } from './guards/user';
 import apiClient from './lib/axios';
+import AllRegisters from './routes/registers/user/AllRegisters';
 
 const router = createBrowserRouter([
   {
@@ -51,13 +55,20 @@ const router = createBrowserRouter([
 
               },
               {
-                path: '/user/home/hmi-informations',
-                element: <HmiInformations />
-
+                path: '/user/registers',
+                element: <AllRegisters />
               },
               {
-                path: '/user/registers',
-                element: <RegistersControl />
+                path: '/user/patients',
+                element: <Patients />
+              },
+              {
+                path: '/user/patients/:patientId',
+                element: <PatientRegisters />
+              },
+              {
+                path: '/user/patients/:patientId/:registerId',
+                element: <Register />
               },
               {
                 path: '/user/registers/create-register/:patient_id/:first_time',
@@ -98,10 +109,6 @@ const router = createBrowserRouter([
             element: <CreateUser />
           },
           {
-            path: '/user/create/tcle',
-            element: <TCLE />
-          },
-          {
             path: '/specialist/create',
             element: <CreateSpecialist />
           },
@@ -117,6 +124,18 @@ const router = createBrowserRouter([
 ]);
 
 export function App() {
+  useEffect(() => {
+    const activateImmersiveMode = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Fullscreen.activateImmersiveMode();
+        } catch (error) {
+          console.error('Failed to activate immersive mode:', error);
+        }
+      }
+    };
+    activateImmersiveMode();
+  }, []);
   return (
     <SWRConfig value={{
       fetcher: (url) => apiClient.get(url).then(res => res.data)

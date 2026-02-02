@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 import FinishRegisterNew from "./FinishRegisterNew"
 import RegisterSumary from "./RegisterSumary"
 import useSWRMutation from "swr/mutation"
@@ -143,6 +143,23 @@ export default function CreateRegister() {
 
     const navigate = useNavigate();
 
+    // Reset patient data when patient_id changes
+    useEffect(() => {
+        if (patientData) {
+            setSendData({
+                ...INIT_DATA,
+                patient: patientData
+            });
+            // Only skip confirmation step if explicitly coming from a place that should skip it
+            // For now, we always show confirmation unless first_time is explicitly "new"
+            if (first_time === "new") {
+                setCurrentStepIndex(1);
+            } else {
+                setCurrentStepIndex(0);
+            }
+        }
+    }, [patient_id, patientData, first_time]);
+
     if (isLoading) {
         return <IsLoading />
     }
@@ -175,7 +192,7 @@ export default function CreateRegister() {
 
         setCurrentStepIndex(i => {
 
-            if (currentStepIndex <= 1)
+            if (currentStepIndex <= 0)
                 return i;
             else
                 return i - 1;
@@ -202,10 +219,13 @@ export default function CreateRegister() {
             },
             body: file,
         }).then(r => {
-
-            console.log(r.ok)
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(r.ok)
+            }
         }).catch(err => {
-            console.log(err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(err);
+            }
         })
 
         return result.image_id;
@@ -220,8 +240,9 @@ export default function CreateRegister() {
         const id2 = await submitImage(sendData.photo2);
         const id3 = await submitImage(sendData.photo3);
 
-        if (errorPhoto)
+        if (errorPhoto && import.meta.env.VITE_DEV_MODE === 'true') {
             console.log(errorPhoto);
+        }
 
         let arg: SendData = {
             "photo_id1": id1,
@@ -237,7 +258,9 @@ export default function CreateRegister() {
             "diagnosis": null
         }
 
-        console.log(arg)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(arg)
+        }
 
         const result = await trigger(arg)
 
@@ -250,17 +273,17 @@ export default function CreateRegister() {
             navigate(`/user/home/`); // Redireciona para a home
         } else {
             setSubmitting(false);
-            console.error('Erro ao enviar dados:', error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Erro ao enviar dados:', error);
+            }
         }
 
-        console.log(data)
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(data)
+        }
     }
 
-    if (!sendData.patient) {
-        updateFields({ patient: patientData })
-        if (first_time == "new")
-            next()
-    }
+
 
     const steps = [
         <ConfirmPatient />,

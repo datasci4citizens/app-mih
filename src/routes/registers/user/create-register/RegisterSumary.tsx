@@ -1,157 +1,165 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Edit } from "lucide-react";
+import { ChevronLeft, CheckCircle2, User, FileText, Image as ImageIcon } from "lucide-react";
 import { useFormContext } from "./CreateRegisterForm";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ActionButton } from "@/components/ui/action-button";
+import { ToyBackground } from "@/components/ui/toy-background";
 import loadingGif from "@/assets/gif loading.gif"
+
+// Summary Item component
+interface SummaryItemProps {
+    label: string;
+    value: string;
+}
+
+const SummaryItem = ({ label, value }: SummaryItemProps) => (
+    <div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+        <span className="text-gray-500 text-sm font-medium">{label}</span>
+        <span className="text-gray-800 font-bold text-sm text-right">{value}</span>
+    </div>
+);
+
+// Section Header component
+interface SectionHeaderProps {
+    icon: React.ComponentType<any>;
+    title: string;
+}
+
+const SectionHeader = ({ icon: Icon, title }: SectionHeaderProps) => (
+    <div className="flex items-center gap-2 mb-3 text-gray-800">
+        <Icon size={20} className="text-[#FF8A65]" />
+        <h3 className="font-bold text-lg">{title}</h3>
+    </div>
+);
 
 export default function RegisterSumary() {
 
-    const { sendData, back, goTo, submit, submitting } = useFormContext();
+    const { sendData, back, submit, submitting } = useFormContext();
 
     const { patient, toothache, painLevel, sensitivity,
         toothStain, aestheticDiscomfort, userObservations } = { ...sendData }
 
+    if (!patient) return null;
+
     return (
+        <div className="w-full min-h-screen bg-[#A0E7E5] relative overflow-auto">
+            <ToyBackground />
 
-        <div className="min-h-screen max-h-screen overflow-auto">
-
-            <div className="bg-[#0C4A6E] h-32 w-full"></div>
-
-            <div className="flex flex-col items-center justify-center pt-[30px] justify-between rounded-t-3xl -mt-16 bg-white space-y-4 mb-10 mb-20">
-
-                <div className="flex w-full items-center justify-between px-[30px] mt-2 mb-5">
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0" disabled={submitting} onClick={back}>
-                        <ArrowLeft color="black" />
-                    </Button>
-
-                    <h1 className="font-bold text-4xl text-center mx-2">Sumário</h1>
-
-                    <div className="w-10 h-10 shrink-0" aria-hidden="true" />
-                </div>
-                
-                <div className="w-full px-[30px] space-y-4">
-                    <Card className="w-full">
-                        <CardHeader className="flex flex-row items-center justify-center">
-                            <CardTitle>Criança Selecionada</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <CardDescription className="text-xl font-bold text-center">
-                                {patient?.name}
-                            </CardDescription>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="w-full">
-                        <CardHeader className="flex flex-row items-center justify-center">
-                            <CardTitle>Fotos dos dentes</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <CardDescription className="text-base font-bold text-center">
-                                <Accordion type="single" collapsible className="w-full flex flex-col justify-center">
-
-                                    <AccordionItem value="captureItem1">
-                                        <AccordionTrigger className="font-bold text-primary text-base">
-                                            Dentes frontais
-                                        </AccordionTrigger>
-
-                                        <AccordionContent className="flex flex-col items-center justify-center">
-                                            <div className="flex w-full justify-end">
-                                                <Edit color="black" onClick={() => goTo(1)}></Edit>
-                                            </div>
-                                            <img src={URL.createObjectURL(sendData.photo1)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
-
-                                        </AccordionContent>
-
-                                    </AccordionItem>
-
-                                    <AccordionItem value="captureItem2">
-                                        <AccordionTrigger className="font-bold text-primary text-base">
-                                            Dentes molares
-                                        </AccordionTrigger>
-
-                                        <AccordionContent className="flex flex-col font-extrabold text-base items-center justify-center gap-2">
-                                            <div className="flex w-full justify-end">
-                                                <Edit color="black" width={30} onClick={() => goTo(2)}></Edit>
-                                            </div>
-                                            Molar Direito
-                                            <img src={URL.createObjectURL(sendData.photo2)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
-                                            Molar esquerdo
-                                            <img src={URL.createObjectURL(sendData.photo3)} alt="Captura da foto" className="w-[95%] h-auto rounded-lg shadow-lg" />
-
-                                        </AccordionContent>
-
-                                    </AccordionItem>
-
-                                </Accordion>
-
-                            </CardDescription>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="w-full">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Informações finais</CardTitle>
-                            <Edit onClick={() => goTo(3)}></Edit>
-                        </CardHeader>
-                        <CardContent className="space-y-2 divide-y-2 divide-primary/20">
-                            <CardDescription>
-                                <h1 className="text-lg font-bold text-primary">A criança sente dor nos dentes ? </h1>
-                                <li className="text-base font-bold">{toothache ? "SIM" : "NÃO"}</li>
-                            </CardDescription>
-                            {toothache && <CardDescription>
-                                <h1 className="text-lg font-bold text-primary">Nível da dor</h1>
-                                <li className="text-base font-bold">
-                                    {painLevel === 1 && "Leve"}
-                                    {painLevel === 2 && "Moderada"}
-                                    {painLevel === 3 && "Intensa"}
-                                </li>
-                            </CardDescription>}
-                            <CardDescription>
-                                <h1 className="text-lg font-bold text-primary">A criança tem sensibilidade nos dentes ?</h1>
-                                <li className="text-base font-bold">{sensitivity ? "SIM" : "NÃO"}</li>
-                            </CardDescription>
-                            <CardDescription>
-                                <h1 className="text-lg font-bold text-primary">A criança apresenta mancha nos dentes ?</h1>
-                                <li className="text-base font-bold" >{toothStain ? "SIM" : "NÃO"}</li>
-                            </CardDescription>
-                            {toothStain && <CardDescription>
-                                <h1 className="text-lg font-bold text-primary">A mancha gera desconforto estético ?</h1>
-                                <li className="text-base font-bold">{aestheticDiscomfort ? "SIM" : "NÃO"}</li>
-                            </CardDescription>}
-                            {
-                                userObservations && <CardDescription>
-                                    <h1 className="text-lg font-bold text-primary">Observações</h1>
-                                    <li className="text-base font-bold">{userObservations}</li>
-                                </CardDescription>
-                            }
-                        </CardContent>
-                    </Card>
-
+            <div className="relative z-10 min-h-screen flex flex-col pb-10">
+                {/* Header */}
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
+                    <button onClick={back} disabled={submitting} className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center disabled:opacity-50">
+                        <ChevronLeft size={24} />
+                    </button>
+                    <h1 className="text-xl font-bold text-gray-800">Resumo do Registro</h1>
                 </div>
 
-                <Button className="text-center gap-3" type={"submit"} disabled={submitting} onClick={submit}>
-                    {
-                        submitting && (
+                {/* Content */}
+                <div className="flex-1 flex items-center justify-center px-6">
+                    <div className="w-full max-w-md md:max-w-4xl">
+                        <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl space-y-6">
+                            <p className="text-gray-600 text-center mb-2">
+                                Confirme as informações antes de enviar.
+                            </p>
 
-                            <><img src={loadingGif} className="h-8"></img>Enviando</>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-6">
+                                    {/* Patient Section */}
+                                    <div className="bg-gray-50 p-4 rounded-2xl">
+                                        <SectionHeader icon={User} title="Criança" />
+                                        <SummaryItem label="Nome" value={patient.name} />
+                                        <SummaryItem
+                                            label="Nascimento"
+                                            value={new Date(patient.birthday).toLocaleDateString('pt-BR')}
+                                        />
+                                    </div>
 
-                        )
+                                    {/* Photos Section */}
+                                    <div>
+                                        <SectionHeader icon={ImageIcon} title="Fotos" />
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {/* Frontal Photo */}
+                                            <div className="space-y-2">
+                                                <img
+                                                    src={URL.createObjectURL(sendData.photo1)}
+                                                    alt="Frontal"
+                                                    className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
+                                                />
+                                                <p className="text-xs text-center text-gray-600 font-medium">Frontal</p>
+                                            </div>
 
-                    }
-                    {
-                        !submitting && (
+                                            {/* Molar Right Photo */}
+                                            <div className="space-y-2">
+                                                <img
+                                                    src={URL.createObjectURL(sendData.photo2)}
+                                                    alt="Molar Dir."
+                                                    className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
+                                                />
+                                                <p className="text-xs text-center text-gray-600 font-medium">Molar Dir.</p>
+                                            </div>
 
-                            <>Enviar Registro</>
+                                            {/* Molar Left Photo */}
+                                            <div className="space-y-2">
+                                                <img
+                                                    src={URL.createObjectURL(sendData.photo3)}
+                                                    alt="Molar Esq."
+                                                    className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
+                                                />
+                                                <p className="text-xs text-center text-gray-600 font-medium">Molar Esq.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        )
+                                <div className="space-y-6 flex flex-col justify-between">
+                                    {/* Questionnaire Section */}
+                                    <div className="bg-gray-50 p-4 rounded-2xl h-full">
+                                        <SectionHeader icon={FileText} title="Respostas" />
+                                        <SummaryItem label="Dor de dente" value={toothache ? "Sim" : "Não"} />
+                                        {toothache && (
+                                            <SummaryItem
+                                                label="Nível da dor"
+                                                value={
+                                                    painLevel === 1 ? "Leve" :
+                                                        painLevel === 2 ? "Moderada" : "Intensa"
+                                                }
+                                            />
+                                        )}
+                                        <SummaryItem label="Sensibilidade" value={sensitivity ? "Sim" : "Não"} />
+                                        <SummaryItem label="Mancha" value={toothStain ? "Sim" : "Não"} />
+                                        {toothStain && (
+                                            <SummaryItem label="Desconforto Estético" value={aestheticDiscomfort ? "Sim" : "Não"} />
+                                        )}
+                                        {userObservations && (
+                                            <div className="mt-3 pt-3 border-t border-gray-200">
+                                                <span className="text-gray-500 text-sm font-medium block mb-1">Observações</span>
+                                                <p className="text-gray-800 text-sm bg-white p-3 rounded-lg border border-gray-100 italic">
+                                                    "{userObservations}"
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
 
-                    }
-                </Button>
-
+                                    {/* Submit Button */}
+                                    <div className="pt-2">
+                                        <ActionButton
+                                            onClick={submit}
+                                            icon={submitting ? undefined : CheckCircle2}
+                                            disabled={submitting}
+                                        >
+                                            {submitting && (
+                                                <>
+                                                    <img src={loadingGif} className="h-6" alt="Loading" />
+                                                    Enviando...
+                                                </>
+                                            )}
+                                            {!submitting && "Enviar Registro"}
+                                        </ActionButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div >
-
+        </div>
     )
-
 }

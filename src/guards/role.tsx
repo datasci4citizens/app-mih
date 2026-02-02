@@ -5,7 +5,9 @@ export function RoleGuard() {
 
     const data = useUser()
 
-    //console.log("role guard ", data)
+    if (import.meta.env.VITE_DEV_MODE === 'true') {
+        console.log("role guard ", data);
+    }
 
     if (data.role == null)
         return <Navigate to="/select" />

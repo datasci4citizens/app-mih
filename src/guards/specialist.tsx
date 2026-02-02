@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ToyBackground } from "@/components/ui/toy-background";
 import apiClient from "@/lib/axios";
 import { useUser } from "@/lib/hooks/use-user";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
@@ -20,14 +21,30 @@ export function SpecialistGuard() {
         return <Navigate to='/' />
     else if (!data.is_allowed) {
         return (
-            <div className="h-screen min-w-full flex flex-col justify-start items-center p-[30px] pt-[100px] bg-primary">
+            <div className="w-full h-screen bg-[#A0E7E5] relative">
+                <ToyBackground />
+                <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center">
 
-                <div className="flex flex-col justify-between items-center h-[60%]">
-                    <h1 className="text-4xl font-bold text-white text-start">Ops! <br /> Parece que você ainda não tem permissão para acessar a área de especialista </h1>
+                    <div className="bg-white/95 backdrop-blur-sm p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in fade-in zoom-in-95 duration-500">
+                        <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-500">
+                            <span className="text-4xl">⏳</span>
+                        </div>
 
-                    <Button onClick={handleLogout} variant={"secondary"} className="text-2xl text-primary">
-                        Retornar
-                    </Button>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+                            Conta em Análise
+                        </h1>
+
+                        <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+                            Sua conta de especialista foi criada e está aguardando aprovação dos administradores.
+                        </p>
+
+                        <Button
+                            onClick={handleLogout}
+                            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold h-12 rounded-xl text-lg shadow-md transition-colors"
+                        >
+                            Voltar para o Login
+                        </Button>
+                    </div>
 
                 </div>
             </div>
