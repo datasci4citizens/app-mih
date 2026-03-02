@@ -115,7 +115,7 @@ export default function PatientHomePage() {
   };
 
   const handleLogout = async () => {
-    await apiClient.post("/auth/logout");
+    await apiClient.post("/auth/logout/");
     mutate("/user/me", null);
     localStorage.clear();
     navigate("/login");

@@ -8,7 +8,7 @@ export function LogoutButton() {
     const { mutate } = useSWRConfig();
     const navigate = useNavigate();
     const handleLogout = async () => {
-        await apiClient.post("/auth/logout");
+        await apiClient.post("/auth/logout/");
         mutate("/user/me", null);
         localStorage.clear();
         navigate("/login");
