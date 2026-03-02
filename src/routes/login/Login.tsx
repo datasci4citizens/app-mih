@@ -76,12 +76,15 @@ const WebLogin = () => {
 				console.log('response:', codeResponse);
 			}
 			try {
-				const response = await apiClient.post('/auth/login/google', {
+				// Troca o code do Google por dados do usuário + JWT diretamente
+				const response = await apiClient.post('/auth/login/google/', {
 					code: codeResponse.code,
 				});
 				if (import.meta.env.VITE_DEV_MODE === 'true') {
 					console.log('Usuário logado:', response.data);
 				}
+				localStorage.setItem('access_token', response.data.access);
+				localStorage.setItem('refresh_token', response.data.refresh);
 				navigate('/');
 			} catch (error) {
 				console.error('Erro ao logar:', error);
@@ -121,12 +124,15 @@ const NativeLogin = () => {
 			if (import.meta.env.VITE_DEV_MODE === 'true') {
 				console.log('result ', result);
 			}
-			const response = await apiClient.post('/auth/login/google/native', {
+			// Troca o access_token do Google por dados do usuário + JWT diretamente
+			const response = await apiClient.post('/auth/login/google/native/', {
 				code: (result as any).accessToken.token,
 			});
 			if (import.meta.env.VITE_DEV_MODE === 'true') {
 				console.log('Usuário logado nativamente:', response.data);
 			}
+			localStorage.setItem('access_token', response.data.access);
+			localStorage.setItem('refresh_token', response.data.refresh);
 			navigate('/');
 		} catch (error) {
 			console.error('Error during native Google login:', error);
