@@ -94,9 +94,13 @@ async function sendRequest(url: string, { arg }: {
 }
 
 async function sendPhotoRequest(url: string, { arg }: {
-    arg: { extension: string };
+    arg: File | Blob;
 }) {
-    return apiClient.post(url, arg).then(res => res.data)
+    const formData = new FormData();
+    formData.append('file', arg, 'image.jpg');
+    return apiClient.post(url, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    }).then(res => res.data)
 }
 
 function IsLoading() {
@@ -207,29 +211,11 @@ export default function CreateRegister() {
 
     }
 
-    async function submitImage(file: any) {
+    async function submitImage(file: File | Blob) {
 
-        const result = await triggerPhoto({ extension: "jpg" })
+        const result = await triggerPhoto(file)
 
-        const url = result.upload_url;
-
-        await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "image/jpeg",
-            },
-            body: file,
-        }).then(r => {
-            if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.log(r.ok)
-            }
-        }).catch(err => {
-            if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.log(err);
-            }
-        })
-
-        return result.image_id;
+        return result.id;
 
     }
 

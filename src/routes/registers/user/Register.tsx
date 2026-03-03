@@ -155,7 +155,7 @@ export default function Register() {
                                 <div className="mb-4 bg-gray-100 rounded-2xl overflow-hidden">
                                     <MinioImage
                                         className="w-full h-64 md:h-96 object-contain"
-                                        path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${photos[currentPhotoIndex]}.jpg`}
+                                        imageId={photos[currentPhotoIndex]}
                                     />
                                 </div>
 
@@ -172,7 +172,7 @@ export default function Register() {
                                         >
                                             <MinioImage
                                                 className="w-full h-full object-cover"
-                                                path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${photoId}.jpg`}
+                                                imageId={photoId}
                                             />
                                         </button>
                                     ))}

@@ -116,7 +116,7 @@ export default function RegisterDiagnostic() {
                                                             <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-inner">
                                                                 <MinioImage
                                                                     className="w-full h-full object-contain mix-blend-multiply"
-                                                                    path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${register[photoKey]}.jpg`}
+                                                                    imageId={register[photoKey]}
                                                                 />
                                                             </div>
                                                         </CarouselItem>
