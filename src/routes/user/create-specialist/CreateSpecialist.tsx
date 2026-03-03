@@ -47,7 +47,7 @@ async function sendRequest(
 export default function CreateSpecialist() {
 	const user = useUser();
 	const { trigger, data, error, isMutating } = useSwrMutation(
-		`${import.meta.env.VITE_SERVER_URL}/users/`,
+		`/users/`,
 		sendRequest,
 	);
 	const [submitting, setSubmitting] = useState(false);
@@ -106,7 +106,7 @@ export default function CreateSpecialist() {
 		}
 		if (!isMutating && !error) {
 			if (result) {
-				await mutate('/user/me', undefined, { revalidate: true });
+				await mutate('/user/me/', undefined, { revalidate: true });
 				setSubmitting(false);
 				navigate(`/specialist/home`);
 			} else {

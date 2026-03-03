@@ -66,7 +66,7 @@ async function sendRequest(
 
 export default function CreateUser() {
 	const { trigger, error } = useSwrMutation(
-		`${import.meta.env.VITE_SERVER_URL}/users/`,
+		`/users/`,
 		sendRequest,
 	);
 	const [submitting, setSubmitting] = useState(false);
@@ -95,7 +95,7 @@ export default function CreateUser() {
 		}
 
 		if (result && !error) {
-			await mutate('/user/me');
+			await mutate('/user/me/');
 			setSubmitting(false);
 			navigate(`/user/home`);
 		} else {

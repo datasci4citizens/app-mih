@@ -6,7 +6,7 @@ import useSWR from "swr";
 
 export function AuthGuard() {
 
-    const { data, error, isLoading } = useSWR('/user/me')
+    const { data, error, isLoading } = useSWR('/user/me/')
 
     if (isLoading)
         return <LoadingInfos />

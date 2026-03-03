@@ -20,8 +20,7 @@ type RegisterData = {
 }
 
 function RegisterCard({ value, selectRegister }: { value: RegisterData, selectRegister: (id: string) => void }) {
-    const { data: mihData, isLoading } = useSWR(`/mih/${value.mih_id}`);
-
+    const { data: mihData, isLoading } = useSWR(`/api/mih/${value.mih_id}`);
     const patientName = isLoading ? "Carregando..." : mihData?.patient?.name || "Paciente desconhecido";
 
     return (

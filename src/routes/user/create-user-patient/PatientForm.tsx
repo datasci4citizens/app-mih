@@ -90,7 +90,7 @@ async function sendRequest(url: string, { arg }: { arg: any }) {
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/users/patients/`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`/api/patients/`, sendRequest)
     const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
 
@@ -142,7 +142,7 @@ export default function PatientForm() {
         }
         if (result && !error) {
             setSubmitting(false)
-            navigate(`/user/registers/create-register/${result.data.patient_id}/first_time`);
+            navigate(`/user/registers/create-register/${result.data.id}/first_time`);
         } else {
             setSubmitting(false)
             if (import.meta.env.VITE_DEV_MODE === 'true') {

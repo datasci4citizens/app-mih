@@ -13,7 +13,7 @@ import {
 
 export default function SpecialistHomePage() {
 
-    const { data: user } = useSWR('/user/me')
+    const { data: user } = useSWR('/user/me/')
     const navigate = useNavigate();
     const { mutate } = useSWRConfig();
 
@@ -22,7 +22,7 @@ export default function SpecialistHomePage() {
 
     const handleLogout = async () => {
         await apiClient.post("/auth/logout/");
-        mutate("/user/me", null);
+        mutate("/user/me/", null);
         localStorage.clear();
         navigate("/login");
     };

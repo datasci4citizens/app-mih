@@ -62,6 +62,7 @@ type SendData = {
     photo_id1: number;
     photo_id2: number;
     photo_id3: number;
+    patient: number;
     start_date: string;
     painLevel: number;
     sensitivityField: boolean;
@@ -131,11 +132,11 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`/${patient_id}/mih/`, sendRequest)
+    const { trigger, data, error } = useSWRMutation(`/api/mih/`, sendRequest)
 
-    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/api/images/`, sendPhotoRequest)
 
-    const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
+    const { data: patientData, error: isError, isLoading } = useSWR(`/api/patients/${patient_id}`)
 
     const [sendData, setSendData] = useState(INIT_DATA)
 
@@ -248,6 +249,7 @@ export default function CreateRegister() {
             "photo_id1": id1,
             "photo_id2": id2,
             "photo_id3": id3,
+            "patient": Number(patient_id),
             "start_date": new Date().toISOString(),
             "painLevel": sendData.painLevel,
             "sensitivityField": sendData.sensitivity,

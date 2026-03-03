@@ -49,7 +49,7 @@ export default function RegisterDiagnostic() {
 
     const { submitting, submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
 
-    const { data, error, isLoading } = useSWR(`/mih/${register?.mih_id}`);
+    const { data, error, isLoading } = useSWR(`/api/mih/${register?.mih_id}`);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

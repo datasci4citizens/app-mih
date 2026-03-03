@@ -5,6 +5,7 @@ import RegisterDiagnostic from "./RegisterDiagnostic";
 import useSWR from "swr";
 import useSWRMutation from 'swr/mutation'
 import ErrorPage from "@/lib/components_utils/ErrorPage";
+import apiClient from "@/lib/axios";
 
 type RegisterData = {
     photo_id1: number;
@@ -44,19 +45,12 @@ async function sendRequest(url: string, { arg }: {
         console.log('=== sending request to ===')
         console.log(url)
     }
-    return await fetch(url, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: "include",
-        body: JSON.stringify(arg)
-    }).then(res => res.json())
+    return apiClient.patch(url, arg).then(res => res.data)
 }
 
 export default function SpecialistRegistersControl() {
 
-    const { data, error, isLoading, mutate } = useSWR('/mih/undiagnosed');
+    const { data, error, isLoading, mutate } = useSWR('/api/mih/undiagnosed');
 
     const [page, setPage] = useState(0);
 
@@ -64,7 +58,7 @@ export default function SpecialistRegistersControl() {
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
-    const { trigger, error: isError, isMutating } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/mih/${register?.mih_id}`, sendRequest)
+    const { trigger, error: isError, isMutating } = useSWRMutation(`/api/mih/${register?.mih_id}`, sendRequest)
 
     if (isLoading) {
         return <SkeletonLoading />

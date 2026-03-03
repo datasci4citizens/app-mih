@@ -11,7 +11,7 @@ interface Patient {
  * Simple wrapper around SWR for consistency
  */
 export function usePatients() {
-    const { data, error, isLoading, mutate } = useSWR<Patient[]>('/users/patients/');
+    const { data, error, isLoading, mutate } = useSWR<Patient[]>('/api/patients/');
 
     return {
         patients: data,

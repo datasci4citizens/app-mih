@@ -57,8 +57,8 @@ export default function Register() {
     const navigate = useNavigate();
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/patients/${patientId}`);
-    const { data, error, isLoading } = useSWR(`/patients/${patientId}/mih`);
+    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/api/patients/${patientId}`);
+    const { data, error, isLoading } = useSWR(`/api/patients/${patientId}/mih`);
 
     if (isLoading || patientLoading) {
         return <SkeletonLoading />;
