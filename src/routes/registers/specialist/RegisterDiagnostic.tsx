@@ -50,6 +50,7 @@ export default function RegisterDiagnostic() {
     const { submitting, submitRegister, setDiagnostic, setObservation, register, back } = useSpecialistRegistersContext();
 
     const { data, error, isLoading } = useSWR(`/api/mih/${register?.mih_id}`);
+    const { data: patientData, isLoading: patientLoading } = useSWR(data?.patient ? `/api/patients/${data.patient}` : null);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -66,7 +67,7 @@ export default function RegisterDiagnostic() {
         }
     }
 
-    if (isLoading)
+    if (isLoading || patientLoading)
         return <SkeletonLoading />
 
     if (error)
@@ -148,11 +149,11 @@ export default function RegisterDiagnostic() {
                                 <CardContent className="p-6 space-y-4">
                                     <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                                         <span className="text-gray-500 font-medium">Nome</span>
-                                        <span className="font-bold text-gray-800">{data?.patient?.name}</span>
+                                        <span className="font-bold text-gray-800">{patientData?.name}</span>
                                     </div>
                                     <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                                         <span className="text-gray-500 font-medium">Nascimento</span>
-                                        <span className="font-semibold text-gray-700">{new Date(data?.patient?.birthday || "").toLocaleDateString('pt-BR')}</span>
+                                        <span className="font-semibold text-gray-700">{patientData?.birthday ? new Date(patientData.birthday).toLocaleDateString('pt-BR') : ""}</span>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 text-sm pt-2">

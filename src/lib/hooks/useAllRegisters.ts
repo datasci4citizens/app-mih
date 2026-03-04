@@ -24,7 +24,7 @@ export interface RegisterWithPatient extends Register {
  * Extracted from AllRegisters.tsx component
  */
 export function useAllRegisters() {
-    const { data: patientsData, error: patientsError, isLoading: patientsLoading } = useSWR<Patient[]>('/api/patients/');
+    const { data: patientsData, error: patientsError, isLoading: patientsLoading } = useSWR<Patient[]>('/api/patients/my/');
     const [allRegisters, setAllRegisters] = useState<RegisterWithPatient[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -38,9 +38,11 @@ export function useAllRegisters() {
                 const promises = patientsData.map(async (patient) => {
                     try {
                         const response = await apiClient.get(`/api/patients/${patient.patient_id}/mih`);
-                        if (response.data?.mih && Array.isArray(response.data.mih)) {
-                            return response.data.mih.map((register: Register) => ({
-                                ...register,
+                        if (Array.isArray(response.data)) {
+                            return response.data.map((register: any) => ({
+                                mih_id: register.id,
+                                start_date: register.start_date,
+                                diagnosis: register.diagnosis,
                                 patient_id: patient.patient_id,
                                 patientName: patient.name
                             }));

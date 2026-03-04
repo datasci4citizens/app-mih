@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { mutate } from 'swr';
 
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_SERVER_URL,
@@ -42,6 +43,8 @@ apiClient.interceptors.response.use(
 					// Refresh inválido — limpa tokens e força relogin
 					localStorage.removeItem('access_token');
 					localStorage.removeItem('refresh_token');
+					// Dispatch an event to clear SWR cache (since we can't reliably call hooks outside React)
+					mutate(() => true, undefined, { revalidate: false });
 				}
 			}
 		}

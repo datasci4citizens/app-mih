@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+import { mutate } from 'swr';
 import { ToyBackground } from '@/components/ui/toy-background';
 
 // Content of the login page, without the login button logic
@@ -85,6 +86,10 @@ const WebLogin = () => {
 				}
 				localStorage.setItem('access_token', response.data.access);
 				localStorage.setItem('refresh_token', response.data.refresh);
+
+				// Immediately put the user data in SWR cache so AuthGuard doesn't flash redirect
+				mutate('/user/me/', response.data, false);
+
 				navigate('/');
 			} catch (error) {
 				console.error('Erro ao logar:', error);
@@ -133,6 +138,10 @@ const NativeLogin = () => {
 			}
 			localStorage.setItem('access_token', response.data.access);
 			localStorage.setItem('refresh_token', response.data.refresh);
+
+			// Immediately put the user data in SWR cache so AuthGuard doesn't flash redirect
+			mutate('/user/me/', response.data, false);
+
 			navigate('/');
 		} catch (error) {
 			console.error('Error during native Google login:', error);

@@ -63,7 +63,7 @@ export default function PatientRegisters() {
         return <ErrorPage type="user"></ErrorPage>;
     }
 
-    const registers = data?.mih || [];
+    const registers = Array.isArray(data) ? data : [];
     const undiagnosedCount = registers.filter((r: any) => !r.diagnosis || r.diagnosis === null).length;
 
     return (

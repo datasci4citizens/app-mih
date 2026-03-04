@@ -21,6 +21,7 @@ type RegisterData = {
     specialistObservations: string,
     diagnosis: string;
     mih_id: number;
+    patient: number;
 }
 
 type RegisterArray = RegisterData[];
@@ -58,7 +59,7 @@ export default function SpecialistRegistersControl() {
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
-    const { trigger, error: isError, isMutating } = useSWRMutation(`/api/mih/${register?.mih_id}`, sendRequest)
+    const { trigger, isMutating } = useSWRMutation(`/api/mih/${register?.mih_id}/`, sendRequest)
 
     if (isLoading) {
         return <SkeletonLoading />
@@ -70,10 +71,6 @@ export default function SpecialistRegistersControl() {
     if (isMutating) {
         return <SkeletonLoading />
 
-    }
-
-    if (import.meta.env.VITE_DEV_MODE === 'true') {
-        console.log(data)
     }
 
     function selectRegister(registerId: string) {
@@ -129,25 +126,23 @@ export default function SpecialistRegistersControl() {
     }
 
     async function submitRegister() {
-
         setSubmitting(true);
 
         if (!register || register.diagnosis == null) {
             setSubmitting(false);
-            return undefined;
+            return;
         }
 
-        await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
-
-        mutate(undefined, { revalidate: true }); // Atualiza o cache localmente
-
-        if (isError) {
+        try {
+            await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
+            await mutate(); // Re-fetch the undiagnosed list
             setSubmitting(false);
-            return <ErrorPage type="specialist"></ErrorPage>
+            back();
+        } catch (err) {
+            console.error(err);
+            setSubmitting(false);
+            // Error handling is done by the isError render check at the top of the component
         }
-
-        setSubmitting(false);
-        back()
     }
 
     const pages = [

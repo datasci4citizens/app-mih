@@ -11,7 +11,7 @@ export default function SelectUserType() {
 
     const handleLogout = async () => {
         await apiClient.post("/auth/logout/");
-        mutate("/user/me/", null);
+        mutate(() => true, undefined, { revalidate: false });
         localStorage.clear();
         navigate("/login");
     };

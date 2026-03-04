@@ -30,7 +30,7 @@ const InfoItem = ({ icon: Icon, label, value }: InfoItemProps) => (
 export default function ConfirmPatient() {
 
     const { sendData, updateFields, next } = useFormContext();
-    const { data: allPatientsData } = useSWR('/api/patients/');
+    const { data: allPatientsData } = useSWR('/api/patients/my/');
     const [showPatientModal, setShowPatientModal] = useState(false);
     const navigate = useNavigate();
 

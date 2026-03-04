@@ -6,9 +6,10 @@ import useSWR from "swr";
 
 export function AuthGuard() {
 
-    const { data, error, isLoading } = useSWR('/user/me/')
+    const { data, error, isLoading, isValidating } = useSWR('/user/me/')
 
-    if (isLoading)
+    // Wait if it's the first load or if SWR is fetching data but we don't have cache yet
+    if (isLoading || (isValidating && !data))
         return <LoadingInfos />
 
     if (import.meta.env.VITE_DEV_MODE === 'true') {

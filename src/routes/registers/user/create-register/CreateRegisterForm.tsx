@@ -267,7 +267,7 @@ export default function CreateRegister() {
         }
 
         if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(data)
+            console.log(result)
         }
     }
 

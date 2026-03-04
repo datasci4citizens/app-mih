@@ -68,7 +68,7 @@ export default function Register() {
         return <ErrorPage type="user"></ErrorPage>;
     }
 
-    const register = data?.mih?.find((r: any) => r.mih_id === Number(registerId));
+    const register = Array.isArray(data) ? data.find((r: any) => (r.mih_id ?? r.id) === Number(registerId)) : undefined;
 
     if (!register || !patient) {
         return <ErrorPage type="user"></ErrorPage>;

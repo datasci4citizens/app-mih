@@ -93,7 +93,7 @@ const HmiInformationCarousel = () => {
 export default function PatientHomePage() {
 
   const { data: user } = useSWR('/user/me/')
-  const { data: patientsData } = useSWR('/api/patients/')
+  const { data: patientsData } = useSWR('/api/patients/my/')
   const navigate = useNavigate();
   const { mutate } = useSWRConfig();
 
@@ -116,7 +116,7 @@ export default function PatientHomePage() {
 
   const handleLogout = async () => {
     await apiClient.post("/auth/logout/");
-    mutate("/user/me/", null);
+    mutate(() => true, undefined, { revalidate: false });
     localStorage.clear();
     navigate("/login");
   };
