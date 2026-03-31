@@ -77,7 +77,6 @@ async function sendRequest(
 			city?: string;
 			neighborhood?: string;
 			accept_tcle?: boolean;
-			participates_in_research: boolean;
 		};
 	},
 ) {
@@ -111,7 +110,6 @@ export default function CreateUser() {
 		const newValues = {
 			...values,
 			role: 'responsible',
-			participates_in_research: participatesInResearch ?? false,
 		};
 		const result = await trigger(newValues);
 
