@@ -35,6 +35,7 @@ import ErrorPage from '@/lib/components_utils/ErrorPage'
 import { useState } from 'react'
 import DatePicker from '@/components/ui/date-picker'
 import apiClient from '@/lib/axios'
+import { useResearchParticipation } from '@/lib/context/ResearchParticipationContext'
 
 
 const deliveryProblems = [
@@ -93,6 +94,7 @@ export default function PatientForm() {
     const { trigger, data, error } = useSWRMutation(`/api/patients/`, sendRequest)
     const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
+    const { participatesInResearch } = useResearchParticipation()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -179,6 +181,8 @@ export default function PatientForm() {
                         <div className="w-full max-w-md md:max-w-4xl mx-auto">
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+
+                                    {/* ── Campos essenciais (sempre exibidos) ─────────────────── */}
                                     <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
                                         <CardContent className='space-y-3 p-4'>
 
@@ -206,7 +210,6 @@ export default function PatientForm() {
                                                             disabled={(date) => {
                                                                 const today = startOfDay(new Date());
                                                                 return (isBefore(date, new Date("1900-01-01")) || isAfter(date, today));
-                                                                // isAfter(date, subYears(today, 18))
                                                             }}
                                                         />
                                                         <FormMessage />
@@ -242,7 +245,6 @@ export default function PatientForm() {
                                                             <FormLabel className='font-bold'>Número de irmãos</FormLabel>
                                                             <FormControl>
                                                                 <Input type="number" placeholder="Número de irmãos" {...field} />
-
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -251,202 +253,218 @@ export default function PatientForm() {
                                             )}
                                         </CardContent>
                                     </Card>
-                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
-                                        <CardContent className='space-y-3 p-4'>
-                                            <FormField
-                                                control={form.control}
-                                                name="deliveryProblems"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <ToggleField
-                                                                label="A mãe teve problemas durante a gravidez?"
-                                                                value={field.value}
-                                                                onChange={(checked) => {
-                                                                    field.onChange(checked);
-                                                                    if (!checked) {
-                                                                        form.setValue("deliveryProblemsTypes", []);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            {form.watch('deliveryProblems') && (<FormField
-                                                control={form.control}
-                                                name="deliveryProblemsTypes"
-                                                render={() => (
-                                                    <FormItem >
 
-                                                        <Accordion type="single" collapsible className="border-none">
-                                                            <AccordionItem value="item-1" className="border-none">
-                                                                <AccordionTrigger className='hover:no-underline text-sm font-semibold text-gray-600 py-3 px-4 bg-gray-50 rounded-xl mb-2'>Quais problemas?</AccordionTrigger>
-                                                                <AccordionContent className='space-y-3 pt-2 pb-1'>
+                                    {/* ============================================================
+                                        BLOCO DE PESQUISA — exibido apenas para participantes
+                                        Para remover: apagar daqui até "fim do bloco de pesquisa"
+                                        ============================================================ */}
+                                    {participatesInResearch && (
+                                        <div className="space-y-5">
+                                            {/* Label identificador do bloco */}
+                                            <div className="flex items-center gap-2 px-1">
+                                                <div className="h-px flex-1 bg-cyan-300/60" />
+                                                <span className="text-xs font-bold text-cyan-700 bg-cyan-100 px-3 py-1 rounded-full">🔬 Dados para a pesquisa</span>
+                                                <div className="h-px flex-1 bg-cyan-300/60" />
+                                            </div>
 
-                                                                    {deliveryProblems.map((item) => (
-                                                                        <FormField
-                                                                            key={item.id}
-                                                                            control={form.control}
-                                                                            name="deliveryProblemsTypes"
-                                                                            render={({ field }) => {
-                                                                                return (
+                                            <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
+                                                <CardContent className='space-y-3 p-4'>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="deliveryProblems"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <ToggleField
+                                                                        label="A mãe teve problemas durante a gravidez?"
+                                                                        value={field.value}
+                                                                        onChange={(checked) => {
+                                                                            field.onChange(checked);
+                                                                            if (!checked) {
+                                                                                form.setValue("deliveryProblemsTypes", []);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    {form.watch('deliveryProblems') && (<FormField
+                                                        control={form.control}
+                                                        name="deliveryProblemsTypes"
+                                                        render={() => (
+                                                            <FormItem >
 
-                                                                                    <FormItem
-                                                                                        key={item.id}
-                                                                                        className="flex flex-row items-center space-x-3 space-y-0 p-3 bg-white rounded-xl border border-gray-100 hover:border-[#A0E7E5]/50 transition-colors"
-                                                                                    >
-                                                                                        <FormControl>
-                                                                                            <Checkbox
-                                                                                                checked={field.value?.includes(item.id)}
-                                                                                                onCheckedChange={(checked) => {
-                                                                                                    return checked
-                                                                                                        ? field.onChange([...field.value, item.id])
-                                                                                                        : field.onChange(
-                                                                                                            field.value?.filter(
-                                                                                                                (value) => value !== item.id
-                                                                                                            )
-                                                                                                        )
+                                                                <Accordion type="single" collapsible className="border-none">
+                                                                    <AccordionItem value="item-1" className="border-none">
+                                                                        <AccordionTrigger className='hover:no-underline text-sm font-semibold text-gray-600 py-3 px-4 bg-gray-50 rounded-xl mb-2'>Quais problemas?</AccordionTrigger>
+                                                                        <AccordionContent className='space-y-3 pt-2 pb-1'>
 
-                                                                                                }}
-                                                                                            />
-                                                                                        </FormControl>
-                                                                                        <FormLabel className="font-medium text-gray-700 cursor-pointer flex-1">
-                                                                                            {item.label}
-                                                                                        </FormLabel>
-                                                                                    </FormItem>
-                                                                                )
-                                                                            }}
-                                                                        />
-                                                                    ))}
-                                                                </AccordionContent>
-                                                            </AccordionItem>
-                                                        </Accordion>
+                                                                            {deliveryProblems.map((item) => (
+                                                                                <FormField
+                                                                                    key={item.id}
+                                                                                    control={form.control}
+                                                                                    name="deliveryProblemsTypes"
+                                                                                    render={({ field }) => {
+                                                                                        return (
 
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />)}
-                                            <FormField
-                                                control={form.control}
-                                                name="premature"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <ToggleField
-                                                                label="Teve parto prematuro? (antes de 37 semanas)"
-                                                                value={field.value}
-                                                                onChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="deliveryType"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <ToggleField
-                                                                label="Tipo de parto: Normal?"
-                                                                value={field.value === "normal"}
-                                                                onChange={(checked) => {
-                                                                    if (checked) {
-                                                                        form.setValue("deliveryType", "normal");
-                                                                    } else {
-                                                                        form.setValue("deliveryType", "cesarean");
-                                                                    }
-                                                                    if (import.meta.env.VITE_DEV_MODE === 'true') {
-                                                                        console.log(form.watch("deliveryType"));
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="lowWeight"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <ToggleField
-                                                                label="Baixo peso ao nascer? (abaixo de 2,5kg)"
-                                                                value={field.value}
-                                                                onChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
+                                                                                            <FormItem
+                                                                                                key={item.id}
+                                                                                                className="flex flex-row items-center space-x-3 space-y-0 p-3 bg-white rounded-xl border border-gray-100 hover:border-[#A0E7E5]/50 transition-colors"
+                                                                                            >
+                                                                                                <FormControl>
+                                                                                                    <Checkbox
+                                                                                                        checked={field.value?.includes(item.id)}
+                                                                                                        onCheckedChange={(checked) => {
+                                                                                                            return checked
+                                                                                                                ? field.onChange([...field.value, item.id])
+                                                                                                                : field.onChange(
+                                                                                                                    field.value?.filter(
+                                                                                                                        (value) => value !== item.id
+                                                                                                                    )
+                                                                                                                )
 
-                                        </CardContent>
-                                    </Card>
+                                                                                                        }}
+                                                                                                    />
+                                                                                                </FormControl>
+                                                                                                <FormLabel className="font-medium text-gray-700 cursor-pointer flex-1">
+                                                                                                    {item.label}
+                                                                                                </FormLabel>
+                                                                                            </FormItem>
+                                                                                        )
+                                                                                    }}
+                                                                                />
+                                                                            ))}
+                                                                        </AccordionContent>
+                                                                    </AccordionItem>
+                                                                </Accordion>
 
-                                    <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
-                                        <CardContent className='space-y-3 p-4'>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />)}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="premature"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <ToggleField
+                                                                        label="Teve parto prematuro? (antes de 37 semanas)"
+                                                                        value={field.value}
+                                                                        onChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="deliveryType"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <ToggleField
+                                                                        label="Tipo de parto: Normal?"
+                                                                        value={field.value === "normal"}
+                                                                        onChange={(checked) => {
+                                                                            if (checked) {
+                                                                                form.setValue("deliveryType", "normal");
+                                                                            } else {
+                                                                                form.setValue("deliveryType", "cesarean");
+                                                                            }
+                                                                            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                                                                                console.log(form.watch("deliveryType"));
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="lowWeight"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <ToggleField
+                                                                        label="Baixo peso ao nascer? (abaixo de 2,5kg)"
+                                                                        value={field.value}
+                                                                        onChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </CardContent>
+                                            </Card>
 
-                                            <FormField
-                                                control={form.control}
-                                                name="highFever"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <ToggleField
-                                                                label="Já teve febre alta ou infecção até os 3 anos?"
-                                                                value={field.value}
-                                                                onChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="consultDentist"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <ToggleField
-                                                                label="Já teve consulta com dentista?"
-                                                                value={field.value}
-                                                                onChange={(checked) => {
-                                                                    field.onChange(checked);
-                                                                    if (!checked) {
-                                                                        form.setValue("consultType", "");
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            {form.watch('consultDentist') && (<FormField
-                                                control={form.control}
-                                                name="consultType"
-                                                render={({ field }) => (
-                                                    <FormItem >
-                                                        <FormLabel className='font-bold'>Tipo de consulta</FormLabel>
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Consulta em qual meio" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                <SelectItem value="private">Privado</SelectItem>
-                                                                <SelectItem value="public">Público</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />)}
+                                            <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
+                                                <CardContent className='space-y-3 p-4'>
 
-                                        </CardContent>
-                                    </Card>
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="highFever"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <ToggleField
+                                                                        label="Já teve febre alta ou infecção até os 3 anos?"
+                                                                        value={field.value}
+                                                                        onChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="consultDentist"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <ToggleField
+                                                                        label="Já teve consulta com dentista?"
+                                                                        value={field.value}
+                                                                        onChange={(checked) => {
+                                                                            field.onChange(checked);
+                                                                            if (!checked) {
+                                                                                form.setValue("consultType", "");
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    {form.watch('consultDentist') && (<FormField
+                                                        control={form.control}
+                                                        name="consultType"
+                                                        render={({ field }) => (
+                                                            <FormItem >
+                                                                <FormLabel className='font-bold'>Tipo de consulta</FormLabel>
+                                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                    <FormControl>
+                                                                        <SelectTrigger>
+                                                                            <SelectValue placeholder="Consulta em qual meio" />
+                                                                        </SelectTrigger>
+                                                                    </FormControl>
+                                                                    <SelectContent>
+                                                                        <SelectItem value="private">Privado</SelectItem>
+                                                                        <SelectItem value="public">Público</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />)}
+
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    )} {/* fim do bloco de pesquisa */}
+                                    {/* ============================================================ */}
 
                                     <div className="flex justify-center pt-2">
                                         <Button className="w-full md:w-auto md:min-w-[200px]" type="submit" disabled={submitting}>

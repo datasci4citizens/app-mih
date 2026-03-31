@@ -23,10 +23,19 @@ import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
+import { useResearchParticipation } from '@/lib/context/ResearchParticipationContext';
 
-const formSchema = z.object({
+// Schema base — sempre requeridos (sem TCLE: só para quem participa da pesquisa)
+const baseSchema = z.object({
 	name: z.string().min(4, {
 		message: 'Nome muito pequeno.',
+	}),
+});
+
+// Schema para quem participa da pesquisa — campos extras + TCLE obrigatórios
+const researchSchema = baseSchema.extend({
+	accept_tcle: z.boolean().refine((val) => val === true, {
+		message: 'É necessário que concorde com os termos para avançar.',
 	}),
 	phone_number: z.string().min(11, {
 		message: 'O telefone deve ter no mínimo 11 dígitos.',
@@ -40,10 +49,20 @@ const formSchema = z.object({
 	neighborhood: z.string().min(2, {
 		message: 'O Bairro deve ter no mínimo 2 dígitos.',
 	}),
-	accept_tcle: z.boolean().refine((val) => val === true, {
-		message: 'É necessário que concorde com os termos para avançar.',
-	}),
 });
+
+// Schema para quem não participa — só campos essenciais, sem TCLE
+const noResearchSchema = baseSchema.extend({
+	accept_tcle: z.boolean().optional(),
+	phone_number: z.string().optional(),
+	state: z.string().optional(),
+	city: z.string().optional(),
+	neighborhood: z.string().optional(),
+});
+
+type ResearchFormValues = z.infer<typeof researchSchema>;
+type NoResearchFormValues = z.infer<typeof noResearchSchema>;
+type FormValues = ResearchFormValues | NoResearchFormValues;
 
 async function sendRequest(
 	url: string,
@@ -52,12 +71,13 @@ async function sendRequest(
 	}: {
 		arg: {
 			name: string;
-			phone_number: string;
+			phone_number?: string;
 			role: string;
-			state: string;
-			city: string;
-			neighborhood: string;
-			accept_tcle: boolean;
+			state?: string;
+			city?: string;
+			neighborhood?: string;
+			accept_tcle?: boolean;
+			participates_in_research: boolean;
 		};
 	},
 ) {
@@ -65,16 +85,17 @@ async function sendRequest(
 }
 
 export default function CreateUser() {
-	const { trigger, error } = useSwrMutation(
-		`/users/`,
-		sendRequest,
-	);
+	const { trigger, error } = useSwrMutation(`/users/`, sendRequest);
 	const [submitting, setSubmitting] = useState(false);
 	const [showTcleModal, setShowTcleModal] = useState(false);
 	const navigate = useNavigate();
+	const { participatesInResearch } = useResearchParticipation();
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	// Escolher o schema conforme a decisão de participação
+	const activeSchema = participatesInResearch ? researchSchema : noResearchSchema;
+
+	const form = useForm<FormValues>({
+		resolver: zodResolver(activeSchema),
 		defaultValues: {
 			name: '',
 			phone_number: '',
@@ -85,9 +106,13 @@ export default function CreateUser() {
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: FormValues) {
 		setSubmitting(true);
-		const newValues = { ...values, role: 'responsible' };
+		const newValues = {
+			...values,
+			role: 'responsible',
+			participates_in_research: participatesInResearch ?? false,
+		};
 		const result = await trigger(newValues);
 
 		if (error) {
@@ -128,7 +153,7 @@ export default function CreateUser() {
 
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl space-y-6">
-							{/* Card 1: Form Fields (White Background) */}
+							{/* Card 1: Essential Fields (always shown) */}
 							<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-5">
 								{/* Name Field */}
 								<FormField
@@ -151,151 +176,160 @@ export default function CreateUser() {
 									)}
 								/>
 
-								{/* Phone Field */}
-								<FormField
-									control={form.control}
-									name="phone_number"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="font-bold text-gray-700">
-												Número de telefone*
-											</FormLabel>
-											<FormControl>
-												<Input
-													placeholder="Telefone"
-													{...field}
-													className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
-												/>
-											</FormControl>
-											<FormDescription className="text-xs">
-												Insira o telefone para contato
-											</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+								{/* Research fields — only shown when participating */}
+								{participatesInResearch && (
+									<>
+										{/* Phone Field */}
+										<FormField
+											control={form.control}
+											name="phone_number"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel className="font-bold text-gray-700">
+														Número de telefone*
+													</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="Telefone"
+															{...field}
+															className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+														/>
+													</FormControl>
+													<FormDescription className="text-xs">
+														Insira o telefone para contato
+													</FormDescription>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
 
-								{/* Location Fields - Grid */}
-								<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-									{/* State Field */}
-									<FormField
-										control={form.control}
-										name="state"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel className="font-bold text-gray-700">Estado*</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Estado"
-														{...field}
-														className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
+										{/* Location Fields - Grid */}
+										<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+											{/* State Field */}
+											<FormField
+												control={form.control}
+												name="state"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel className="font-bold text-gray-700">Estado*</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="Estado"
+																{...field}
+																className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-									{/* City Field */}
-									<FormField
-										control={form.control}
-										name="city"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel className="font-bold text-gray-700">Cidade*</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Cidade"
-														{...field}
-														className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
+											{/* City Field */}
+											<FormField
+												control={form.control}
+												name="city"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel className="font-bold text-gray-700">Cidade*</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="Cidade"
+																{...field}
+																className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-									{/* Neighborhood Field */}
-									<FormField
-										control={form.control}
-										name="neighborhood"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel className="font-bold text-gray-700">Bairro*</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Bairro"
-														{...field}
-														className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-								</div>
+											{/* Neighborhood Field */}
+											<FormField
+												control={form.control}
+												name="neighborhood"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel className="font-bold text-gray-700">Bairro*</FormLabel>
+														<FormControl>
+															<Input
+																placeholder="Bairro"
+																{...field}
+																className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
+															/>
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
+									</>
+								)}
 							</div>
 
-							{/* Card 2: Research Information (Blue Background) */}
-							<div className="bg-gradient-to-br from-cyan-400 to-cyan-500 p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+							{/* Card 2: Research status banner */}
+							<div className={`p-5 rounded-3xl shadow-xl animate-in fade-in slide-in-from-bottom-8 duration-700 ${participatesInResearch
+								? 'bg-gradient-to-br from-cyan-400 to-cyan-500'
+								: 'bg-white/60 backdrop-blur-sm border border-gray-200'
+								}`}>
 								<div className="flex items-start gap-3">
-									<Info className="w-6 h-6 text-white flex-shrink-0 mt-0.5" />
-									<div className="flex-1">
-										<h3 className="font-bold text-white mb-3 text-lg">
-											Convite para Participação em Pesquisa
-										</h3>
-										<p className="text-sm text-white leading-relaxed">
-											Você é convidado(a) a participar de uma pesquisa científica
-											desenvolvida por Dentistas da <strong>FOP - Unicamp</strong> para
-											melhorar o tratamento de HMI.
-										</p>
-										<p className="text-sm text-white leading-relaxed mt-3">
-											Caso concorde, coletaremos dados de forma <strong>anônima</strong> sobre
-											o uso da plataforma. Seus dados pessoais (nome, e-mail, telefone)
-											<strong> não serão armazenados</strong> para a pesquisa.
-										</p>
-										<p className="text-sm font-semibold text-white mt-4">
-											✨ Participe, você ajudará a criar uma plataforma sempre melhor!
-										</p>
+									<Info className={`w-5 h-5 flex-shrink-0 mt-0.5 ${participatesInResearch ? 'text-white' : 'text-gray-400'}`} />
+									<div>
+										{participatesInResearch ? (
+											<>
+												<p className="font-bold text-white text-sm">Participando da pesquisa</p>
+												<p className="text-xs text-white/80 mt-0.5">
+													Seus dados anônimos ajudarão a melhorar o tratamento do HMI.
+												</p>
+											</>
+										) : (
+											<>
+												<p className="font-bold text-gray-600 text-sm">Sem participação na pesquisa</p>
+												<p className="text-xs text-gray-400 mt-0.5">
+													Você ainda pode enviar fotos e receber diagnósticos normalmente.
+												</p>
+											</>
+										)}
 									</div>
 								</div>
 							</div>
 
-							{/* Card 3: TCLE Acceptance (White Background) */}
-							<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-								<FormField
-									control={form.control}
-									name="accept_tcle"
-									render={({ field }) => (
-										<FormItem className="flex flex-row items-start space-x-3 space-y-0">
-											<FormControl>
-												<Checkbox
-													checked={field.value}
-													onCheckedChange={field.onChange}
-													className="mt-0.5"
-												/>
-											</FormControl>
-											<div className="space-y-1 leading-none">
-												<FormLabel className="font-semibold text-gray-800">
-													Li e aceito os termos TCLE
-												</FormLabel>
-												<FormDescription className="text-xs">
-													<button
-														type="button"
-														onClick={() => setShowTcleModal(true)}
-														className="text-[#FF8A65] hover:text-[#FF8A65]/80 font-medium underline"
-													>
-														Ver TCLE completo
-													</button>
-												</FormDescription>
-												<FormMessage />
-											</div>
-										</FormItem>
-									)}
-								/>
-							</div>
+							{/* Card 3: TCLE Acceptance — apenas para participantes da pesquisa */}
+							{participatesInResearch && (
+								<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+									<FormField
+										control={form.control}
+										name="accept_tcle"
+										render={({ field }) => (
+											<FormItem className="flex flex-row items-start space-x-3 space-y-0">
+												<FormControl>
+													<Checkbox
+														checked={field.value}
+														onCheckedChange={field.onChange}
+														className="mt-0.5"
+													/>
+												</FormControl>
+												<div className="space-y-1 leading-none">
+													<FormLabel className="font-semibold text-gray-800">
+														Li e aceito os termos TCLE
+													</FormLabel>
+													<FormDescription className="text-xs">
+														<button
+															type="button"
+															onClick={() => setShowTcleModal(true)}
+															className="text-[#FF8A65] hover:text-[#FF8A65]/80 font-medium underline"
+														>
+															Ver TCLE completo
+														</button>
+													</FormDescription>
+													<FormMessage />
+												</div>
+											</FormItem>
+										)}
+									/>
+								</div>
+							)}
 
-							{/* Submit Button - No background */}
+							{/* Submit Button */}
 							<Button
 								className="w-full transform transition-all duration-150 active:scale-95 hover:-translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.1)] active:shadow-[0_1px_0_rgba(0,0,0,0.1)] active:translate-y-1 rounded-2xl py-6 font-bold text-white text-lg bg-gradient-to-br from-[#FF8A65] to-[#FFB394]"
 								type="submit"
