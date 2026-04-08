@@ -13,7 +13,6 @@ import PatientForm from './routes/user/create-user-patient/PatientForm';
 import SelectUserType from './routes/user/SelectUserType';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
-import TcleDecision from './routes/user/create-user-patient/Tcle';
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Fullscreen } from '@boengli/capacitor-fullscreen';
@@ -24,7 +23,6 @@ import { SpecialistGuard } from './guards/specialist';
 import { UserGuard } from './guards/user';
 import apiClient from './lib/axios';
 import AllRegisters from './routes/registers/user/AllRegisters';
-import { ResearchParticipationProvider } from './lib/context/ResearchParticipationContext';
 
 const router = createBrowserRouter([
   {
@@ -107,10 +105,6 @@ const router = createBrowserRouter([
         children: [
 
           {
-            path: '/user/tcle',
-            element: <TcleDecision />
-          },
-          {
             path: '/user/create',
             element: <CreateUser />
           },
@@ -143,12 +137,10 @@ export function App() {
     activateImmersiveMode();
   }, []);
   return (
-    <ResearchParticipationProvider>
-      <SWRConfig value={{
-        fetcher: (url) => apiClient.get(url).then(res => res.data)
-      }}>
-        <RouterProvider router={router} />
-      </SWRConfig>
-    </ResearchParticipationProvider>
+    <SWRConfig value={{
+      fetcher: (url) => apiClient.get(url).then(res => res.data)
+    }}>
+      <RouterProvider router={router} />
+    </SWRConfig>
   )
 }

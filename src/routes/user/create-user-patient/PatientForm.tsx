@@ -35,7 +35,7 @@ import ErrorPage from '@/lib/components_utils/ErrorPage'
 import { useState } from 'react'
 import DatePicker from '@/components/ui/date-picker'
 import apiClient from '@/lib/axios'
-import { useResearchParticipation } from '@/lib/context/ResearchParticipationContext'
+import { useUser } from '@/lib/hooks/use-user'
 
 
 const deliveryProblems = [
@@ -94,7 +94,7 @@ export default function PatientForm() {
     const { trigger, data, error } = useSWRMutation(`/api/patients/`, sendRequest)
     const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
-    const { participatesInResearch } = useResearchParticipation()
+    const { accept_tcle: participatesInResearch } = useUser()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

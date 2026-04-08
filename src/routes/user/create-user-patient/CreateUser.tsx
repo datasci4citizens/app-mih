@@ -13,47 +13,41 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { ToyBackground } from '@/components/ui/toy-background';
-import { TcleModal } from '@/components/ui/tcle-modal';
-import { Info, ChevronLeft } from 'lucide-react';
+import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
+import { ChevronLeft, FlaskConical, EyeOff, AlertCircle } from 'lucide-react';
 
-import ErrorPage from '@/lib/components_utils/ErrorPage';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
-import { useResearchParticipation } from '@/lib/context/ResearchParticipationContext';
-
-// Schema base — sempre requeridos (sem TCLE: só para quem participa da pesquisa)
-const baseSchema = z.object({
-	name: z.string().min(4, {
-		message: 'Nome muito pequeno.',
-	}),
-});
 
 // Schema para quem participa da pesquisa — campos extras + TCLE obrigatórios
-const researchSchema = baseSchema.extend({
+const researchSchema = z.object({
+	name: z.string().min(4, { message: 'Nome muito pequeno.' }),
 	accept_tcle: z.boolean().refine((val) => val === true, {
-		message: 'É necessário que concorde com os termos para avançar.',
+		message: 'É necessário que concorde com os termos do TCLE para avançar.',
+	}),
+	accept_privacy_policy: z.boolean().refine((val) => val === true, {
+		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
 	}),
 	phone_number: z.string().min(11, {
 		message: 'O telefone deve ter no mínimo 11 dígitos.',
 	}),
-	state: z.string().min(2, {
-		message: 'O Estado deve ter no mínimo 2 dígitos.',
-	}),
-	city: z.string().min(2, {
-		message: 'A cidade deve ter no mínimo 2 dígitos.',
-	}),
-	neighborhood: z.string().min(2, {
-		message: 'O Bairro deve ter no mínimo 2 dígitos.',
-	}),
+	state: z.string().min(2, { message: 'O Estado deve ter no mínimo 2 caracteres.' }),
+	city: z.string().min(2, { message: 'A cidade deve ter no mínimo 2 caracteres.' }),
+	neighborhood: z.string().min(2, { message: 'O Bairro deve ter no mínimo 2 caracteres.' }),
 });
 
-// Schema para quem não participa — só campos essenciais, sem TCLE
-const noResearchSchema = baseSchema.extend({
+// Schema para quem não participa — apenas Política de Privacidade é obrigatória
+const noResearchSchema = z.object({
+	name: z.string().min(4, { message: 'Nome muito pequeno.' }),
 	accept_tcle: z.boolean().optional(),
+	accept_privacy_policy: z.boolean().refine((val) => val === true, {
+		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
+	}),
 	phone_number: z.string().optional(),
 	state: z.string().optional(),
 	city: z.string().optional(),
@@ -77,6 +71,8 @@ async function sendRequest(
 			city?: string;
 			neighborhood?: string;
 			accept_tcle?: boolean;
+			accept_privacy_policy?: boolean;
+			user_agent?: string;
 		};
 	},
 ) {
@@ -86,11 +82,16 @@ async function sendRequest(
 export default function CreateUser() {
 	const { trigger, error } = useSwrMutation(`/users/`, sendRequest);
 	const [submitting, setSubmitting] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [showTcleModal, setShowTcleModal] = useState(false);
+	const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+	// Desbloqueios: só true após o usuário rolar até o fim e aceitar no modal
+	const [tcleUnlocked, setTcleUnlocked] = useState(false);
+	const [privacyUnlocked, setPrivacyUnlocked] = useState(false);
+	// Toggle de participação na pesquisa — estado local, definido nesta tela
+	const [participatesInResearch, setParticipatesInResearch] = useState(false);
 	const navigate = useNavigate();
-	const { participatesInResearch } = useResearchParticipation();
 
-	// Escolher o schema conforme a decisão de participação
 	const activeSchema = participatesInResearch ? researchSchema : noResearchSchema;
 
 	const form = useForm<FormValues>({
@@ -102,19 +103,53 @@ export default function CreateUser() {
 			city: '',
 			neighborhood: '',
 			accept_tcle: false,
+			accept_privacy_policy: false,
 		},
 	});
 
+	// Ao mudar participação, resetar campos condicionais e desbloquear TCLE
+	function handleResearchToggle(value: boolean) {
+		setParticipatesInResearch(value);
+		if (!value) {
+			form.setValue('accept_tcle', false);
+			setTcleUnlocked(false);
+			form.setValue('phone_number', '');
+			form.setValue('state', '');
+			form.setValue('city', '');
+			form.setValue('neighborhood', '');
+			form.clearErrors(['accept_tcle', 'phone_number', 'state', 'city', 'neighborhood']);
+		}
+	}
+
+	// Callbacks são memoizados para evitar re-renders desnecessários
+	const handleTcleAccepted = useCallback((accepted: boolean) => {
+		if (accepted) {
+			setTcleUnlocked(true);
+			form.setValue('accept_tcle', true);
+		}
+	}, [form]);
+
+	const handlePrivacyAccepted = useCallback((accepted: boolean) => {
+		if (accepted) {
+			setPrivacyUnlocked(true);
+			form.setValue('accept_privacy_policy', true);
+		}
+	}, [form]);
+
 	async function onSubmit(values: FormValues) {
 		setSubmitting(true);
+		setSubmitError(null);
 		const newValues = {
 			...values,
 			role: 'responsible',
+			user_agent: navigator.userAgent,
 		};
 		const result = await trigger(newValues);
 
 		if (error) {
-			return <ErrorPage type="user"></ErrorPage>;
+			setSubmitError(error?.message || 'Erro ao cadastrar usuário.');
+			setSubmitting(false);
+			return;
 		}
 
 		if (result && !error) {
@@ -132,8 +167,11 @@ export default function CreateUser() {
 	return (
 		<div className="w-full min-h-screen bg-[#A0E7E5] relative">
 			<ToyBackground />
-			<div className="relative z-10 flex flex-col min-h-screen" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)', paddingBottom: '3rem' }}>
-				{/* Header with Back Button */}
+			<div
+				className="relative z-10 flex flex-col min-h-screen"
+				style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)', paddingBottom: '3rem' }}
+			>
+				{/* Header */}
 				<div className="px-6 pb-6 flex items-center gap-4">
 					<button
 						onClick={() => navigate(-1)}
@@ -141,19 +179,65 @@ export default function CreateUser() {
 					>
 						<ChevronLeft size={24} />
 					</button>
-					<h1 className="text-2xl font-bold text-white drop-shadow-lg" style={{ fontFamily: 'Nunito, sans-serif' }}>
+					<h1
+						className="text-2xl font-bold text-white drop-shadow-lg"
+						style={{ fontFamily: 'Nunito, sans-serif' }}
+					>
 						Cadastro Responsável
 					</h1>
 				</div>
 
-				{/* Content */}
 				<div className="flex-1 flex flex-col items-center px-6">
-
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl space-y-6">
-							{/* Card 1: Essential Fields (always shown) */}
+
+							{/* Erro de submissão */}
+							{submitError && (
+								<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
+									<AlertCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
+									<div>
+										<p className="font-semibold text-red-800 text-sm">Erro ao cadastrar</p>
+										<p className="text-xs text-red-700 mt-0.5">{submitError}</p>
+									</div>
+								</div>
+							)}
+
+							{/* Card 1: Convite à pesquisa (toggle) */}
+							<div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+								<div className="flex items-start gap-4">
+									<div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#A0E7E5] to-[#2A9D8F] flex items-center justify-center flex-shrink-0 shadow-md">
+										<FlaskConical size={22} className="text-white" />
+									</div>
+									<div className="flex-1">
+										<p className="font-bold text-gray-800 text-base leading-tight">
+											Participar da pesquisa FOP-Unicamp
+										</p>
+										<p className="text-xs text-gray-500 mt-1 leading-snug">
+											Contribua com dados anônimos para melhorar o tratamento da HMI.
+											Não afeta o uso normal do aplicativo.
+										</p>
+									</div>
+									<Switch
+										checked={participatesInResearch}
+										onCheckedChange={handleResearchToggle}
+										className="flex-shrink-0 mt-1"
+									/>
+								</div>
+
+								{participatesInResearch && (
+									<div className="mt-4 pt-4 border-t border-gray-100 flex items-start gap-2">
+										<EyeOff size={14} className="text-[#2A9D8F] flex-shrink-0 mt-0.5" />
+										<p className="text-xs text-[#2A9D8F] font-medium">
+											Seus dados pessoais (nome, e-mail, telefone) nunca serão associados
+											aos dados de pesquisa, que são completamente anônimos.
+										</p>
+									</div>
+								)}
+							</div>
+
+							{/* Card 2: Dados essenciais */}
 							<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-5">
-								{/* Name Field */}
+								{/* Nome */}
 								<FormField
 									control={form.control}
 									name="name"
@@ -164,7 +248,7 @@ export default function CreateUser() {
 											</FormLabel>
 											<FormControl>
 												<Input
-													placeholder="Nome do responsável"
+													placeholder="Nome completo"
 													{...field}
 													className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
 												/>
@@ -174,10 +258,9 @@ export default function CreateUser() {
 									)}
 								/>
 
-								{/* Research fields — only shown when participating */}
+								{/* Campos extras apenas para participantes */}
 								{participatesInResearch && (
 									<>
-										{/* Phone Field */}
 										<FormField
 											control={form.control}
 											name="phone_number"
@@ -188,22 +271,20 @@ export default function CreateUser() {
 													</FormLabel>
 													<FormControl>
 														<Input
-															placeholder="Telefone"
+															placeholder="(XX) XXXXX-XXXX"
 															{...field}
 															className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
 														/>
 													</FormControl>
 													<FormDescription className="text-xs">
-														Insira o telefone para contato
+														Para contato da equipe de pesquisa, se necessário
 													</FormDescription>
 													<FormMessage />
 												</FormItem>
 											)}
 										/>
 
-										{/* Location Fields - Grid */}
 										<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-											{/* State Field */}
 											<FormField
 												control={form.control}
 												name="state"
@@ -212,7 +293,7 @@ export default function CreateUser() {
 														<FormLabel className="font-bold text-gray-700">Estado*</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Estado"
+																placeholder="SP"
 																{...field}
 																className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
 															/>
@@ -221,8 +302,6 @@ export default function CreateUser() {
 													</FormItem>
 												)}
 											/>
-
-											{/* City Field */}
 											<FormField
 												control={form.control}
 												name="city"
@@ -231,7 +310,7 @@ export default function CreateUser() {
 														<FormLabel className="font-bold text-gray-700">Cidade*</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Cidade"
+																placeholder="Piracicaba"
 																{...field}
 																className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
 															/>
@@ -240,8 +319,6 @@ export default function CreateUser() {
 													</FormItem>
 												)}
 											/>
-
-											{/* Neighborhood Field */}
 											<FormField
 												control={form.control}
 												name="neighborhood"
@@ -250,7 +327,7 @@ export default function CreateUser() {
 														<FormLabel className="font-bold text-gray-700">Bairro*</FormLabel>
 														<FormControl>
 															<Input
-																placeholder="Bairro"
+																placeholder="Centro"
 																{...field}
 																className="border-gray-300 focus:border-[#A0E7E5] focus:ring-[#A0E7E5]/20"
 															/>
@@ -264,34 +341,7 @@ export default function CreateUser() {
 								)}
 							</div>
 
-							{/* Card 2: Research status banner */}
-							<div className={`p-5 rounded-3xl shadow-xl animate-in fade-in slide-in-from-bottom-8 duration-700 ${participatesInResearch
-								? 'bg-gradient-to-br from-cyan-400 to-cyan-500'
-								: 'bg-white/60 backdrop-blur-sm border border-gray-200'
-								}`}>
-								<div className="flex items-start gap-3">
-									<Info className={`w-5 h-5 flex-shrink-0 mt-0.5 ${participatesInResearch ? 'text-white' : 'text-gray-400'}`} />
-									<div>
-										{participatesInResearch ? (
-											<>
-												<p className="font-bold text-white text-sm">Participando da pesquisa</p>
-												<p className="text-xs text-white/80 mt-0.5">
-													Seus dados anônimos ajudarão a melhorar o tratamento do HMI.
-												</p>
-											</>
-										) : (
-											<>
-												<p className="font-bold text-gray-600 text-sm">Sem participação na pesquisa</p>
-												<p className="text-xs text-gray-400 mt-0.5">
-													Você ainda pode enviar fotos e receber diagnósticos normalmente.
-												</p>
-											</>
-										)}
-									</div>
-								</div>
-							</div>
-
-							{/* Card 3: TCLE Acceptance — apenas para participantes da pesquisa */}
+							{/* Card 3: TCLE — apenas para participantes da pesquisa */}
 							{participatesInResearch && (
 								<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
 									<FormField
@@ -302,21 +352,25 @@ export default function CreateUser() {
 												<FormControl>
 													<Checkbox
 														checked={field.value}
-														onCheckedChange={field.onChange}
+														disabled={!tcleUnlocked}
+														onCheckedChange={() => {
+															if (!tcleUnlocked) setShowTcleModal(true);
+															else field.onChange(!field.value);
+														}}
 														className="mt-0.5"
 													/>
 												</FormControl>
 												<div className="space-y-1 leading-none">
-													<FormLabel className="font-semibold text-gray-800">
-														Li e aceito os termos TCLE
+													<FormLabel className={`font-semibold ${tcleUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+														Li e aceito o TCLE (Termo de Consentimento Livre e Esclarecido)*
 													</FormLabel>
 													<FormDescription className="text-xs">
 														<button
 															type="button"
 															onClick={() => setShowTcleModal(true)}
-															className="text-[#FF8A65] hover:text-[#FF8A65]/80 font-medium underline"
+															className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
 														>
-															Ver TCLE completo
+															{tcleUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
 														</button>
 													</FormDescription>
 													<FormMessage />
@@ -327,7 +381,45 @@ export default function CreateUser() {
 								</div>
 							)}
 
-							{/* Submit Button */}
+							{/* Card 4: Política de Privacidade — para todos */}
+							<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+								<FormField
+									control={form.control}
+									name="accept_privacy_policy"
+									render={({ field }) => (
+										<FormItem className="flex flex-row items-start space-x-3 space-y-0">
+											<FormControl>
+												<Checkbox
+													checked={field.value}
+													disabled={!privacyUnlocked}
+													onCheckedChange={() => {
+														if (!privacyUnlocked) setShowPrivacyModal(true);
+														else field.onChange(!field.value);
+													}}
+													className="mt-0.5"
+												/>
+											</FormControl>
+											<div className="space-y-1 leading-none">
+												<FormLabel className={`font-semibold ${privacyUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+													Li e aceito a Política de Privacidade*
+												</FormLabel>
+												<FormDescription className="text-xs">
+													<button
+														type="button"
+														onClick={() => setShowPrivacyModal(true)}
+														className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
+													>
+														{privacyUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
+													</button>
+												</FormDescription>
+												<FormMessage />
+											</div>
+										</FormItem>
+									)}
+								/>
+							</div>
+
+							{/* Submit */}
 							<Button
 								className="w-full transform transition-all duration-150 active:scale-95 hover:-translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.1)] active:shadow-[0_1px_0_rgba(0,0,0,0.1)] active:translate-y-1 rounded-2xl py-6 font-bold text-white text-lg bg-gradient-to-br from-[#FF8A65] to-[#FFB394]"
 								type="submit"
@@ -338,10 +430,23 @@ export default function CreateUser() {
 						</form>
 					</Form>
 				</div>
-
-				{/* TCLE Modal */}
-				<TcleModal open={showTcleModal} onOpenChange={setShowTcleModal} />
 			</div>
+
+			{/* TCLE Modal */}
+			<TcleModalSecure
+				open={showTcleModal}
+				onOpenChange={setShowTcleModal}
+				onAccept={handleTcleAccepted}
+				documentType="tcle"
+			/>
+
+			{/* Política de Privacidade Modal */}
+			<TcleModalSecure
+				open={showPrivacyModal}
+				onOpenChange={setShowPrivacyModal}
+				onAccept={handlePrivacyAccepted}
+				documentType="privacy"
+			/>
 		</div>
 	);
 }

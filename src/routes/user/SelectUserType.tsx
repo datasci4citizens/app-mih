@@ -43,7 +43,7 @@ export default function SelectUserType() {
                 {/* Selection Cards Container */}
                 <div className="w-full max-w-md space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
                     {/* Patient Card */}
-                    <Link to="/user/tcle" className="block">
+                    <Link to="/user/create" className="block">
                         <button className="w-full bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group">
                             <div className="flex items-center gap-4">
                                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF8A65] to-[#FFB394] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">

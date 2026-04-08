@@ -5,6 +5,7 @@ const ctx = createContext({
     email: "",
     role: "",
     is_allowed: true,
+    accept_tcle: false as boolean | undefined,
 })
 
 export const UserContextProvider = ctx.Provider;
