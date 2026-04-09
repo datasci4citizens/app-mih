@@ -3,7 +3,7 @@
  * Encapsula: estados, effects, presignedUrl regeneration e callbacks
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentDocuments } from './useConsentDocuments';
 import type { ConsentDocumentInfo } from '@/types/consent.types';
 
@@ -43,6 +43,10 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 		presignedUrl: null,
 	});
 
+	// Refs para rastrear se já regeneramos a URL nesta abertura
+	const tcleUrlFetchedRef = useRef(false);
+	const privacyUrlFetchedRef = useRef(false);
+
 	// Carrega IDs dos documentos quando consentDocs carrega
 	useEffect(() => {
 		if (!docsLoading && consentDocs.length > 0) {
@@ -58,9 +62,10 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 		}
 	}, [consentDocs, docsLoading]);
 
-	// Regenera presignedUrl quando TCLE modal abre
+	// Regenera presignedUrl quando TCLE modal abre - apenas uma vez por abertura
 	useEffect(() => {
-		if (tcle.isOpen && tcle.documentId) {
+		if (tcle.isOpen && tcle.documentId && !tcleUrlFetchedRef.current) {
+			tcleUrlFetchedRef.current = true;
 			const tcleDoc = consentDocs.find(d => d.id === tcle.documentId);
 			if (tcleDoc) {
 				getPresignedUrl('tcle', tcleDoc.language).then(response => {
@@ -69,12 +74,16 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 					}
 				});
 			}
+		} else if (!tcle.isOpen) {
+			// Reset flag quando modal fecha
+			tcleUrlFetchedRef.current = false;
 		}
-	}, [tcle.isOpen, tcle.documentId, consentDocs, getPresignedUrl]);
+	}, [tcle.isOpen, tcle.documentId]);
 
-	// Regenera presignedUrl quando Privacy modal abre
+	// Regenera presignedUrl quando Privacy modal abre - apenas uma vez por abertura
 	useEffect(() => {
-		if (privacy.isOpen && privacy.documentId) {
+		if (privacy.isOpen && privacy.documentId && !privacyUrlFetchedRef.current) {
+			privacyUrlFetchedRef.current = true;
 			const privacyDoc = consentDocs.find(d => d.id === privacy.documentId);
 			if (privacyDoc) {
 				getPresignedUrl('privacy_policy', privacyDoc.language).then(response => {
@@ -83,8 +92,11 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 					}
 				});
 			}
+		} else if (!privacy.isOpen) {
+			// Reset flag quando modal fecha
+			privacyUrlFetchedRef.current = false;
 		}
-	}, [privacy.isOpen, privacy.documentId, consentDocs, getPresignedUrl]);
+	}, [privacy.isOpen, privacy.documentId]);
 
 	const setTcleOpen = (open: boolean) => {
 		setTcle(prev => ({ ...prev, isOpen: open }));

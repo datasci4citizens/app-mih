@@ -4,6 +4,7 @@
  */
 
 import useSWR from 'swr'
+import { useCallback } from 'react'
 import apiClient from '@/lib/axios'
 import type {
   ConsentDocumentInfo,
@@ -69,8 +70,8 @@ export const useConsentDocuments = (options?: UseConsentDocumentsOptions): UseCo
     },
   )
 
-  // Function to get presigned URL
-  const getPresignedUrl = async (
+  // Function to get presigned URL - memoizada para evitar recriações desnecessárias
+  const getPresignedUrl = useCallback(async (
     documentType: 'tcle' | 'privacy_policy',
     lang: string = 'pt-BR',
   ): Promise<PresignedUrlResponse | null> => {
@@ -87,7 +88,7 @@ export const useConsentDocuments = (options?: UseConsentDocumentsOptions): UseCo
       console.error('Erro ao gerar presigned URL:', err)
       return null
     }
-  }
+  }, [])
 
   return {
     documents: data?.documents || [],
