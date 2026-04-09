@@ -18,11 +18,13 @@ import { ToyBackground } from '@/components/ui/toy-background';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
 import { ChevronLeft, FlaskConical, EyeOff, AlertCircle } from 'lucide-react';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
+import { useConsentDocuments } from '@/lib/hooks/useConsentDocuments';
+import type { ConsentDocumentReference } from '@/types/consent.types';
 
 // Schema para quem participa da pesquisa — campos extras + TCLE obrigatórios
 const researchSchema = z.object({
@@ -30,9 +32,17 @@ const researchSchema = z.object({
 	accept_tcle: z.boolean().refine((val) => val === true, {
 		message: 'É necessário que concorde com os termos do TCLE para avançar.',
 	}),
+	tcle_document: z.object({
+		id: z.number().optional(),
+		hash: z.string().optional(),
+	}).optional(),
 	accept_privacy_policy: z.boolean().refine((val) => val === true, {
 		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
 	}),
+	privacy_policy_document: z.object({
+		id: z.number().optional(),
+		hash: z.string().optional(),
+	}).optional(),
 	phone_number: z.string().min(11, {
 		message: 'O telefone deve ter no mínimo 11 dígitos.',
 	}),
@@ -45,9 +55,17 @@ const researchSchema = z.object({
 const noResearchSchema = z.object({
 	name: z.string().min(4, { message: 'Nome muito pequeno.' }),
 	accept_tcle: z.boolean().optional(),
+	tcle_document: z.object({
+		id: z.number().optional(),
+		hash: z.string().optional(),
+	}).optional(),
 	accept_privacy_policy: z.boolean().refine((val) => val === true, {
 		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
 	}),
+	privacy_policy_document: z.object({
+		id: z.number().optional(),
+		hash: z.string().optional(),
+	}).optional(),
 	phone_number: z.string().optional(),
 	state: z.string().optional(),
 	city: z.string().optional(),
@@ -71,7 +89,9 @@ async function sendRequest(
 			city?: string;
 			neighborhood?: string;
 			accept_tcle?: boolean;
+			tcle_document?: ConsentDocumentReference;
 			accept_privacy_policy?: boolean;
+			privacy_policy_document?: ConsentDocumentReference;
 			user_agent?: string;
 		};
 	},
@@ -81,6 +101,7 @@ async function sendRequest(
 
 export default function CreateUser() {
 	const { trigger, error } = useSwrMutation(`/users/`, sendRequest);
+	const { documents: consentDocs, loading: docsLoading, getPresignedUrl } = useConsentDocuments();
 	const [submitting, setSubmitting] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [showTcleModal, setShowTcleModal] = useState(false);
@@ -90,7 +111,68 @@ export default function CreateUser() {
 	const [privacyUnlocked, setPrivacyUnlocked] = useState(false);
 	// Toggle de participação na pesquisa — estado local, definido nesta tela
 	const [participatesInResearch, setParticipatesInResearch] = useState(false);
+	// Document IDs carregados do servidor
+	const [tcleDocumentId, setTcleDocumentId] = useState<number | null>(null);
+	const [privacyDocumentId, setPrivacyDocumentId] = useState<number | null>(null);
+	// Presigned URLs para os documentos
+	const [tclePresignedUrl, setTclePresignedUrl] = useState<string | null>(null);
+	const [privacyPresignedUrl, setPrivacyPresignedUrl] = useState<string | null>(null);
 	const navigate = useNavigate();
+
+	// Extrai IDs dos documentos e gera presigned URLs quando carrega
+	useEffect(() => {
+		if (!docsLoading && consentDocs.length > 0) {
+			const tcleDoc = consentDocs.find(d => d.consent_type === 'tcle');
+			const privacyDoc = consentDocs.find(d => d.consent_type === 'privacy_policy');
+			
+			if (tcleDoc) {
+				setTcleDocumentId(tcleDoc.id);
+				// Gerar presigned URL
+				getPresignedUrl('tcle', tcleDoc.language).then(response => {
+					if (response?.presigned_url) {
+						setTclePresignedUrl(response.presigned_url);
+					}
+				});
+			}
+			if (privacyDoc) {
+				setPrivacyDocumentId(privacyDoc.id);
+				// Gerar presigned URL
+				getPresignedUrl('privacy_policy', privacyDoc.language).then(response => {
+					if (response?.presigned_url) {
+						setPrivacyPresignedUrl(response.presigned_url);
+					}
+				});
+			}
+		}
+	}, [consentDocs, docsLoading, getPresignedUrl]);
+
+	// Regenerar presignedUrl do TCLE quando modal abre (para evitar URLs expiradas)
+	useEffect(() => {
+		if (showTcleModal && tcleDocumentId) {
+			const tcleDoc = consentDocs.find(d => d.id === tcleDocumentId);
+			if (tcleDoc) {
+				getPresignedUrl('tcle', tcleDoc.language).then(response => {
+					if (response?.presigned_url) {
+						setTclePresignedUrl(response.presigned_url);
+					}
+				});
+			}
+		}
+	}, [showTcleModal, tcleDocumentId, consentDocs, getPresignedUrl]);
+
+	// Regenerar presignedUrl da Política de Privacidade quando modal abre
+	useEffect(() => {
+		if (showPrivacyModal && privacyDocumentId) {
+			const privacyDoc = consentDocs.find(d => d.id === privacyDocumentId);
+			if (privacyDoc) {
+				getPresignedUrl('privacy_policy', privacyDoc.language).then(response => {
+					if (response?.presigned_url) {
+						setPrivacyPresignedUrl(response.presigned_url);
+					}
+				});
+			}
+		}
+	}, [showPrivacyModal, privacyDocumentId, consentDocs, getPresignedUrl]);
 
 	const activeSchema = participatesInResearch ? researchSchema : noResearchSchema;
 
@@ -103,7 +185,9 @@ export default function CreateUser() {
 			city: '',
 			neighborhood: '',
 			accept_tcle: false,
+			tcle_document: undefined,
 			accept_privacy_policy: false,
+			privacy_policy_document: undefined,
 		},
 	});
 
@@ -112,6 +196,7 @@ export default function CreateUser() {
 		setParticipatesInResearch(value);
 		if (!value) {
 			form.setValue('accept_tcle', false);
+			form.setValue('tcle_document', undefined);
 			setTcleUnlocked(false);
 			form.setValue('phone_number', '');
 			form.setValue('state', '');
@@ -123,18 +208,20 @@ export default function CreateUser() {
 
 	// Callbacks são memoizados para evitar re-renders desnecessários
 	const handleTcleAccepted = useCallback((accepted: boolean) => {
-		if (accepted) {
+		if (accepted && tcleDocumentId) {
 			setTcleUnlocked(true);
 			form.setValue('accept_tcle', true);
+			form.setValue('tcle_document', { id: tcleDocumentId });
 		}
-	}, [form]);
+	}, [form, tcleDocumentId]);
 
 	const handlePrivacyAccepted = useCallback((accepted: boolean) => {
-		if (accepted) {
+		if (accepted && privacyDocumentId) {
 			setPrivacyUnlocked(true);
 			form.setValue('accept_privacy_policy', true);
+			form.setValue('privacy_policy_document', { id: privacyDocumentId });
 		}
-	}, [form]);
+	}, [form, privacyDocumentId]);
 
 	async function onSubmit(values: FormValues) {
 		setSubmitting(true);
@@ -438,6 +525,7 @@ export default function CreateUser() {
 				onOpenChange={setShowTcleModal}
 				onAccept={handleTcleAccepted}
 				documentType="tcle"
+				presignedUrl={tclePresignedUrl || undefined}
 			/>
 
 			{/* Política de Privacidade Modal */}
@@ -446,6 +534,7 @@ export default function CreateUser() {
 				onOpenChange={setShowPrivacyModal}
 				onAccept={handlePrivacyAccepted}
 				documentType="privacy"
+				presignedUrl={privacyPresignedUrl || undefined}
 			/>
 		</div>
 	);

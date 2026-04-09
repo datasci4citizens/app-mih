@@ -15,6 +15,7 @@ interface TcleModalSecureProps {
     onOpenChange: (open: boolean) => void;
     onAccept?: (accepted: boolean) => void;
     documentType?: "tcle" | "privacy";
+    presignedUrl?: string;
 }
 
 // ─── Fonte única de verdade dos documentos ────────────────────────────────────
@@ -47,6 +48,7 @@ export function TcleModalSecure({
     onOpenChange,
     onAccept,
     documentType = "tcle",
+    presignedUrl,
 }: TcleModalSecureProps) {
     const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
     const [isAccepted, setIsAccepted] = useState(false);
@@ -58,7 +60,9 @@ export function TcleModalSecure({
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const config = DOCUMENT_CONFIG[documentType];
-    const isPdf = config.type === "pdf";
+    // Use presignedUrl se fornecido, senão use config padrão
+    const documentUrl = presignedUrl || config.url;
+    const isPdf = presignedUrl ? presignedUrl.includes('.pdf') : config.type === "pdf";
 
     const handleOpenChange = (value: boolean) => {
         if (!value) {
@@ -78,7 +82,7 @@ export function TcleModalSecure({
         const controller = new AbortController();
         setLoading(true);
         
-        fetch(config.url, { signal: controller.signal })
+        fetch(documentUrl, { signal: controller.signal })
             .then((r) => r.text())
             .then((html) => setHtmlContent(extractBodyContent(html)))
             .catch((e) => {
@@ -89,7 +93,7 @@ export function TcleModalSecure({
             .finally(() => setLoading(false));
         
         return () => controller.abort();
-    }, [open, isPdf, config.url]);
+    }, [open, isPdf, documentUrl]);
 
     // Scroll tracking para HTML
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -183,7 +187,7 @@ export function TcleModalSecure({
                     <div className="p-4">
                         {isPdf ? (
                             <PdfViewer
-                                url={config.url}
+                                url={documentUrl}
                                 zoom={zoom}
                                 onReady={handlePdfReady}
                                 onScrolledToEnd={() => setHasScrolledToBottom(true)}

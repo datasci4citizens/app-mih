@@ -94,7 +94,8 @@ export default function PatientForm() {
     const { trigger, data, error } = useSWRMutation(`/api/patients/`, sendRequest)
     const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
-    const { accept_tcle: participatesInResearch } = useUser()
+    const { consent } = useUser()
+    const participatesInResearch = consent?.tcle?.accepted ?? false
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
