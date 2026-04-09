@@ -23,26 +23,28 @@ import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
-import { useConsentDocuments } from '@/lib/hooks/useConsentDocuments';
+import { useConsentModals } from '@/lib/hooks/useConsentModals';
 import type { ConsentDocumentReference } from '@/types/consent.types';
 
-// Schema para quem participa da pesquisa — campos extras + TCLE obrigatórios
+// ──────────────────────────────────────────────────────────────────────────────
+// SCHEMAS
+// ──────────────────────────────────────────────────────────────────────────────
+
+const documentSchema = z.object({
+	id: z.number().optional(),
+	hash: z.string().optional(),
+}).optional();
+
 const researchSchema = z.object({
 	name: z.string().min(4, { message: 'Nome muito pequeno.' }),
 	accept_tcle: z.boolean().refine((val) => val === true, {
 		message: 'É necessário que concorde com os termos do TCLE para avançar.',
 	}),
-	tcle_document: z.object({
-		id: z.number().optional(),
-		hash: z.string().optional(),
-	}).optional(),
+	tcle_document: documentSchema,
 	accept_privacy_policy: z.boolean().refine((val) => val === true, {
 		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
 	}),
-	privacy_policy_document: z.object({
-		id: z.number().optional(),
-		hash: z.string().optional(),
-	}).optional(),
+	privacy_policy_document: documentSchema,
 	phone_number: z.string().min(11, {
 		message: 'O telefone deve ter no mínimo 11 dígitos.',
 	}),
@@ -51,21 +53,14 @@ const researchSchema = z.object({
 	neighborhood: z.string().min(2, { message: 'O Bairro deve ter no mínimo 2 caracteres.' }),
 });
 
-// Schema para quem não participa — apenas Política de Privacidade é obrigatória
 const noResearchSchema = z.object({
 	name: z.string().min(4, { message: 'Nome muito pequeno.' }),
 	accept_tcle: z.boolean().optional(),
-	tcle_document: z.object({
-		id: z.number().optional(),
-		hash: z.string().optional(),
-	}).optional(),
+	tcle_document: documentSchema,
 	accept_privacy_policy: z.boolean().refine((val) => val === true, {
 		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
 	}),
-	privacy_policy_document: z.object({
-		id: z.number().optional(),
-		hash: z.string().optional(),
-	}).optional(),
+	privacy_policy_document: documentSchema,
 	phone_number: z.string().optional(),
 	state: z.string().optional(),
 	city: z.string().optional(),
@@ -76,106 +71,35 @@ type ResearchFormValues = z.infer<typeof researchSchema>;
 type NoResearchFormValues = z.infer<typeof noResearchSchema>;
 type FormValues = ResearchFormValues | NoResearchFormValues;
 
+// ──────────────────────────────────────────────────────────────────────────────
+// API REQUEST
+// ──────────────────────────────────────────────────────────────────────────────
+
 async function sendRequest(
 	url: string,
-	{
-		arg,
-	}: {
-		arg: {
-			name: string;
-			phone_number?: string;
-			role: string;
-			state?: string;
-			city?: string;
-			neighborhood?: string;
-			accept_tcle?: boolean;
-			tcle_document?: ConsentDocumentReference;
-			accept_privacy_policy?: boolean;
-			privacy_policy_document?: ConsentDocumentReference;
-			user_agent?: string;
-		};
-	},
+	{ arg }: { arg: any },
 ) {
 	return await apiClient.put(url, arg);
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// COMPONENT
+// ──────────────────────────────────────────────────────────────────────────────
+
 export default function CreateUser() {
+	const navigate = useNavigate();
 	const { trigger, error } = useSwrMutation(`/users/`, sendRequest);
-	const { documents: consentDocs, loading: docsLoading, getPresignedUrl } = useConsentDocuments();
+
+	// Estados do componente
 	const [submitting, setSubmitting] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
-	const [showTcleModal, setShowTcleModal] = useState(false);
-	const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-	// Desbloqueios: só true após o usuário rolar até o fim e aceitar no modal
-	const [tcleUnlocked, setTcleUnlocked] = useState(false);
-	const [privacyUnlocked, setPrivacyUnlocked] = useState(false);
-	// Toggle de participação na pesquisa — estado local, definido nesta tela
 	const [participatesInResearch, setParticipatesInResearch] = useState(false);
-	// Document IDs carregados do servidor
-	const [tcleDocumentId, setTcleDocumentId] = useState<number | null>(null);
-	const [privacyDocumentId, setPrivacyDocumentId] = useState<number | null>(null);
-	// Presigned URLs para os documentos
-	const [tclePresignedUrl, setTclePresignedUrl] = useState<string | null>(null);
-	const [privacyPresignedUrl, setPrivacyPresignedUrl] = useState<string | null>(null);
-	const navigate = useNavigate();
 
-	// Extrai IDs dos documentos e gera presigned URLs quando carrega
-	useEffect(() => {
-		if (!docsLoading && consentDocs.length > 0) {
-			const tcleDoc = consentDocs.find(d => d.consent_type === 'tcle');
-			const privacyDoc = consentDocs.find(d => d.consent_type === 'privacy_policy');
-			
-			if (tcleDoc) {
-				setTcleDocumentId(tcleDoc.id);
-				// Gerar presigned URL
-				getPresignedUrl('tcle', tcleDoc.language).then(response => {
-					if (response?.presigned_url) {
-						setTclePresignedUrl(response.presigned_url);
-					}
-				});
-			}
-			if (privacyDoc) {
-				setPrivacyDocumentId(privacyDoc.id);
-				// Gerar presigned URL
-				getPresignedUrl('privacy_policy', privacyDoc.language).then(response => {
-					if (response?.presigned_url) {
-						setPrivacyPresignedUrl(response.presigned_url);
-					}
-				});
-			}
-		}
-	}, [consentDocs, docsLoading, getPresignedUrl]);
+	// Hook customizado para gerenciar modais de consentimento
+	const { tcle, privacy, setTcleOpen, setPrivacyOpen, getTcleDocId, getPrivacyDocId } = useConsentModals();
 
-	// Regenerar presignedUrl do TCLE quando modal abre (para evitar URLs expiradas)
-	useEffect(() => {
-		if (showTcleModal && tcleDocumentId) {
-			const tcleDoc = consentDocs.find(d => d.id === tcleDocumentId);
-			if (tcleDoc) {
-				getPresignedUrl('tcle', tcleDoc.language).then(response => {
-					if (response?.presigned_url) {
-						setTclePresignedUrl(response.presigned_url);
-					}
-				});
-			}
-		}
-	}, [showTcleModal, tcleDocumentId, consentDocs, getPresignedUrl]);
-
-	// Regenerar presignedUrl da Política de Privacidade quando modal abre
-	useEffect(() => {
-		if (showPrivacyModal && privacyDocumentId) {
-			const privacyDoc = consentDocs.find(d => d.id === privacyDocumentId);
-			if (privacyDoc) {
-				getPresignedUrl('privacy_policy', privacyDoc.language).then(response => {
-					if (response?.presigned_url) {
-						setPrivacyPresignedUrl(response.presigned_url);
-					}
-				});
-			}
-		}
-	}, [showPrivacyModal, privacyDocumentId, consentDocs, getPresignedUrl]);
-
+	// Form
 	const activeSchema = participatesInResearch ? researchSchema : noResearchSchema;
-
 	const form = useForm<FormValues>({
 		resolver: zodResolver(activeSchema),
 		defaultValues: {
@@ -191,47 +115,53 @@ export default function CreateUser() {
 		},
 	});
 
-	// Ao mudar participação, resetar campos condicionais e desbloquear TCLE
-	function handleResearchToggle(value: boolean) {
+	// Quando usuário alterna participação em pesquisa
+	const handleResearchToggle = useCallback((value: boolean) => {
 		setParticipatesInResearch(value);
 		if (!value) {
 			form.setValue('accept_tcle', false);
 			form.setValue('tcle_document', undefined);
-			setTcleUnlocked(false);
 			form.setValue('phone_number', '');
 			form.setValue('state', '');
 			form.setValue('city', '');
 			form.setValue('neighborhood', '');
 			form.clearErrors(['accept_tcle', 'phone_number', 'state', 'city', 'neighborhood']);
 		}
-	}
+	}, [form]);
 
-	// Callbacks são memoizados para evitar re-renders desnecessários
+	// Quando usuário aceita TCLE
 	const handleTcleAccepted = useCallback((accepted: boolean) => {
-		if (accepted && tcleDocumentId) {
-			setTcleUnlocked(true);
-			form.setValue('accept_tcle', true);
-			form.setValue('tcle_document', { id: tcleDocumentId });
+		if (accepted) {
+			const docId = getTcleDocId();
+			if (docId) {
+				form.setValue('accept_tcle', true);
+				form.setValue('tcle_document', { id: docId });
+			}
 		}
-	}, [form, tcleDocumentId]);
+	}, [form, getTcleDocId]);
 
+	// Quando usuário aceita Política de Privacidade
 	const handlePrivacyAccepted = useCallback((accepted: boolean) => {
-		if (accepted && privacyDocumentId) {
-			setPrivacyUnlocked(true);
-			form.setValue('accept_privacy_policy', true);
-			form.setValue('privacy_policy_document', { id: privacyDocumentId });
+		if (accepted) {
+			const docId = getPrivacyDocId();
+			if (docId) {
+				form.setValue('accept_privacy_policy', true);
+				form.setValue('privacy_policy_document', { id: docId });
+			}
 		}
-	}, [form, privacyDocumentId]);
+	}, [form, getPrivacyDocId]);
 
-	async function onSubmit(values: FormValues) {
+	const onSubmit = useCallback(async (values: FormValues) => {
 		setSubmitting(true);
 		setSubmitError(null);
-		const newValues = {
+
+		const payload = {
 			...values,
 			role: 'responsible',
 			user_agent: navigator.userAgent,
 		};
-		const result = await trigger(newValues);
+
+		const result = await trigger(payload);
 
 		if (error) {
 			setSubmitError(error?.message || 'Erro ao cadastrar usuário.');
@@ -241,15 +171,11 @@ export default function CreateUser() {
 
 		if (result && !error) {
 			await mutate('/user/me/');
-			setSubmitting(false);
 			navigate(`/user/home`);
 		} else {
 			setSubmitting(false);
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.error('Erro ao enviar dados:', error);
-			}
 		}
-	}
+	}, [trigger, error, navigate]);
 
 	return (
 		<div className="w-full min-h-screen bg-[#A0E7E5] relative">
@@ -439,25 +365,25 @@ export default function CreateUser() {
 												<FormControl>
 													<Checkbox
 														checked={field.value}
-														disabled={!tcleUnlocked}
-														onCheckedChange={() => {
-															if (!tcleUnlocked) setShowTcleModal(true);
+													disabled={!tcle.isUnlocked}
+													onCheckedChange={() => {
+														if (!tcle.isUnlocked) setTcleOpen(true);
 															else field.onChange(!field.value);
 														}}
 														className="mt-0.5"
 													/>
 												</FormControl>
 												<div className="space-y-1 leading-none">
-													<FormLabel className={`font-semibold ${tcleUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
-														Li e aceito o TCLE (Termo de Consentimento Livre e Esclarecido)*
-													</FormLabel>
-													<FormDescription className="text-xs">
-														<button
-															type="button"
-															onClick={() => setShowTcleModal(true)}
-															className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
-														>
-															{tcleUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
+												<FormLabel className={`font-semibold ${tcle.isUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+													Li e aceito o TCLE (Termo de Consentimento Livre e Esclarecido)*
+												</FormLabel>
+												<FormDescription className="text-xs">
+													<button
+														type="button"
+														onClick={() => setTcleOpen(true)}
+														className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
+													>
+														{tcle.isUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
 														</button>
 													</FormDescription>
 													<FormMessage />
@@ -478,25 +404,25 @@ export default function CreateUser() {
 											<FormControl>
 												<Checkbox
 													checked={field.value}
-													disabled={!privacyUnlocked}
+													disabled={!privacy.isUnlocked}
 													onCheckedChange={() => {
-														if (!privacyUnlocked) setShowPrivacyModal(true);
+														if (!privacy.isUnlocked) setPrivacyOpen(true);
 														else field.onChange(!field.value);
 													}}
 													className="mt-0.5"
 												/>
 											</FormControl>
 											<div className="space-y-1 leading-none">
-												<FormLabel className={`font-semibold ${privacyUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+												<FormLabel className={`font-semibold ${privacy.isUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
 													Li e aceito a Política de Privacidade*
 												</FormLabel>
 												<FormDescription className="text-xs">
 													<button
 														type="button"
-														onClick={() => setShowPrivacyModal(true)}
+														onClick={() => setPrivacyOpen(true)}
 														className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
 													>
-														{privacyUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
+														{privacy.isUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
 													</button>
 												</FormDescription>
 												<FormMessage />
@@ -521,20 +447,20 @@ export default function CreateUser() {
 
 			{/* TCLE Modal */}
 			<TcleModalSecure
-				open={showTcleModal}
-				onOpenChange={setShowTcleModal}
-				onAccept={handleTcleAccepted}
-				documentType="tcle"
-				presignedUrl={tclePresignedUrl || undefined}
-			/>
+			open={tcle.isOpen}
+			onOpenChange={setTcleOpen}
+			onAccept={handleTcleAccepted}
+			documentType="tcle"
+			presignedUrl={tcle.presignedUrl || undefined}
+		/>
 
-			{/* Política de Privacidade Modal */}
-			<TcleModalSecure
-				open={showPrivacyModal}
-				onOpenChange={setShowPrivacyModal}
-				onAccept={handlePrivacyAccepted}
-				documentType="privacy"
-				presignedUrl={privacyPresignedUrl || undefined}
+		{/* Política de Privacidade Modal */}
+		<TcleModalSecure
+			open={privacy.isOpen}
+			onOpenChange={setPrivacyOpen}
+			onAccept={handlePrivacyAccepted}
+			documentType="privacy"
+			presignedUrl={privacy.presignedUrl || undefined}
 			/>
 		</div>
 	);
