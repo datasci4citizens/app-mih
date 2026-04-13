@@ -133,6 +133,7 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
 
     // Rastreia scroll do container pai
     useEffect(() => {
+        if (status !== "done") return; // Só verificar final da página após o PDF ser renderizado
         const scrollParent = containerRef.current?.closest("[data-scroll-container]") as HTMLDivElement | null;
         if (!scrollParent) {
             console.warn("[PdfViewer] [data-scroll-container] não encontrado");
@@ -153,9 +154,9 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
         };
         scrollParent.addEventListener("scroll", handleScroll);
         // Chama no mount também caso o doc seja pequeno
-        handleScroll();
+        setTimeout(() => handleScroll(), 300);
         return () => scrollParent.removeEventListener("scroll", handleScroll);
-    }, [onScrolledToEnd, onProgress]);
+    }, [onScrolledToEnd, onProgress, status]);
 
     return (
         <div className="w-full flex justify-center">

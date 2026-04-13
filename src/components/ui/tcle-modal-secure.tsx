@@ -16,6 +16,7 @@ interface TcleModalSecureProps {
     onAccept?: (accepted: boolean) => void;
     documentType?: "tcle" | "privacy";
     presignedUrl?: string;
+    isAlreadyUnlocked?: boolean;
 }
 
 // ─── Fonte única de verdade dos documentos ────────────────────────────────────
@@ -49,15 +50,24 @@ export function TcleModalSecure({
     onAccept,
     documentType = "tcle",
     presignedUrl,
+    isAlreadyUnlocked = false,
 }: TcleModalSecureProps) {
-    const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+    const [hasScrolledToBottom, setHasScrolledToBottom] = useState(isAlreadyUnlocked);
     const [isAccepted, setIsAccepted] = useState(false);
-    const [scrollProgress, setScrollProgress] = useState(0);
+    const [scrollProgress, setScrollProgress] = useState(isAlreadyUnlocked ? 100 : 0);
     const [htmlContent, setHtmlContent] = useState("");
     const [loading, setLoading] = useState(false);
     const [zoom, setZoom] = useState(1.0);
     const fitZoomRef = useRef(1.0);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Garante que o estado reflita prop que vem do pai
+    useEffect(() => {
+        if (isAlreadyUnlocked) {
+            setHasScrolledToBottom(true);
+            setScrollProgress(100);
+        }
+    }, [isAlreadyUnlocked]);
 
     const config = DOCUMENT_CONFIG[documentType];
     // Use presignedUrl se fornecido, senão use config padrão
@@ -66,9 +76,10 @@ export function TcleModalSecure({
 
     const handleOpenChange = (value: boolean) => {
         if (!value) {
-            setHasScrolledToBottom(false);
+            // Ao fechar, se já estava destrancado, continua destrancado
+            setHasScrolledToBottom(isAlreadyUnlocked);
             setIsAccepted(false);
-            setScrollProgress(0);
+            setScrollProgress(isAlreadyUnlocked ? 100 : 0);
             setHtmlContent("");
             setZoom(1.0);
         }

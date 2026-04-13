@@ -19,6 +19,8 @@ interface UseConsentModalsReturn {
 	privacy: DocumentModal;
 	setTcleOpen: (open: boolean) => void;
 	setPrivacyOpen: (open: boolean) => void;
+	setTcleUnlocked: (unlocked: boolean) => void;
+	setPrivacyUnlocked: (unlocked: boolean) => void;
 	handleTcleAccepted: (accepted: boolean) => ((accepted: boolean) => void);
 	handlePrivacyAccepted: (accepted: boolean) => ((accepted: boolean) => void);
 	getTcleDocId: () => number | null;
@@ -106,6 +108,14 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 		setPrivacy(prev => ({ ...prev, isOpen: open }));
 	};
 
+	const setTcleUnlocked = (unlocked: boolean) => {
+		setTcle(prev => ({ ...prev, isUnlocked: unlocked }));
+	};
+
+	const setPrivacyUnlocked = (unlocked: boolean) => {
+		setPrivacy(prev => ({ ...prev, isUnlocked: unlocked }));
+	};
+
 	const handleTcleAccepted = useCallback(
 		(accepted: boolean) => () => {
 			if (accepted) {
@@ -132,6 +142,8 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 		privacy,
 		setTcleOpen,
 		setPrivacyOpen,
+		setTcleUnlocked,
+		setPrivacyUnlocked,
 		handleTcleAccepted,
 		handlePrivacyAccepted,
 		getTcleDocId,

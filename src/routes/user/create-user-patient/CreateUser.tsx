@@ -96,7 +96,7 @@ export default function CreateUser() {
 	const [participatesInResearch, setParticipatesInResearch] = useState(false);
 
 	// Hook customizado para gerenciar modais de consentimento
-	const { tcle, privacy, setTcleOpen, setPrivacyOpen, getTcleDocId, getPrivacyDocId } = useConsentModals();
+	const { tcle, privacy, setTcleOpen, setPrivacyOpen, setTcleUnlocked, setPrivacyUnlocked, getTcleDocId, getPrivacyDocId } = useConsentModals();
 
 	// Form
 	const activeSchema = participatesInResearch ? researchSchema : noResearchSchema;
@@ -132,28 +132,46 @@ export default function CreateUser() {
 	// Quando usuário aceita TCLE
 	const handleTcleAccepted = useCallback((accepted: boolean) => {
 		if (accepted) {
+			// Desbloqueia o checkbox no form
+			setTcleOpen(false);
 			const docId = getTcleDocId();
+			form.setValue('accept_tcle', true);
 			if (docId) {
-				form.setValue('accept_tcle', true);
 				form.setValue('tcle_document', { id: docId });
 			}
+			// Marca como desbloqueado para liberar o checkbox
+			setTcleUnlocked(true);
 		}
-	}, [form, getTcleDocId]);
+	}, [form, getTcleDocId, setTcleOpen]);
 
 	// Quando usuário aceita Política de Privacidade
 	const handlePrivacyAccepted = useCallback((accepted: boolean) => {
 		if (accepted) {
+			// Desbloqueia o checkbox no form
+			setPrivacyOpen(false);
 			const docId = getPrivacyDocId();
+			form.setValue('accept_privacy_policy', true);
 			if (docId) {
-				form.setValue('accept_privacy_policy', true);
 				form.setValue('privacy_policy_document', { id: docId });
 			}
+			// Marca como desbloqueado para liberar o checkbox
+			setPrivacyUnlocked(true);
 		}
-	}, [form, getPrivacyDocId]);
+	}, [form, getPrivacyDocId, setPrivacyOpen]);
 
 	const onSubmit = useCallback(async (values: FormValues) => {
 		setSubmitting(true);
 		setSubmitError(null);
+
+		// Garantir que os IDs de consentimento não foram perdidos (race condition com o SWR)
+		if (values.accept_privacy_policy && !values.privacy_policy_document?.id) {
+			const privacyId = getPrivacyDocId();
+			if (privacyId) values.privacy_policy_document = { id: privacyId };
+		}
+		if (participatesInResearch && values.accept_tcle && !values.tcle_document?.id) {
+			const tcleId = getTcleDocId();
+			if (tcleId) values.tcle_document = { id: tcleId };
+		}
 
 		const payload = {
 			...values,
@@ -356,81 +374,141 @@ export default function CreateUser() {
 
 							{/* Card 3: TCLE — apenas para participantes da pesquisa */}
 							{participatesInResearch && (
-								<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-									<FormField
-										control={form.control}
-										name="accept_tcle"
-										render={({ field }) => (
-											<FormItem className="flex flex-row items-start space-x-3 space-y-0">
-												<FormControl>
-													<Checkbox
-														checked={field.value}
-													disabled={!tcle.isUnlocked}
-													onCheckedChange={() => {
-														if (!tcle.isUnlocked) setTcleOpen(true);
-															else field.onChange(!field.value);
-														}}
-														className="mt-0.5"
-													/>
-												</FormControl>
-												<div className="space-y-1 leading-none">
-												<FormLabel className={`font-semibold ${tcle.isUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
-													Li e aceito o TCLE (Termo de Consentimento Livre e Esclarecido)*
-												</FormLabel>
-												<FormDescription className="text-xs">
-													<button
-														type="button"
-														onClick={() => setTcleOpen(true)}
-														className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
-													>
-														{tcle.isUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
-														</button>
-													</FormDescription>
-													<FormMessage />
-												</div>
-											</FormItem>
-										)}
-									/>
-								</div>
-							)}
-
-							{/* Card 4: Política de Privacidade — para todos */}
-							<div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
 								<FormField
 									control={form.control}
-									name="accept_privacy_policy"
+									name="accept_tcle"
 									render={({ field }) => (
-										<FormItem className="flex flex-row items-start space-x-3 space-y-0">
+										<FormItem>
 											<FormControl>
-												<Checkbox
-													checked={field.value}
-													disabled={!privacy.isUnlocked}
-													onCheckedChange={() => {
-														if (!privacy.isUnlocked) setPrivacyOpen(true);
+												<button
+													type="button"
+													onClick={() => {
+														if (!tcle.isUnlocked) setTcleOpen(true);
 														else field.onChange(!field.value);
 													}}
-													className="mt-0.5"
-												/>
+													className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${
+														field.value
+															? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
+															: tcle.isUnlocked
+																? 'border-gray-200 hover:border-[#A0E7E5]'
+																: 'border-gray-200 hover:border-amber-300'
+													}`}
+												>
+													<div className="flex items-center gap-4">
+														<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${
+															field.value ? 'bg-[#2A9D8F]' : tcle.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
+														}`}>
+															{field.value ? (
+																<svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+															) : tcle.isUnlocked ? (
+																<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="3" /></svg>
+															) : (
+																<svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+															)}
+														</div>
+														<div className="flex-1">
+															<p className={`font-semibold text-sm leading-tight ${field.value ? 'text-[#2A9D8F]' : 'text-gray-800'}`}>
+																Li e aceito o TCLE*
+															</p>
+															<p className="text-xs text-gray-500 mt-0.5">
+																{field.value
+																	? 'Aceite confirmado. Clique para desmarcar.'
+																	: tcle.isUnlocked
+																		? 'Clique para confirmar o aceite'
+																		: 'Clique para ler o Termo de Consentimento'}
+															</p>
+														</div>
+														{tcle.isUnlocked && (
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	setTcleOpen(true);
+																}}
+																className="text-xs font-medium text-[#2A9D8F] hover:text-[#2A9D8F]/80 underline ml-2 px-2 py-1 flex-shrink-0"
+															>
+																Ler novamente
+															</button>
+														)}
+														{!tcle.isUnlocked && (
+															<svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+														)}
+													</div>
+												</button>
 											</FormControl>
-											<div className="space-y-1 leading-none">
-												<FormLabel className={`font-semibold ${privacy.isUnlocked ? 'text-gray-800' : 'text-gray-400'}`}>
-													Li e aceito a Política de Privacidade*
-												</FormLabel>
-												<FormDescription className="text-xs">
-													<button
-														type="button"
-														onClick={() => setPrivacyOpen(true)}
-														className="text-[#2A9D8F] hover:text-[#2A9D8F]/80 font-medium underline"
-													>
-														{privacy.isUnlocked ? 'Ler novamente' : 'Ler documento completo para aceitar'}
-													</button>
-												</FormDescription>
-												<FormMessage />
-											</div>
+											<FormMessage className="px-1 pt-1" />
 										</FormItem>
 									)}
 								/>
-							</div>
+							)}
+
+							{/* Card 4: Política de Privacidade — para todos */}
+							<FormField
+								control={form.control}
+								name="accept_privacy_policy"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<button
+												type="button"
+												onClick={() => {
+													if (!privacy.isUnlocked) setPrivacyOpen(true);
+													else field.onChange(!field.value);
+												}}
+												className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${
+													field.value
+														? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
+														: privacy.isUnlocked
+															? 'border-gray-200 hover:border-[#A0E7E5]'
+															: 'border-gray-200 hover:border-amber-300'
+												}`}
+											>
+												<div className="flex items-center gap-4">
+													<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${
+														field.value ? 'bg-[#2A9D8F]' : privacy.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
+													}`}>
+														{field.value ? (
+															<svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+														) : privacy.isUnlocked ? (
+															<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="3" /></svg>
+														) : (
+															<svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+														)}
+													</div>
+													<div className="flex-1">
+														<p className={`font-semibold text-sm leading-tight ${field.value ? 'text-[#2A9D8F]' : 'text-gray-800'}`}>
+															Li e aceito a Política de Privacidade*
+														</p>
+														<p className="text-xs text-gray-500 mt-0.5">
+															{field.value
+																? 'Aceite confirmado. Clique para desmarcar.'
+																: privacy.isUnlocked
+																	? 'Clique para confirmar o aceite'
+																	: 'Clique para ler a Política de Privacidade'}
+														</p>
+													</div>
+													{privacy.isUnlocked && (
+														<button
+															type="button"
+															onClick={(e) => {
+																e.stopPropagation();
+																setPrivacyOpen(true);
+															}}
+															className="text-xs font-medium text-[#2A9D8F] hover:text-[#2A9D8F]/80 underline ml-2 px-2 py-1 flex-shrink-0"
+														>
+															Ler novamente
+														</button>
+													)}
+													{!privacy.isUnlocked && (
+														<svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+													)}
+												</div>
+											</button>
+										</FormControl>
+										<FormMessage className="px-1 pt-1" />
+									</FormItem>
+								)}
+							/>
 
 							{/* Submit */}
 							<Button
@@ -452,6 +530,7 @@ export default function CreateUser() {
 			onAccept={handleTcleAccepted}
 			documentType="tcle"
 			presignedUrl={tcle.presignedUrl || undefined}
+			isAlreadyUnlocked={tcle.isUnlocked}
 		/>
 
 		{/* Política de Privacidade Modal */}
@@ -461,6 +540,7 @@ export default function CreateUser() {
 			onAccept={handlePrivacyAccepted}
 			documentType="privacy"
 			presignedUrl={privacy.presignedUrl || undefined}
+			isAlreadyUnlocked={privacy.isUnlocked}
 			/>
 		</div>
 	);
