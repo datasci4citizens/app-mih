@@ -8,7 +8,8 @@ import {
     Bell,
     LogOut,
     ClipboardList,
-    CheckCircle2
+    CheckCircle2,
+    Settings
 } from 'lucide-react';
 
 export default function SpecialistHomePage() {
@@ -56,6 +57,14 @@ export default function SpecialistHomePage() {
                                 {/* User Menu Popover */}
                                 {showUserMenu && (
                                     <div className="absolute top-14 left-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <button 
+                                            onClick={() => navigate('/specialist/settings')}
+                                            className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 text-gray-700 transition-colors"
+                                        >
+                                            <Settings size={18} />
+                                            <span className="font-medium">Configurações</span>
+                                        </button>
+                                        <div className="h-px bg-gray-100 my-1"></div>
                                         <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-all active:scale-95">
                                             <LogOut size={18} />
                                             <span className="font-medium">Sair</span>

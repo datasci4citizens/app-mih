@@ -11,6 +11,7 @@ import Register from './routes/registers/user/Register';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import SelectUserType from './routes/user/SelectUserType';
+import SettingsPage from './routes/user/SettingsPage';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
 import { useEffect } from 'react';
@@ -24,6 +25,8 @@ import { UserGuard } from './guards/user';
 import apiClient from './lib/axios';
 import AllRegisters from './routes/registers/user/AllRegisters';
 
+import { ConsentUpdateGuard } from './guards/ConsentUpdateGuard';
+
 const router = createBrowserRouter([
   {
     path: '/login',
@@ -35,8 +38,12 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <RoleGuard />,
+        element: <ConsentUpdateGuard />,
         children: [
+          {
+            path: '/',
+            element: <RoleGuard />,
+            children: [
           {
             path: '/',
             element: <ChoseRoleGuard />
@@ -73,6 +80,10 @@ const router = createBrowserRouter([
               {
                 path: '/user/registers/create-register/:patient_id/:first_time',
                 element: <CreateRegister />
+              },
+              {
+                path: '/user/settings',
+                element: <SettingsPage />
               }
             ]
 
@@ -89,16 +100,21 @@ const router = createBrowserRouter([
 
               },
               {
+                path: '/specialist/settings',
+                element: <SettingsPage />
+              },
+              {
 
                 path: '/specialist/home/registers-evaluation',
                 element: <SpecialistRegistersControl />
 
               }
             ]
-
-          },
+          }
         ]
-      },
+      }
+    ]
+  },
       {
         path: "/",
         element: <NoRoleGuard />,

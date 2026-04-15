@@ -25,6 +25,7 @@ interface UseConsentModalsReturn {
 	handlePrivacyAccepted: (accepted: boolean) => ((accepted: boolean) => void);
 	getTcleDocId: () => number | null;
 	getPrivacyDocId: () => number | null;
+	docsLoading: boolean;
 }
 
 export const useConsentModals = (): UseConsentModalsReturn => {
@@ -148,5 +149,6 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 		handlePrivacyAccepted,
 		getTcleDocId,
 		getPrivacyDocId,
+		docsLoading,
 	};
 };

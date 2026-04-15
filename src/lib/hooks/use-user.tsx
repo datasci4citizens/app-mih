@@ -28,6 +28,7 @@ const ctx = createContext({
     role: "",
     is_allowed: true,
     consent: defaultConsentState,
+    pending_actions: {} as any,
 })
 
 export const UserContextProvider = ctx.Provider;

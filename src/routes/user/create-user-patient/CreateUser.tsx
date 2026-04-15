@@ -96,7 +96,11 @@ export default function CreateUser() {
 	const [participatesInResearch, setParticipatesInResearch] = useState(false);
 
 	// Hook customizado para gerenciar modais de consentimento
-	const { tcle, privacy, setTcleOpen, setPrivacyOpen, setTcleUnlocked, setPrivacyUnlocked, getTcleDocId, getPrivacyDocId } = useConsentModals();
+	const { tcle, privacy, setTcleOpen, setPrivacyOpen, setTcleUnlocked, setPrivacyUnlocked, getTcleDocId, getPrivacyDocId, docsLoading } = useConsentModals();
+
+	const isMissingTcle = participatesInResearch ? tcle.documentId === null : false;
+	const isMissingPrivacy = privacy.documentId === null;
+	const isMissingDocuments = !docsLoading && (isMissingTcle || isMissingPrivacy);
 
 	// Form
 	const activeSchema = participatesInResearch ? researchSchema : noResearchSchema;
@@ -179,6 +183,10 @@ export default function CreateUser() {
 			user_agent: navigator.userAgent,
 		};
 
+		// console.log('DEBUG: Submitting payload:', payload);
+		// console.log('DEBUG: tcle unlocked?', tcle.isUnlocked, 'doc id:', getTcleDocId());
+		// console.log('DEBUG: privacy unlocked?', privacy.isUnlocked, 'doc id:', getPrivacyDocId());
+
 		const result = await trigger(payload);
 
 		if (error) {
@@ -229,6 +237,20 @@ export default function CreateUser() {
 									<div>
 										<p className="font-semibold text-red-800 text-sm">Erro ao cadastrar</p>
 										<p className="text-xs text-red-700 mt-0.5">{submitError}</p>
+									</div>
+								</div>
+							)}
+
+							{/* Documentos não encontrados */}
+							{isMissingDocuments && (
+								<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
+									<AlertCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
+									<div>
+										<p className="font-semibold text-red-800 text-sm">Documentos Indisponíveis</p>
+										<p className="text-xs text-red-700 mt-0.5">
+											Os documentos legais necessários para o cadastro ainda não foram configurados no sistema. 
+											O acesso no momento está temporariamente bloqueado. Tente novamente mais tarde.
+										</p>
 									</div>
 								</div>
 							)}
@@ -382,22 +404,21 @@ export default function CreateUser() {
 											<FormControl>
 												<button
 													type="button"
+													disabled={docsLoading || isMissingTcle}
 													onClick={() => {
 														if (!tcle.isUnlocked) setTcleOpen(true);
 														else field.onChange(!field.value);
 													}}
-													className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${
-														field.value
+													className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${field.value
 															? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
 															: tcle.isUnlocked
 																? 'border-gray-200 hover:border-[#A0E7E5]'
 																: 'border-gray-200 hover:border-amber-300'
-													}`}
+														}`}
 												>
 													<div className="flex items-center gap-4">
-														<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${
-															field.value ? 'bg-[#2A9D8F]' : tcle.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
-														}`}>
+														<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${field.value ? 'bg-[#2A9D8F]' : tcle.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
+															}`}>
 															{field.value ? (
 																<svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
 															) : tcle.isUnlocked ? (
@@ -451,22 +472,21 @@ export default function CreateUser() {
 										<FormControl>
 											<button
 												type="button"
+												disabled={docsLoading || isMissingPrivacy}
 												onClick={() => {
 													if (!privacy.isUnlocked) setPrivacyOpen(true);
 													else field.onChange(!field.value);
 												}}
-												className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${
-													field.value
+												className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${field.value
 														? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
 														: privacy.isUnlocked
 															? 'border-gray-200 hover:border-[#A0E7E5]'
 															: 'border-gray-200 hover:border-amber-300'
-												}`}
+													}`}
 											>
 												<div className="flex items-center gap-4">
-													<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${
-														field.value ? 'bg-[#2A9D8F]' : privacy.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
-													}`}>
+													<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${field.value ? 'bg-[#2A9D8F]' : privacy.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
+														}`}>
 														{field.value ? (
 															<svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
 														) : privacy.isUnlocked ? (
@@ -514,9 +534,9 @@ export default function CreateUser() {
 							<Button
 								className="w-full transform transition-all duration-150 active:scale-95 hover:-translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.1)] active:shadow-[0_1px_0_rgba(0,0,0,0.1)] active:translate-y-1 rounded-2xl py-6 font-bold text-white text-lg bg-gradient-to-br from-[#FF8A65] to-[#FFB394]"
 								type="submit"
-								disabled={submitting}
+								disabled={submitting || docsLoading || isMissingDocuments}
 							>
-								{submitting ? 'Enviando...' : 'Próximo'}
+								{docsLoading ? 'Carregando termo...' : submitting ? 'Enviando...' : 'Próximo'}
 							</Button>
 						</form>
 					</Form>
@@ -525,22 +545,22 @@ export default function CreateUser() {
 
 			{/* TCLE Modal */}
 			<TcleModalSecure
-			open={tcle.isOpen}
-			onOpenChange={setTcleOpen}
-			onAccept={handleTcleAccepted}
-			documentType="tcle"
-			presignedUrl={tcle.presignedUrl || undefined}
-			isAlreadyUnlocked={tcle.isUnlocked}
-		/>
+				open={tcle.isOpen}
+				onOpenChange={setTcleOpen}
+				onAccept={handleTcleAccepted}
+				documentType="tcle"
+				presignedUrl={tcle.presignedUrl || undefined}
+				isAlreadyUnlocked={tcle.isUnlocked}
+			/>
 
-		{/* Política de Privacidade Modal */}
-		<TcleModalSecure
-			open={privacy.isOpen}
-			onOpenChange={setPrivacyOpen}
-			onAccept={handlePrivacyAccepted}
-			documentType="privacy"
-			presignedUrl={privacy.presignedUrl || undefined}
-			isAlreadyUnlocked={privacy.isUnlocked}
+			{/* Política de Privacidade Modal */}
+			<TcleModalSecure
+				open={privacy.isOpen}
+				onOpenChange={setPrivacyOpen}
+				onAccept={handlePrivacyAccepted}
+				documentType="privacy"
+				presignedUrl={privacy.presignedUrl || undefined}
+				isAlreadyUnlocked={privacy.isUnlocked}
 			/>
 		</div>
 	);
