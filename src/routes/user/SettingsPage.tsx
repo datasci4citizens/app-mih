@@ -101,6 +101,7 @@ export default function SettingsPage() {
                     <div className="w-full max-w-2xl space-y-6">
 
                         {/* Research Participation Card */}
+                        {/*
                         <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#A0E7E5] to-[#2A9D8F] flex items-center justify-center flex-shrink-0 shadow-md">
@@ -130,6 +131,7 @@ export default function SettingsPage() {
                                 />
                             </div>
                         </div>
+                        */}
 
                         {/* Consents History Container */}
                         <div className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-xl space-y-4">
@@ -158,12 +160,14 @@ export default function SettingsPage() {
                                                 <Download size={14} /> Download
                                             </button>
                                         )}
+                                        {/* 
                                         <button 
                                             onClick={() => setShowRevokeTcleModal(true)}
                                             className="flex-1 py-2 px-3 text-red-500 hover:bg-red-50 text-xs font-medium rounded-xl transition-colors"
                                         >
                                             Revogar permissão
                                         </button>
+                                        */}
                                     </div>
                                 </div>
                             )}
@@ -191,12 +195,14 @@ export default function SettingsPage() {
                                                 <Download size={14} /> Download
                                             </button>
                                         )}
+                                        {/* 
                                         <button 
                                             onClick={() => setShowRevokePrivacyModal(true)}
                                             className="flex-1 py-2 px-3 text-red-500 hover:bg-red-50 text-xs font-medium rounded-xl transition-colors"
                                         >
                                             Revogar permissão
                                         </button>
+                                        */}
                                     </div>
                                 </div>
                             )}
