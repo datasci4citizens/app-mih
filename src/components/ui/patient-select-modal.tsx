@@ -7,12 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-
-interface Patient {
-    name: string;
-    birthday: string;
-    patient_id: number;
-}
+import type { Patient } from "@/types/patient.types";
 
 interface PatientSelectModalProps {
     open: boolean;
@@ -21,7 +16,8 @@ interface PatientSelectModalProps {
     patients?: Patient[];
 }
 
-function calculateAge(birthday: string): number {
+function calculateAge(birthday: string | null): number | string {
+    if (!birthday) return '-';
     const birthDate = new Date(birthday);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();

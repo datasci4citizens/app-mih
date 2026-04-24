@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import type { UserConsentState } from "@/types/consent.types";
+import type { UserContextData } from "@/types/user.types";
 
 const defaultConsentState: UserConsentState = {
     tcle: {
@@ -22,14 +23,16 @@ const defaultConsentState: UserConsentState = {
     },
 };
 
-const ctx = createContext({
+const defaultUserContextData: UserContextData = {
     name: "",
     email: "",
     role: "",
     is_allowed: true,
     consent: defaultConsentState,
-    pending_actions: {} as any,
-})
+    pending_actions: {},
+};
+
+const ctx = createContext<UserContextData>(defaultUserContextData)
 
 export const UserContextProvider = ctx.Provider;
 
