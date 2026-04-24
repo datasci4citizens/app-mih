@@ -20,7 +20,7 @@ import { ToggleField } from '@/components/ui/toggle-field'
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure'
 
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, AlertCircle } from "lucide-react"
+import { ChevronLeft, AlertCircle, Loader2 } from "lucide-react"
 import { ToyBackground } from "@/components/ui/toy-background"
 import {
     Select,
@@ -559,7 +559,21 @@ export default function PatientForm() {
                                             </Card>
 
                                             {/* ── Card TALE — exibido apenas para crianças de 6-12 anos ── */}
-                                            {taleType && (
+
+                                            {/* Estado de carregamento do documento TALE */}
+                                            {taleType && taleDocsLoading && (
+                                                <div className="w-full bg-white/95 backdrop-blur-sm p-5 rounded-3xl shadow-xl border-2 border-gray-200 flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                                        <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="font-semibold text-sm text-gray-400">Carregando TALE…</p>
+                                                        <p className="text-xs text-gray-400 mt-0.5">Buscando documento de assentimento</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {taleType && !taleDocsLoading && (
                                                 <FormField
                                                     control={form.control}
                                                     name="accept_tale"
