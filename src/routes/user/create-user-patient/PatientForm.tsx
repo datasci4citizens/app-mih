@@ -159,21 +159,32 @@ export default function PatientForm() {
 
     // Gera presigned URL ao abrir o modal TALE
     useEffect(() => {
+        const abortController = new AbortController();
         if (taleModalOpen && taleDocumentId && !taleUrlFetchedRef.current && taleType) {
             taleUrlFetchedRef.current = true
             getPresignedUrl(taleType, 'pt-BR').then(response => {
+                if (abortController.signal.aborted) return;
                 if (response?.presigned_url) {
                     setTalePresignedUrl(response.presigned_url)
                     // Sincroniza o ID com o documento real que a URL aponta,
                     // evitando race condition quando o admin publica nova versão
                     // entre o carregamento da lista e a abertura do modal.
                     if (response?.document_id) setTaleDocumentId(response.document_id)
+                } else {
+                    taleUrlFetchedRef.current = false;
                 }
+            }).catch(() => {
+                if (abortController.signal.aborted) return;
+                taleUrlFetchedRef.current = false;
             })
         } else if (!taleModalOpen) {
             taleUrlFetchedRef.current = false
         }
-    }, [taleModalOpen, taleDocumentId, taleType])
+        
+        return () => {
+            abortController.abort();
+        };
+    }, [taleModalOpen, taleDocumentId, taleType, getPresignedUrl])
 
     // TALE obrigatório se: participa da pesquisa + criança na faixa + documento disponível
     const taleRequired = participatesInResearch && taleType !== null && taleDocumentId !== null
