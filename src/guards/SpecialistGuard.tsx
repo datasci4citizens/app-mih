@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ToyBackground } from "@/components/ui/toy-background";
 import apiClient from "@/lib/axios";
-import { useUser } from "@/lib/hooks/use-user";
+import { useUser } from "@/hooks/useUser";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useSWRConfig } from "swr";
 

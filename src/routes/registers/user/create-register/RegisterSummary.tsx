@@ -30,7 +30,7 @@ const SectionHeader = ({ icon: Icon, title }: SectionHeaderProps) => (
     </div>
 );
 
-export default function RegisterSumary() {
+export default function RegisterSummary() {
 
     const { sendData, back, submit, submitting } = useFormContext();
 

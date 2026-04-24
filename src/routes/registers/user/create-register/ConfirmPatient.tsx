@@ -84,7 +84,7 @@ export default function ConfirmPatient() {
                                         value={patient.brothersNumber}
                                     />
                                 )}
-                                {user?.accept_tcle && (
+                                {user?.consent?.tcle?.accepted && (
                                     <>
                                         <InfoItem
                                             icon={Thermometer}

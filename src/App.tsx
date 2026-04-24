@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { AuthGuard } from './guards/auth';
+import { AuthGuard } from './guards/AuthGuard';
+
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
 import PatientHomePage from './routes/home/UserHomePage';
 import LoginPage from './routes/login/Login';
-import SpecialistRegistersControl from './routes/registers/specialist/SpecialsitRegistersControl';
+import SpecialistRegistersControl from './routes/registers/specialist/SpecialistRegistersControl';
 import CreateRegister from './routes/registers/user/create-register/CreateRegisterForm';
 import Patients from './routes/registers/user/Patients';
 import PatientRegisters from './routes/registers/user/PatientRegisters';
@@ -11,20 +12,21 @@ import Register from './routes/registers/user/Register';
 import CreateSpecialist from './routes/user/create-specialist/CreateSpecialist';
 import PatientForm from './routes/user/create-user-patient/PatientForm';
 import SelectUserType from './routes/user/SelectUserType';
+import SettingsPage from './routes/user/SettingsPage';
 import { SWRConfig } from 'swr';
 import CreateUser from './routes/user/create-user-patient/CreateUser';
-import TcleDecision from './routes/user/create-user-patient/Tcle';
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Fullscreen } from '@boengli/capacitor-fullscreen';
-import { RoleGuard } from './guards/role';
-import { NoRoleGuard } from './guards/norole';
-import { ChoseRoleGuard } from './guards/choserole';
-import { SpecialistGuard } from './guards/specialist';
-import { UserGuard } from './guards/user';
+import { RoleGuard } from './guards/RoleGuard';
+import { NoRoleGuard } from './guards/NoRoleGuard';
+import { ChoseRoleGuard } from './guards/ChooseRoleGuard';
+import { SpecialistGuard } from './guards/SpecialistGuard';
+import { UserGuard } from './guards/UserGuard';
 import apiClient from './lib/axios';
 import AllRegisters from './routes/registers/user/AllRegisters';
-import { ResearchParticipationProvider } from './lib/context/ResearchParticipationContext';
+
+import { ConsentUpdateGuard } from './guards/ConsentUpdateGuard';
 
 const router = createBrowserRouter([
   {
@@ -37,8 +39,12 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <RoleGuard />,
+        element: <ConsentUpdateGuard />,
         children: [
+          {
+            path: '/',
+            element: <RoleGuard />,
+            children: [
           {
             path: '/',
             element: <ChoseRoleGuard />
@@ -75,6 +81,10 @@ const router = createBrowserRouter([
               {
                 path: '/user/registers/create-register/:patient_id/:first_time',
                 element: <CreateRegister />
+              },
+              {
+                path: '/user/settings',
+                element: <SettingsPage />
               }
             ]
 
@@ -91,25 +101,26 @@ const router = createBrowserRouter([
 
               },
               {
+                path: '/specialist/settings',
+                element: <SettingsPage />
+              },
+              {
 
                 path: '/specialist/home/registers-evaluation',
                 element: <SpecialistRegistersControl />
 
               }
             ]
-
-          },
+          }
         ]
-      },
+      }
+    ]
+  },
       {
         path: "/",
         element: <NoRoleGuard />,
         children: [
 
-          {
-            path: '/user/tcle',
-            element: <TcleDecision />
-          },
           {
             path: '/user/create',
             element: <CreateUser />
@@ -143,12 +154,10 @@ export function App() {
     activateImmersiveMode();
   }, []);
   return (
-    <ResearchParticipationProvider>
-      <SWRConfig value={{
-        fetcher: (url) => apiClient.get(url).then(res => res.data)
-      }}>
-        <RouterProvider router={router} />
-      </SWRConfig>
-    </ResearchParticipationProvider>
+    <SWRConfig value={{
+      fetcher: (url) => apiClient.get(url).then(res => res.data)
+    }}>
+      <RouterProvider router={router} />
+    </SWRConfig>
   )
 }

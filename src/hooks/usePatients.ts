@@ -1,10 +1,5 @@
 import useSWR from 'swr';
-
-interface Patient {
-    name: string;
-    birthday: string;
-    patient_id: number;
-}
+import type { Patient } from '@/types/patient.types';
 
 /**
  * Custom hook to fetch user's patients
