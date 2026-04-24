@@ -6,6 +6,7 @@ import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import { ToyBackground } from '@/components/ui/toy-background';
+import { notifyApiError } from '@/lib/api-error';
 
 // Content of the login page, without the login button logic
 const LoginContent = ({ onLoginClick }: { onLoginClick: () => void }) => (
@@ -91,8 +92,9 @@ const WebLogin = () => {
 				mutate('/user/me/', response.data, false);
 
 				navigate('/');
-			} catch (error) {
+			} catch (error: any) {
 				console.error('Erro ao logar:', error);
+				notifyApiError(error, 'Não foi possível realizar o login. Verifique sua conexão ou tente novamente mais tarde.');
 			}
 		},
 		flow: 'auth-code',
@@ -143,8 +145,9 @@ const NativeLogin = () => {
 			mutate('/user/me/', response.data, false);
 
 			navigate('/');
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Error during native Google login:', error);
+			notifyApiError(error, 'Não foi possível realizar o login. Verifique sua conexão ou tente novamente mais tarde.');
 		}
 	};
 

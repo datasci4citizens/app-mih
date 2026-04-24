@@ -3,6 +3,7 @@ import useSWR, { mutate } from "swr";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import apiClient from "@/lib/axios";
+import { notifyApiError } from "@/lib/api-error";
 import {
     ChevronLeft,
     Download,
@@ -56,7 +57,7 @@ export default function SettingsPage() {
             window.URL.revokeObjectURL(blobUrl);
         } catch (error) {
             console.error('Failed to download document', error);
-            alert("Não foi possível realizar o download do documento.");
+            notifyApiError(error, 'Não foi possível realizar o download do documento.');
         }
     };
 
@@ -70,8 +71,9 @@ export default function SettingsPage() {
             });
             await mutate('/user/me/');
             setShowRevokeTcleModal(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to revoke TCLE', error);
+			notifyApiError(error, 'Falha de conexão ao revogar TCLE. Tente novamente.');
         } finally {
             setIsUpdating(false);
         }

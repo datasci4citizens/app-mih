@@ -27,6 +27,7 @@ import apiClient from './lib/axios';
 import AllRegisters from './routes/registers/user/AllRegisters';
 
 import { ConsentUpdateGuard } from './guards/ConsentUpdateGuard';
+import { Toaster } from './components/ui/toaster';
 
 const router = createBrowserRouter([
   {
@@ -158,6 +159,7 @@ export function App() {
       fetcher: (url) => apiClient.get(url).then(res => res.data)
     }}>
       <RouterProvider router={router} />
+      <Toaster />
     </SWRConfig>
   )
 }

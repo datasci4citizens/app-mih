@@ -13,6 +13,7 @@ import CaptureTwo from "./CaptureTwo"
 import ErrorPage from "@/components/ErrorPage"
 import apiClient from "@/lib/axios"
 import { TaleUpdateGuard } from "@/guards/TaleUpdateGuard"
+import { notifyApiError } from "@/lib/api-error"
 
 type PatientsData = {
     name: string,
@@ -137,7 +138,7 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, error } = useSWRMutation(`/api/mih/`, sendRequest)
+    const { trigger } = useSWRMutation(`/api/mih/`, sendRequest)
 
     const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/api/images/`, sendPhotoRequest)
 
@@ -221,54 +222,47 @@ export default function CreateRegister() {
     }
 
     async function submit() {
+        try {
+            setSubmitting(true);
 
-        setSubmitting(true);
+            const id1 = await submitImage(sendData.photo1);
+            const id2 = await submitImage(sendData.photo2);
+            const id3 = await submitImage(sendData.photo3);
 
-        const id1 = await submitImage(sendData.photo1);
-        const id2 = await submitImage(sendData.photo2);
-        const id3 = await submitImage(sendData.photo3);
-
-        if (errorPhoto && import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(errorPhoto);
-        }
-
-        let arg: SendData = {
-            "photo_id1": id1,
-            "photo_id2": id2,
-            "photo_id3": id3,
-            "patient": Number(patient_id),
-            "start_date": new Date().toISOString(),
-            "painLevel": sendData.painLevel,
-            "sensitivityField": sendData.sensitivity,
-            "stain": sendData.toothStain,
-            "aestheticDiscomfort": sendData.aestheticDiscomfort,
-            "userObservations": sendData.userObservations,
-            "specialistObservations": null,
-            "diagnosis": null
-        }
-
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(arg)
-        }
-
-        const result = await trigger(arg)
-
-        if (error) {
-            return <ErrorPage type="user"></ErrorPage>
-        }
-
-        if (result && !error) {
-            setSubmitting(false);
-            navigate(`/user/home/`); // Redireciona para a home
-        } else {
-            setSubmitting(false);
-            if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.error('Erro ao enviar dados:', error);
+            if (errorPhoto && import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(errorPhoto);
             }
-        }
 
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(result)
+            let arg: SendData = {
+                "photo_id1": id1,
+                "photo_id2": id2,
+                "photo_id3": id3,
+                "patient": Number(patient_id),
+                "start_date": new Date().toISOString(),
+                "painLevel": sendData.painLevel,
+                "sensitivityField": sendData.sensitivity,
+                "stain": sendData.toothStain,
+                "aestheticDiscomfort": sendData.aestheticDiscomfort,
+                "userObservations": sendData.userObservations,
+                "specialistObservations": null,
+                "diagnosis": null
+            }
+
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(arg)
+            }
+
+            const result = await trigger(arg)
+            
+            if (result) {
+                setSubmitting(false);
+                navigate(`/user/home/`);
+            }
+        } catch (err: any) {
+            setSubmitting(false);
+            console.error('Erro ao enviar dados:', err);
+
+            notifyApiError(err, "Ocorreu um erro ao enviar os dados. Tente novamente mais tarde.");
         }
     }
 

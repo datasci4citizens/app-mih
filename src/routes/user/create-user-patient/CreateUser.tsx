@@ -24,6 +24,7 @@ import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
 import { useConsentModals } from '@/hooks/useConsentModals';
+import { getApiErrorMessage } from '@/lib/api-error';
 
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -88,7 +89,7 @@ async function sendRequest(
 
 export default function CreateUser() {
 	const navigate = useNavigate();
-	const { trigger, error } = useSwrMutation(`/users/`, sendRequest);
+	const { trigger } = useSwrMutation(`/users/`, sendRequest);
 
 	// Estados do componente
 	const [submitting, setSubmitting] = useState(false);
@@ -187,21 +188,19 @@ export default function CreateUser() {
 		// console.log('DEBUG: tcle unlocked?', tcle.isUnlocked, 'doc id:', getTcleDocId());
 		// console.log('DEBUG: privacy unlocked?', privacy.isUnlocked, 'doc id:', getPrivacyDocId());
 
-		const result = await trigger(payload);
+		try {
+			const result = await trigger(payload);
 
-		if (error) {
-			setSubmitError(error?.message || 'Erro ao cadastrar usuário.');
+			if (result) {
+				await mutate('/user/me/');
+				navigate(`/user/home`);
+			}
+		} catch (err: any) {
 			setSubmitting(false);
-			return;
+			console.error('Erro ao enviar dados:', err);
+			setSubmitError(getApiErrorMessage(err, 'Falha de conexão. Tente novamente mais tarde.'));
 		}
-
-		if (result && !error) {
-			await mutate('/user/me/');
-			navigate(`/user/home`);
-		} else {
-			setSubmitting(false);
-		}
-	}, [trigger, error, navigate]);
+	}, [trigger, navigate, getPrivacyDocId, getTcleDocId, participatesInResearch]);
 
 	return (
 		<div className="w-full min-h-screen bg-[#A0E7E5] relative">

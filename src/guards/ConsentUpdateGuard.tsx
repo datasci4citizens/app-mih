@@ -7,6 +7,7 @@ import { useUser } from '@/hooks/useUser';
 import { useConsentModals } from '@/hooks/useConsentModals';
 import { DocumentUpdateModalUI } from '@/components/ui/document-update-modal-ui';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
+import { notifyApiError } from '@/lib/api-error';
 
 export function ConsentUpdateGuard() {
     const user = useUser();
@@ -47,9 +48,9 @@ export function ConsentUpdateGuard() {
             
             // Recarrega o state do usuário silenciando a notificação
             await mutate('/user/me/');
-        } catch (error) {
+        } catch (error: any) {
             console.error("Falha ao aceitar os novos termos.", error);
-            alert("Não foi possível confirmar os dados no servidor. Verifique sua internet.");
+            notifyApiError(error, 'Não foi possível confirmar os dados no servidor. Verifique sua internet.');
         } finally {
             setSubmitting(false);
         }
