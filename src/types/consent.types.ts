@@ -13,6 +13,8 @@ export interface ConsentDocumentInfo {
   created_at?: string
   file_size?: number
   content_type?: string
+  requires_reconsent?: boolean
+  changelog?: string
 }
 
 export interface ConsentState {

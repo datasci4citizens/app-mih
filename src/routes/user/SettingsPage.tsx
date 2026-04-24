@@ -9,18 +9,23 @@ import {
     FileText,
     Shield,
     AlertCircle,
-    FlaskConical
+    FlaskConical,
+    ChevronDown,
+    ChevronUp,
+    User
 } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
     const navigate = useNavigate();
     const { data: user } = useSWR('/user/me/');
+    const { data: patientsData } = useSWR<any[]>('/api/patients/my/');
     const consent = user?.consent;
 
     const [isUpdating, setIsUpdating] = useState(false);
     const [showRevokeTcleModal, setShowRevokeTcleModal] = useState(false);
     const [showRevokePrivacyModal, setShowRevokePrivacyModal] = useState(false);
+    const [showTaleDropdown, setShowTaleDropdown] = useState(false);
 
     // Determines if user is participating based on TCLE accepted status
     const isParticipating = consent?.tcle?.accepted === true;
@@ -204,6 +209,60 @@ export default function SettingsPage() {
                                         </button>
                                         */}
                                     </div>
+                                </div>
+                            )}
+
+                            {/* TALE Accordion Dropdown */}
+                            {patientsData && patientsData.some(p => p.tale_accepted) && (
+                                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+                                    <button
+                                        onClick={() => setShowTaleDropdown(!showTaleDropdown)}
+                                        className="p-4 flex items-center justify-between w-full hover:bg-gray-50 transition-colors text-left"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-purple-50 rounded-lg">
+                                                <User className="text-purple-500" size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-gray-800 text-sm">Termo de Assentimento (TALE)</p>
+                                                <p className="text-xs text-gray-500">Documentos assinados pelas crianças</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-gray-400">
+                                            {showTaleDropdown ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                        </div>
+                                    </button>
+                                    
+                                    {showTaleDropdown && (
+                                        <div className="border-t border-gray-50 p-4 space-y-4 bg-gray-50/50">
+                                            {patientsData.filter(p => p.tale_accepted).map(patient => (
+                                                <div key={patient.patient_id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col gap-2">
+                                                    <div className="flex justify-between items-start">
+                                                        <div>
+                                                            <p className="font-bold text-gray-700 text-sm">{patient.name}</p>
+                                                            <p className="text-[10px] text-gray-400">
+                                                                Versão: {patient.tale_document_version || 'N/A'} • Aceito em: {patient.tale_accepted_at ? new Date(patient.tale_accepted_at).toLocaleDateString() : 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-1">
+                                                        {patient.tale_document_hash ? (
+                                                            <button 
+                                                                onClick={() => handleDownload(patient.tale_document_hash, `TALE_${patient.name.replace(/\\s+/g, '_')}`)}
+                                                                className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-medium rounded-lg border border-gray-200 transition-colors"
+                                                            >
+                                                                <Download size={14} /> Download
+                                                            </button>
+                                                        ) : (
+                                                            <button disabled className="w-full py-2 px-3 bg-gray-100 text-gray-400 text-xs font-medium rounded-lg border border-gray-200 cursor-not-allowed">
+                                                                Documento Indisponível
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

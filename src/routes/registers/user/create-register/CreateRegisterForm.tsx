@@ -12,6 +12,7 @@ import CaptureOne from "./CaptureOne"
 import CaptureTwo from "./CaptureTwo"
 import ErrorPage from "@/lib/components_utils/ErrorPage"
 import apiClient from "@/lib/axios"
+import { TaleUpdateGuard } from "@/guards/TaleUpdateGuard"
 
 type PatientsData = {
     name: string,
@@ -281,20 +282,20 @@ export default function CreateRegister() {
         <RegisterSumary />
     ]
     return (
-
-        <FormContext.Provider value={{
-            sendData,
-            patient_id,
-            submitting,
-            updateFields,
-            next,
-            back,
-            goTo,
-            submit
-        }}>
-            {steps[currentStepIndex]}
-        </FormContext.Provider>
-
+        <TaleUpdateGuard patientData={patientData}>
+            <FormContext.Provider value={{
+                sendData,
+                patient_id,
+                submitting,
+                updateFields,
+                next,
+                back,
+                goTo,
+                submit
+            }}>
+                {steps[currentStepIndex]}
+            </FormContext.Provider>
+        </TaleUpdateGuard>
     )
 
 }
