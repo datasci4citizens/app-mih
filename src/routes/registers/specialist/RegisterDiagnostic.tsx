@@ -30,11 +30,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, User, AlertCircle } from "lucide-react";
-import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import { useSpecialistRegistersContext } from "./SpecialistRegistersControl";
 import useSWR from "swr";
-import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
 import { Textarea } from "@/components/ui/textarea";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
 import { MinioImage } from "@/components/ui/minio-image";
 import loadingGif from "@/assets/gif loading.gif"
 import { ToyBackground } from "@/components/ui/toy-background";

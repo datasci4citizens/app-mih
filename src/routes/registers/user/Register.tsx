@@ -4,8 +4,8 @@ import { ToyBackground } from "@/components/ui/toy-background";
 import { MinioImage } from "@/components/ui/minio-image";
 import { useState } from "react";
 import useSWR from 'swr';
-import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
 
 // InfoItem component for displaying questionnaire data
 interface InfoItemProps {

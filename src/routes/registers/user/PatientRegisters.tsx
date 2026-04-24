@@ -1,8 +1,8 @@
 import { ChevronLeft, Calendar, AlertCircle, CheckCircle2, Plus, XCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useSWR from 'swr';
-import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
 import { ToyBackground } from "@/components/ui/toy-background";
 // Map diagnosis to risk level with visual styling
 const getDiagnosisInfo = (diagnosis: string | null) => {

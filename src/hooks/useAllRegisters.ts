@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import apiClient from '@/lib/axios';
-
-interface Patient {
-    name: string;
-    birthday: string;
-    patient_id: number;
-}
+import type { Patient } from '@/types/patient.types';
 
 interface Register {
     mih_id: number;

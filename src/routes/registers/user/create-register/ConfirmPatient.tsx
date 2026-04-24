@@ -31,6 +31,7 @@ export default function ConfirmPatient() {
 
     const { sendData, updateFields, next } = useFormContext();
     const { data: allPatientsData } = useSWR('/api/patients/my/');
+    const { data: user } = useSWR('/user/me/');
     const [showPatientModal, setShowPatientModal] = useState(false);
     const navigate = useNavigate();
 
@@ -83,32 +84,36 @@ export default function ConfirmPatient() {
                                         value={patient.brothersNumber}
                                     />
                                 )}
-                                <InfoItem
-                                    icon={Thermometer}
-                                    label="Febre/Infecção"
-                                    value={patient.highFever ? "Sim" : "Não"}
-                                />
-                                <InfoItem
-                                    icon={Baby}
-                                    label="Prematuro"
-                                    value={patient.premature ? "Sim" : "Não"}
-                                />
-                                <InfoItem
-                                    icon={Weight}
-                                    label="Baixo Peso"
-                                    value={patient.lowWeight ? "Sim" : "Não"}
-                                />
-                                <InfoItem
-                                    icon={Activity}
-                                    label="Tipo de Parto"
-                                    value={patient.deliveryType === "normal" ? "Normal" : "Cesárea"}
-                                />
-                                {patient.consultType && patient.consultType !== "" && (
-                                    <InfoItem
-                                        icon={Stethoscope}
-                                        label="Atendimento"
-                                        value={patient.consultType === "public" ? "Público" : "Particular"}
-                                    />
+                                {user?.consent?.tcle?.accepted && (
+                                    <>
+                                        <InfoItem
+                                            icon={Thermometer}
+                                            label="Febre/Infecção"
+                                            value={patient.highFever ? "Sim" : "Não"}
+                                        />
+                                        <InfoItem
+                                            icon={Baby}
+                                            label="Prematuro"
+                                            value={patient.premature ? "Sim" : "Não"}
+                                        />
+                                        <InfoItem
+                                            icon={Weight}
+                                            label="Baixo Peso"
+                                            value={patient.lowWeight ? "Sim" : "Não"}
+                                        />
+                                        <InfoItem
+                                            icon={Activity}
+                                            label="Tipo de Parto"
+                                            value={patient.deliveryType === "normal" ? "Normal" : "Cesárea"}
+                                        />
+                                        {patient.consultType && patient.consultType !== "" && (
+                                            <InfoItem
+                                                icon={Stethoscope}
+                                                label="Atendimento"
+                                                value={patient.consultType === "public" ? "Público" : "Particular"}
+                                            />
+                                        )}
+                                    </>
                                 )}
                             </div>
 
