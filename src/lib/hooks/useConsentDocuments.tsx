@@ -13,7 +13,7 @@ import type {
 } from '@/types/consent.types'
 
 interface UseConsentDocumentsOptions {
-  type?: 'tcle' | 'privacy_policy'
+  type?: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12'
   language?: 'pt-BR' | 'en'
 }
 
@@ -22,7 +22,7 @@ interface UseConsentDocumentsReturn {
   loading: boolean
   error: string | null
   getPresignedUrl: (
-    documentType: 'tcle' | 'privacy_policy',
+    documentType: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12',
     language?: string,
   ) => Promise<PresignedUrlResponse | null>
 }
@@ -66,13 +66,13 @@ export const useConsentDocuments = (options?: UseConsentDocumentsOptions): UseCo
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 60000, // Cache por 1 minuto
+      dedupingInterval: 10000, // Cache por 10s
     },
   )
 
   // Function to get presigned URL - memoizada para evitar recriações desnecessárias
   const getPresignedUrl = useCallback(async (
-    documentType: 'tcle' | 'privacy_policy',
+    documentType: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12',
     lang: string = 'pt-BR',
   ): Promise<PresignedUrlResponse | null> => {
     try {
@@ -102,7 +102,7 @@ export const useConsentDocuments = (options?: UseConsentDocumentsOptions): UseCo
  * Hook alternativo para buscar um documento específico por tipo e linguagem
  */
 export const useConsentDocument = (
-  type: 'tcle' | 'privacy_policy',
+  type: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12',
   language: 'pt-BR' | 'en' = 'pt-BR',
 ) => {
   const { documents, loading, error } = useConsentDocuments({ type, language })

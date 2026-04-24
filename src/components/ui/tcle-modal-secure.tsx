@@ -14,7 +14,7 @@ interface TcleModalSecureProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onAccept?: (accepted: boolean) => void;
-    documentType?: "tcle" | "privacy";
+    documentType?: "tcle" | "privacy" | "tale_6_9" | "tale_10_12";
     presignedUrl?: string;
     isAlreadyUnlocked?: boolean;
     viewerOnly?: boolean;
@@ -33,6 +33,16 @@ const DOCUMENT_CONFIG = {
         title: "Política de Privacidade",
         subtitle: "Molar Check App",
         type: "html" as const,
+    },
+    tale_6_9: {
+        title: "Termo de Assentimento Livre e Esclarecido (TALE)",
+        subtitle: "Crianças de 6 a 9 anos — Pesquisa FOP Unicamp",
+        type: "pdf" as const,
+    },
+    tale_10_12: {
+        title: "Termo de Assentimento Livre e Esclarecido (TALE)",
+        subtitle: "Crianças de 10 a 12 anos — Pesquisa FOP Unicamp",
+        type: "pdf" as const,
     },
 };
 

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useForm } from 'react-hook-form'
 
-import { isAfter, isBefore, startOfDay } from 'date-fns'
+import { differenceInYears, isAfter, isBefore, startOfDay } from 'date-fns'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,9 +17,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from '@/components/ui/card'
 import { ToggleField } from '@/components/ui/toggle-field'
+import { TcleModalSecure } from '@/components/ui/tcle-modal-secure'
 
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, AlertCircle } from "lucide-react"
 import { ToyBackground } from "@/components/ui/toy-background"
 import {
     Select,
@@ -32,10 +33,11 @@ import useSWRMutation from 'swr/mutation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Checkbox } from '@/components/ui/checkbox'
 import ErrorPage from '@/lib/components_utils/ErrorPage'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import DatePicker from '@/components/ui/date-picker'
 import apiClient from '@/lib/axios'
 import { useUser } from '@/lib/hooks/use-user'
+import { useConsentDocuments } from '@/lib/hooks/useConsentDocuments'
 
 
 const deliveryProblems = [
@@ -67,7 +69,8 @@ const formSchema = z.object({
     brothers: z.boolean(),
     brothersNumber: z.string(),
     consultDentist: z.boolean(),
-    consultType: z.enum(["public", "private", ""])
+    consultType: z.enum(["public", "private", ""]),
+    accept_tale: z.boolean().optional(),
 }).superRefine((values, ctx) => {
     if (values.deliveryProblems && values.deliveryProblemsTypes.length === 0) {
         ctx.addIssue({
@@ -97,6 +100,14 @@ export default function PatientForm() {
     const { consent } = useUser()
     const participatesInResearch = consent?.tcle?.accepted ?? false
 
+    // ── Estado do modal de TALE ──────────────────────────────────────────────
+    const [taleModalOpen, setTaleModalOpen] = useState(false)
+    const [taleUnlocked, setTaleUnlocked] = useState(false)
+    const [taleAccepted, setTaleAccepted] = useState(false)
+    const [talePresignedUrl, setTalePresignedUrl] = useState<string | null>(null)
+    const [taleDocumentId, setTaleDocumentId] = useState<number | null>(null)
+    const taleUrlFetchedRef = useRef(false)
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -111,18 +122,80 @@ export default function PatientForm() {
             brothers: false,
             brothersNumber: "",
             consultDentist: false,
-            consultType: ""
+            consultType: "",
+            accept_tale: false,
         },
     })
 
+    // ── Calcula faixa etária a partir do birthday ────────────────────────────
+    const watchedBirthday = form.watch('birthday')
+    const childAge = watchedBirthday ? differenceInYears(new Date(), watchedBirthday) : null
+    const taleType: 'tale_6_9' | 'tale_10_12' | null =
+        childAge !== null && childAge >= 6 && childAge <= 9 ? 'tale_6_9'
+        : childAge !== null && childAge >= 10 && childAge <= 12 ? 'tale_10_12'
+        : null
+
+    // ── Carrega documento TALE ativo ─────────────────────────────────────────
+    const { documents: taleDocuments, loading: taleDocsLoading, getPresignedUrl } = useConsentDocuments(
+        taleType ? { type: taleType } : undefined
+    )
+
+    // Atualiza ID do documento TALE quando carregado
+    useEffect(() => {
+        const doc = taleDocuments.find(d => d.consent_type === taleType)
+        if (doc) setTaleDocumentId(doc.id)
+        else setTaleDocumentId(null)
+    }, [taleDocuments, taleType])
+
+    // Reseta estado do TALE quando a faixa etária muda
+    useEffect(() => {
+        setTaleUnlocked(false)
+        setTaleAccepted(false)
+        setTalePresignedUrl(null)
+        taleUrlFetchedRef.current = false
+        form.setValue('accept_tale', false)
+    }, [taleType])
+
+    // Gera presigned URL ao abrir o modal TALE
+    useEffect(() => {
+        if (taleModalOpen && taleDocumentId && !taleUrlFetchedRef.current && taleType) {
+            taleUrlFetchedRef.current = true
+            getPresignedUrl(taleType, 'pt-BR').then(response => {
+                if (response?.presigned_url) {
+                    setTalePresignedUrl(response.presigned_url)
+                    // Sincroniza o ID com o documento real que a URL aponta,
+                    // evitando race condition quando o admin publica nova versão
+                    // entre o carregamento da lista e a abertura do modal.
+                    if (response?.document_id) setTaleDocumentId(response.document_id)
+                }
+            })
+        } else if (!taleModalOpen) {
+            taleUrlFetchedRef.current = false
+        }
+    }, [taleModalOpen, taleDocumentId, taleType])
+
+    // TALE obrigatório se: participa da pesquisa + criança na faixa + documento disponível
+    const taleRequired = participatesInResearch && taleType !== null && taleDocumentId !== null
+    const taleBlocksSubmit = taleRequired && !taleAccepted
+    // TALE necessário mas sem documento configurado no sistema
+    const taleMissingDoc = participatesInResearch && taleType !== null && !taleDocsLoading && taleDocumentId === null
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        // Bloqueia submit se TALE obrigatório e não aceito
+        if (taleBlocksSubmit) {
+            form.setError('accept_tale', {
+                message: 'O TALE é obrigatório para crianças participantes da pesquisa nessa faixa etária.',
+            })
+            return
+        }
+
         setSubmitting(true)
         if (import.meta.env.VITE_DEV_MODE === 'true') {
             console.log('=== new values ===')
             console.log(values)
         }
 
-        const newValue = {
+        const newValue: Record<string, any> = {
             name: values.name,
             birthday: values.birthday,
             highFever: values.highFever,
@@ -132,8 +205,15 @@ export default function PatientForm() {
             deliveryType: values.deliveryType,
             deliveryProblemsTypes: values.deliveryProblemsTypes.join(" "),
             brothersNumber: Number(values.brothersNumber),
-            consultType: values.consultType
+            consultType: values.consultType,
         }
+
+        // Inclui TALE se aceito
+        if (taleRequired && taleAccepted && taleDocumentId) {
+            newValue.tale_document_id = taleDocumentId
+            newValue.tale_accepted = true
+        }
+
         const result = await trigger(newValue)
 
         if (error) {
@@ -267,6 +347,20 @@ export default function PatientForm() {
                                                 <span className="text-xs font-bold text-cyan-700 bg-cyan-100 px-3 py-1 rounded-full">🔬 Dados para a pesquisa</span>
                                                 <div className="h-px flex-1 bg-cyan-300/60" />
                                             </div>
+
+                                            {/* Banner: documento TALE não configurado */}
+                                            {taleMissingDoc && (
+                                                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                                                    <AlertCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="font-semibold text-red-800 text-sm">Documento TALE Indisponível</p>
+                                                        <p className="text-xs text-red-700 mt-0.5">
+                                                            O Termo de Assentimento para essa faixa etária ainda não foi configurado no sistema.
+                                                            O cadastro desta criança está temporariamente bloqueado. Tente novamente mais tarde.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                             <Card className='bg-white/95 backdrop-blur-sm border-none shadow-xl rounded-3xl'>
                                                 <CardContent className='space-y-3 p-4'>
@@ -463,12 +557,94 @@ export default function PatientForm() {
 
                                                 </CardContent>
                                             </Card>
+
+                                            {/* ── Card TALE — exibido apenas para crianças de 6-12 anos ── */}
+                                            {taleType && (
+                                                <FormField
+                                                    control={form.control}
+                                                    name="accept_tale"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={!taleDocumentId}
+                                                                    onClick={() => {
+                                                                        if (!taleUnlocked) setTaleModalOpen(true);
+                                                                        else {
+                                                                            const newVal = !taleAccepted
+                                                                            setTaleAccepted(newVal)
+                                                                            field.onChange(newVal)
+                                                                        }
+                                                                    }}
+                                                                    className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${taleAccepted
+                                                                        ? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
+                                                                        : taleUnlocked
+                                                                            ? 'border-gray-200 hover:border-[#A0E7E5]'
+                                                                            : 'border-gray-200 hover:border-amber-300'
+                                                                        }`}
+                                                                >
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${taleAccepted ? 'bg-[#2A9D8F]' : taleUnlocked ? 'bg-gray-100' : 'bg-amber-50'}`}>
+                                                                            {taleAccepted ? (
+                                                                                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                                                            ) : taleUnlocked ? (
+                                                                                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="3" /></svg>
+                                                                            ) : (
+                                                                                <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex-1">
+                                                                            <p className={`font-semibold text-sm leading-tight ${taleAccepted ? 'text-[#2A9D8F]' : 'text-gray-800'}`}>
+                                                                                Li e aceito o TALE*
+                                                                                <span className="ml-1 text-xs font-normal text-gray-400">
+                                                                                    {taleType === 'tale_6_9' ? '(6–9 anos)' : '(10–12 anos)'}
+                                                                                </span>
+                                                                            </p>
+                                                                            <p className="text-xs text-gray-500 mt-0.5">
+                                                                                {taleAccepted
+                                                                                    ? 'Aceite confirmado. Clique para desmarcar.'
+                                                                                    : taleUnlocked
+                                                                                        ? 'Clique para confirmar o aceite'
+                                                                                        : !taleDocumentId
+                                                                                            ? 'Documento TALE não disponível no sistema'
+                                                                                            : 'Clique para ler o Termo de Assentimento'}
+                                                                            </p>
+                                                                        </div>
+                                                                        {taleUnlocked && (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={(e) => { e.stopPropagation(); setTaleModalOpen(true); }}
+                                                                                className="text-xs font-medium text-[#2A9D8F] hover:text-[#2A9D8F]/80 underline ml-2 px-2 py-1 flex-shrink-0"
+                                                                            >
+                                                                                Ler novamente
+                                                                            </button>
+                                                                        )}
+                                                                        {!taleUnlocked && (
+                                                                            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                                        )}
+                                                                    </div>
+                                                                </button>
+                                                            </FormControl>
+                                                            {taleBlocksSubmit && (
+                                                                <p className="text-xs text-red-500 px-1 pt-1">
+                                                                    O TALE é obrigatório para crianças participantes da pesquisa nessa faixa etária.
+                                                                </p>
+                                                            )}
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            )}
                                         </div>
                                     )} {/* fim do bloco de pesquisa */}
                                     {/* ============================================================ */}
 
                                     <div className="flex justify-center pt-2">
-                                        <Button className="w-full md:w-auto md:min-w-[200px]" type="submit" disabled={submitting}>
+                                        <Button
+                                            className="w-full md:w-auto md:min-w-[200px]"
+                                            type="submit"
+                                            disabled={submitting || taleBlocksSubmit || taleMissingDoc}
+                                        >
                                             Salvar Cadastro
                                         </Button>
                                     </div>
@@ -478,9 +654,26 @@ export default function PatientForm() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal TALE */}
+            {taleType && (
+                <TcleModalSecure
+                    open={taleModalOpen}
+                    onOpenChange={setTaleModalOpen}
+                    onAccept={(accepted) => {
+                        if (accepted) {
+                            setTaleUnlocked(true)
+                            setTaleAccepted(true)
+                            form.setValue('accept_tale', true)
+                            setTaleModalOpen(false)
+                        }
+                    }}
+                    documentType={taleType}
+                    presignedUrl={talePresignedUrl || undefined}
+                    isAlreadyUnlocked={taleUnlocked}
+                />
+            )}
         </div>
-
-
     )
 
 }

@@ -5,7 +5,7 @@
 
 export interface ConsentDocumentInfo {
   id: number
-  consent_type: 'tcle' | 'privacy_policy'
+  consent_type: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12'
   version: string
   language: 'pt-BR' | 'en'
   content_hash: string
@@ -38,7 +38,7 @@ export interface ConsentDocumentReference {
 export interface PresignedUrlResponse {
   presigned_url: string
   document_id: number
-  document_type: 'tcle' | 'privacy_policy'
+  document_type: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12'
   version: string
   language: string
   content_type: string
