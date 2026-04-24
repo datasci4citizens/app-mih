@@ -71,17 +71,25 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 			tcleUrlFetchedRef.current = true;
 			const tcleDoc = consentDocs.find(d => d.id === tcle.documentId);
 			if (tcleDoc) {
-				getPresignedUrl('tcle', tcleDoc.language).then(response => {
-					if (response?.presigned_url) {
-						setTcle(prev => ({ ...prev, presignedUrl: response.presigned_url }));
-					}
-				});
+				getPresignedUrl('tcle', tcleDoc.language)
+					.then(response => {
+						if (response?.presigned_url) {
+							setTcle(prev => ({ ...prev, presignedUrl: response.presigned_url }));
+						} else {
+							tcleUrlFetchedRef.current = false;
+						}
+					})
+					.catch(() => {
+						tcleUrlFetchedRef.current = false;
+					});
+			} else {
+				tcleUrlFetchedRef.current = false;
 			}
 		} else if (!tcle.isOpen) {
 			// Reset flag quando modal fecha
 			tcleUrlFetchedRef.current = false;
 		}
-	}, [tcle.isOpen, tcle.documentId]);
+	}, [tcle.isOpen, tcle.documentId, consentDocs, getPresignedUrl]);
 
 	// Regenera presignedUrl quando Privacy modal abre - apenas uma vez por abertura
 	useEffect(() => {
@@ -89,17 +97,25 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 			privacyUrlFetchedRef.current = true;
 			const privacyDoc = consentDocs.find(d => d.id === privacy.documentId);
 			if (privacyDoc) {
-				getPresignedUrl('privacy_policy', privacyDoc.language).then(response => {
-					if (response?.presigned_url) {
-						setPrivacy(prev => ({ ...prev, presignedUrl: response.presigned_url }));
-					}
-				});
+				getPresignedUrl('privacy_policy', privacyDoc.language)
+					.then(response => {
+						if (response?.presigned_url) {
+							setPrivacy(prev => ({ ...prev, presignedUrl: response.presigned_url }));
+						} else {
+							privacyUrlFetchedRef.current = false;
+						}
+					})
+					.catch(() => {
+						privacyUrlFetchedRef.current = false;
+					});
+			} else {
+				privacyUrlFetchedRef.current = false;
 			}
 		} else if (!privacy.isOpen) {
 			// Reset flag quando modal fecha
 			privacyUrlFetchedRef.current = false;
 		}
-	}, [privacy.isOpen, privacy.documentId]);
+	}, [privacy.isOpen, privacy.documentId, consentDocs, getPresignedUrl]);
 
 	const setTcleOpen = (open: boolean) => {
 		setTcle(prev => ({ ...prev, isOpen: open }));

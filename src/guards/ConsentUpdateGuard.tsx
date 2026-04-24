@@ -50,6 +50,7 @@ export function ConsentUpdateGuard() {
         } catch (error) {
             console.error("Falha ao aceitar os novos termos.", error);
             alert("Não foi possível confirmar os dados no servidor. Verifique sua internet.");
+        } finally {
             setSubmitting(false);
         }
     };
