@@ -11,6 +11,7 @@ import type {
   ConsentDocumentsListResponse,
   PresignedUrlResponse,
 } from '@/types/consent.types'
+import { notifyApiError } from '@/lib/api-error'
 
 interface UseConsentDocumentsOptions {
   type?: 'tcle' | 'privacy_policy' | 'tale_6_9' | 'tale_10_12'
@@ -85,7 +86,10 @@ export const useConsentDocuments = (options?: UseConsentDocumentsOptions): UseCo
 
       return response.data as PresignedUrlResponse
     } catch (err) {
-      console.error('Erro ao gerar presigned URL:', err)
+      if (import.meta.env.VITE_DEV_MODE === 'true') {
+        console.error('Erro ao gerar presigned URL:', err)
+      }
+      notifyApiError(err, 'Não foi possível carregar o documento. Tente novamente.')
       return null
     }
   }, [])

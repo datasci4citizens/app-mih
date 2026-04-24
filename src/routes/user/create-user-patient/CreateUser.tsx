@@ -24,7 +24,7 @@ import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
 import { useConsentModals } from '@/hooks/useConsentModals';
-import { getApiErrorMessage } from '@/lib/api-error';
+import { notifyApiError } from '@/lib/api-error';
 
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -93,7 +93,6 @@ export default function CreateUser() {
 
 	// Estados do componente
 	const [submitting, setSubmitting] = useState(false);
-	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [participatesInResearch, setParticipatesInResearch] = useState(false);
 
 	// Hook customizado para gerenciar modais de consentimento
@@ -166,7 +165,6 @@ export default function CreateUser() {
 
 	const onSubmit = useCallback(async (values: FormValues) => {
 		setSubmitting(true);
-		setSubmitError(null);
 
 		// Garantir que os IDs de consentimento não foram perdidos (race condition com o SWR)
 		if (values.accept_privacy_policy && !values.privacy_policy_document?.id) {
@@ -197,8 +195,10 @@ export default function CreateUser() {
 			}
 		} catch (err: any) {
 			setSubmitting(false);
-			console.error('Erro ao enviar dados:', err);
-			setSubmitError(getApiErrorMessage(err, 'Falha de conexão. Tente novamente mais tarde.'));
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Erro ao enviar dados:', err);
+			}
+			notifyApiError(err, 'Falha de conexão. Tente novamente mais tarde.');
 		}
 	}, [trigger, navigate, getPrivacyDocId, getTcleDocId, participatesInResearch]);
 
@@ -228,18 +228,6 @@ export default function CreateUser() {
 				<div className="flex-1 flex flex-col items-center px-6">
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl space-y-6">
-
-							{/* Erro de submissão */}
-							{submitError && (
-								<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
-									<AlertCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
-									<div>
-										<p className="font-semibold text-red-800 text-sm">Erro ao cadastrar</p>
-										<p className="text-xs text-red-700 mt-0.5">{submitError}</p>
-									</div>
-								</div>
-							)}
-
 							{/* Documentos não encontrados */}
 							{isMissingDocuments && (
 								<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
@@ -247,7 +235,7 @@ export default function CreateUser() {
 									<div>
 										<p className="font-semibold text-red-800 text-sm">Documentos Indisponíveis</p>
 										<p className="text-xs text-red-700 mt-0.5">
-											Os documentos legais necessários para o cadastro ainda não foram configurados no sistema. 
+											Os documentos legais necessários para o cadastro ainda não foram configurados no sistema.
 											O acesso no momento está temporariamente bloqueado. Tente novamente mais tarde.
 										</p>
 									</div>
@@ -409,10 +397,10 @@ export default function CreateUser() {
 														else field.onChange(!field.value);
 													}}
 													className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${field.value
-															? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
-															: tcle.isUnlocked
-																? 'border-gray-200 hover:border-[#A0E7E5]'
-																: 'border-gray-200 hover:border-amber-300'
+														? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
+														: tcle.isUnlocked
+															? 'border-gray-200 hover:border-[#A0E7E5]'
+															: 'border-gray-200 hover:border-amber-300'
 														}`}
 												>
 													<div className="flex items-center gap-4">
@@ -477,10 +465,10 @@ export default function CreateUser() {
 													else field.onChange(!field.value);
 												}}
 												className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${field.value
-														? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
-														: privacy.isUnlocked
-															? 'border-gray-200 hover:border-[#A0E7E5]'
-															: 'border-gray-200 hover:border-amber-300'
+													? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
+													: privacy.isUnlocked
+														? 'border-gray-200 hover:border-[#A0E7E5]'
+														: 'border-gray-200 hover:border-amber-300'
 													}`}
 											>
 												<div className="flex items-center gap-4">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useSWRConfig } from 'swr';
 import apiClient from '@/lib/axios';
 
@@ -8,6 +8,7 @@ import { useConsentModals } from '@/hooks/useConsentModals';
 import { DocumentUpdateModalUI } from '@/components/ui/document-update-modal-ui';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
 import { notifyApiError } from '@/lib/api-error';
+import { useLogout } from '@/hooks/useLogout';
 
 export function ConsentUpdateGuard() {
     const user = useUser();
@@ -15,7 +16,7 @@ export function ConsentUpdateGuard() {
     
     const [submitting, setSubmitting] = useState(false);
     const { mutate } = useSWRConfig();
-    const navigate = useNavigate();
+    const { logout } = useLogout();
     const { tcle, privacy, setTcleOpen, setPrivacyOpen } = useConsentModals();
 
     // Safety check just in case user object is empty/loading
@@ -49,16 +50,13 @@ export function ConsentUpdateGuard() {
             // Recarrega o state do usuário silenciando a notificação
             await mutate('/user/me/');
         } catch (error: any) {
-            console.error("Falha ao aceitar os novos termos.", error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error("Falha ao aceitar os novos termos.", error);
+            }
             notifyApiError(error, 'Não foi possível confirmar os dados no servidor. Verifique sua internet.');
         } finally {
             setSubmitting(false);
         }
-    };
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/login');
     };
 
     return (
@@ -81,7 +79,7 @@ export function ConsentUpdateGuard() {
                         submitting={submitting}
                         onAccept={handleAccept}
                         onDismiss={() => setDismissed(true)}
-                        onReject={handleLogout}
+                        onReject={logout}
                     />
 
                     {/* Visualizadores de PDF nativos */}

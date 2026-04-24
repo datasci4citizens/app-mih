@@ -69,7 +69,9 @@ export function TaleUpdateGuard({ patientData, children }: TaleUpdateGuardProps)
             await mutate(`/api/patients/${patientData.patient_id}`);
             setDismissed(true);
         } catch (error: any) {
-            console.error("Falha ao aceitar o TALE.", error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error("Falha ao aceitar o TALE.", error);
+            }
             notifyApiError(error, 'Não foi possível confirmar os dados no servidor. Verifique sua internet.');
         } finally {
             setSubmitting(false);
@@ -83,7 +85,9 @@ export function TaleUpdateGuard({ patientData, children }: TaleUpdateGuardProps)
             setPresignedUrl(urlData?.presigned_url || null);
             setPdfViewerOpen(true);
         } catch (err) {
-            console.error("Failed to fetch URL", err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error("Failed to fetch URL", err);
+            }
             notifyApiError(err, 'Não foi possível carregar o documento agora.');
         }
     };

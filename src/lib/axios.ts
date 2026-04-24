@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { mutate } from 'swr';
+import { notifyApiError } from './api-error';
 
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_SERVER_URL,
@@ -47,6 +48,10 @@ apiClient.interceptors.response.use(
 					mutate(() => true, undefined, { revalidate: false });
 				}
 			}
+		}
+
+		if (error.response?.status >= 500) {
+			notifyApiError(error, 'Erro interno no servidor.');
 		}
 
 		return Promise.reject(error);

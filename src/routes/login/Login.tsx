@@ -93,7 +93,9 @@ const WebLogin = () => {
 
 				navigate('/');
 			} catch (error: any) {
-				console.error('Erro ao logar:', error);
+				if (import.meta.env.VITE_DEV_MODE === 'true') {
+					console.error('Erro ao logar:', error);
+				}
 				notifyApiError(error, 'Não foi possível realizar o login. Verifique sua conexão ou tente novamente mais tarde.');
 			}
 		},
@@ -146,7 +148,9 @@ const NativeLogin = () => {
 
 			navigate('/');
 		} catch (error: any) {
-			console.error('Error during native Google login:', error);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Error during native Google login:', error);
+			}
 			notifyApiError(error, 'Não foi possível realizar o login. Verifique sua conexão ou tente novamente mais tarde.');
 		}
 	};

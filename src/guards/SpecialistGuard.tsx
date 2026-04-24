@@ -1,21 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ToyBackground } from "@/components/ui/toy-background";
-import apiClient from "@/lib/axios";
 import { useUser } from "@/hooks/useUser";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
-import { useSWRConfig } from "swr";
+import { Navigate, Outlet } from "react-router-dom";
+import { useLogout } from "@/hooks/useLogout";
 
 export function SpecialistGuard() {
-
     const data = useUser();
-    const { mutate } = useSWRConfig();
-    const navigate = useNavigate();
-    const handleLogout = async () => {
-        await apiClient.post("/auth/logout/");
-        mutate(() => true, undefined, { revalidate: false });
-        localStorage.clear();
-        navigate("/login");
-    };
+    const { logout, isLoggingOut } = useLogout();
 
     if (data.role != "specialist")
         return <Navigate to='/' />
@@ -39,7 +30,8 @@ export function SpecialistGuard() {
                         </p>
 
                         <Button
-                            onClick={handleLogout}
+                            onClick={logout}
+                            disabled={isLoggingOut}
                             className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold h-12 rounded-xl text-lg shadow-md transition-colors"
                         >
                             Voltar para o Login

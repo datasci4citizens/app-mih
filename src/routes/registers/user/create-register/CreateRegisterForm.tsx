@@ -260,7 +260,9 @@ export default function CreateRegister() {
             }
         } catch (err: any) {
             setSubmitting(false);
-            console.error('Erro ao enviar dados:', err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Erro ao enviar dados:', err);
+            }
 
             notifyApiError(err, "Ocorreu um erro ao enviar os dados. Tente novamente mais tarde.");
         }

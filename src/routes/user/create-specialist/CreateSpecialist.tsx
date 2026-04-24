@@ -134,7 +134,9 @@ export default function CreateSpecialist() {
 			}
 		} catch (err: any) {
 			setSubmitting(false);
-			console.error('Erro ao enviar dados:', err);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Erro ao enviar dados:', err);
+			}
 			notifyApiError(err, 'Falha de conexão. Tente novamente mais tarde.');
 		}
 	}

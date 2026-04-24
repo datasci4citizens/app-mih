@@ -235,7 +235,9 @@ export default function PatientForm() {
             }
         } catch (err: any) {
             setSubmitting(false)
-            console.error('Erro ao enviar dados:', err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Erro ao enviar dados:', err);
+            }
             
             // Lida com erros do backend (ex: Erros de TALE ou Bad Request)
             notifyApiError(err, 'Falha de conexão. Tente novamente mais tarde.');

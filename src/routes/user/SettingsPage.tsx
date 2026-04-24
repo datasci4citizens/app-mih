@@ -56,7 +56,9 @@ export default function SettingsPage() {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(blobUrl);
         } catch (error) {
-            console.error('Failed to download document', error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Failed to download document', error);
+            }
             notifyApiError(error, 'Não foi possível realizar o download do documento.');
         }
     };
@@ -72,7 +74,9 @@ export default function SettingsPage() {
             await mutate('/user/me/');
             setShowRevokeTcleModal(false);
         } catch (error: any) {
-            console.error('Failed to revoke TCLE', error);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Failed to revoke TCLE', error);
+            }
 			notifyApiError(error, 'Falha de conexão ao revogar TCLE. Tente novamente.');
         } finally {
             setIsUpdating(false);

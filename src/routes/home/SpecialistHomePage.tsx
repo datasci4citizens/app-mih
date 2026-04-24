@@ -1,8 +1,8 @@
 import { ToyBackground } from "@/components/ui/toy-background";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
-import apiClient from "@/lib/axios";
+import { useLogout } from "@/hooks/useLogout";
 import {
     User,
     Bell,
@@ -16,17 +16,10 @@ export default function SpecialistHomePage() {
 
     const { data: user } = useSWR('/user/me/')
     const navigate = useNavigate();
-    const { mutate } = useSWRConfig();
+    const { logout } = useLogout();
 
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
-
-    const handleLogout = async () => {
-        await apiClient.post("/auth/logout/");
-        mutate(() => true, undefined, { revalidate: false });
-        localStorage.clear();
-        navigate("/login");
-    };
 
     return (
         <div className="w-full bg-[#A0E7E5]">
@@ -65,7 +58,7 @@ export default function SpecialistHomePage() {
                                             <span className="font-medium">Configurações</span>
                                         </button>
                                         <div className="h-px bg-gray-100 my-1"></div>
-                                        <button onClick={handleLogout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-all active:scale-95">
+                                        <button onClick={logout} className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-red-50 text-red-500 transition-all active:scale-95">
                                             <LogOut size={18} />
                                             <span className="font-medium">Sair</span>
                                         </button>

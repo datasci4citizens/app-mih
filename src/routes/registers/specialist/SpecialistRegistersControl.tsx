@@ -142,7 +142,9 @@ export default function SpecialistRegistersControl() {
             setSubmitting(false);
             back();
         } catch (err: any) {
-            console.error(err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error(err);
+            }
             setSubmitting(false);
             notifyApiError(err, "Falha ao salvar diagnóstico. Tente novamente.");
         }

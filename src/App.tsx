@@ -148,7 +148,9 @@ export function App() {
         try {
           await Fullscreen.activateImmersiveMode();
         } catch (error) {
-          console.error('Failed to activate immersive mode:', error);
+          if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.error('Failed to activate immersive mode:', error);
+          }
         }
       }
     };

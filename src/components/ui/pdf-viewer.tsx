@@ -120,7 +120,9 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
                     console.log("[PdfViewer] Renderização concluída");
                 }
             } catch (e) {
-                console.error("[PdfViewer] Erro:", e);
+                if (import.meta.env.VITE_DEV_MODE === 'true') {
+                    console.error("[PdfViewer] Erro:", e);
+                }
                 if (!cancelled) {
                     setErrorMsg(String(e));
                     setStatus("error");
