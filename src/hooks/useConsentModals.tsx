@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentDocuments } from './useConsentDocuments';
-import type { ConsentDocumentInfo } from '@/types/consent.types';
+
 
 interface DocumentModal {
 	isOpen: boolean;

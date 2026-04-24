@@ -17,16 +17,16 @@ import { Input } from '@/components/ui/input';
 import { ToyBackground } from '@/components/ui/toy-background';
 import { ChevronLeft, AlertCircle } from 'lucide-react';
 
-import ErrorPage from '@/lib/components_utils/ErrorPage';
+import ErrorPage from '@/components/ErrorPage';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
 import { useState, useCallback, useEffect } from 'react';
-import { useUser } from '@/lib/hooks/use-user';
+import { useUser } from '@/hooks/useUser';
+
+import { useConsentModals } from '@/hooks/useConsentModals';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
-import { useConsentModals } from '@/lib/hooks/useConsentModals';
-import type { ConsentDocumentReference } from '@/types/consent.types';
 
 const documentSchema = z.object({
 	id: z.number().optional(),

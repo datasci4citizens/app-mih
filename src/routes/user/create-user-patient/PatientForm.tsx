@@ -32,12 +32,13 @@ import {
 import useSWRMutation from 'swr/mutation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Checkbox } from '@/components/ui/checkbox'
-import ErrorPage from '@/lib/components_utils/ErrorPage'
-import { useState, useEffect, useRef } from 'react'
+import ErrorPage from '@/components/ErrorPage'
 import DatePicker from '@/components/ui/date-picker'
+
+import { useState, useEffect, useRef } from 'react'
 import apiClient from '@/lib/axios'
-import { useUser } from '@/lib/hooks/use-user'
-import { useConsentDocuments } from '@/lib/hooks/useConsentDocuments'
+import { useUser } from '@/hooks/useUser'
+import { useConsentDocuments } from '@/hooks/useConsentDocuments'
 
 
 const deliveryProblems = [

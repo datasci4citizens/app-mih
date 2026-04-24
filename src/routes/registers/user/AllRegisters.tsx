@@ -1,12 +1,12 @@
 import { ChevronLeft, Calendar, Plus, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
 import { ToyBackground } from "@/components/ui/toy-background";
 import { PatientSelectModal } from "@/components/ui/patient-select-modal";
 import { useState } from "react";
-import { useAllRegisters } from "@/lib/hooks/useAllRegisters";
-import { usePatients } from "@/lib/hooks/usePatients";
+import { useAllRegisters } from "@/hooks/useAllRegisters";
+import { usePatients } from "@/hooks/usePatients";
 import { getDiagnosisInfo } from "@/lib/utils/diagnosis";
 
 

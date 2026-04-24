@@ -1,10 +1,12 @@
 import { createContext, useContext, useState } from "react";
-import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
+import SkeletonLoading from "@/components/SkeletonLoading";
+
+
 import PendingRegisters from "./PendingRegisters";
 import RegisterDiagnostic from "./RegisterDiagnostic";
 import useSWR from "swr";
 import useSWRMutation from 'swr/mutation'
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import ErrorPage from "@/components/ErrorPage";
 import apiClient from "@/lib/axios";
 
 type RegisterData = {

@@ -12,19 +12,19 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { Switch } from '@/components/ui/switch';
 import { ToyBackground } from '@/components/ui/toy-background';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
 import { ChevronLeft, FlaskConical, EyeOff, AlertCircle } from 'lucide-react';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
-import { useConsentModals } from '@/lib/hooks/useConsentModals';
-import type { ConsentDocumentReference } from '@/types/consent.types';
+import { useConsentModals } from '@/hooks/useConsentModals';
+
 
 // ──────────────────────────────────────────────────────────────────────────────
 // SCHEMAS
