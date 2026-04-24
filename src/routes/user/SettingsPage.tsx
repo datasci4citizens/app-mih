@@ -1,7 +1,7 @@
 import { ToyBackground } from "@/components/ui/toy-background";
 import useSWR, { mutate } from "swr";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import apiClient from "@/lib/axios";
 import {
     ChevronLeft,
@@ -9,12 +9,12 @@ import {
     FileText,
     Shield,
     AlertCircle,
-    FlaskConical,
+
     ChevronDown,
     ChevronUp,
     User
 } from 'lucide-react';
-import { Switch } from "@/components/ui/switch";
+
 
 export default function SettingsPage() {
     const navigate = useNavigate();
@@ -27,8 +27,6 @@ export default function SettingsPage() {
     const [showRevokePrivacyModal, setShowRevokePrivacyModal] = useState(false);
     const [showTaleDropdown, setShowTaleDropdown] = useState(false);
 
-    // Determines if user is participating based on TCLE accepted status
-    const isParticipating = consent?.tcle?.accepted === true;
 
     const handleDownload = async (documentHash: string, defaultFilename: string) => {
         try {
@@ -37,7 +35,7 @@ export default function SettingsPage() {
             });
             const url = resp.data.presigned_url;
             const contentType = resp.data.content_type;
-            
+
             const ext = contentType === 'text/html' ? '.html' : '.pdf';
             const filename = `${defaultFilename}${ext}`;
 
@@ -46,13 +44,13 @@ export default function SettingsPage() {
             if (!fileResp.ok) throw new Error("Erro ao baixar arquivo do servidor remoto.");
             const blob = await fileResp.blob();
             const blobUrl = window.URL.createObjectURL(blob);
-            
+
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = filename;
             document.body.appendChild(a);
             a.click();
-            
+
             // Limpa o link local da memória
             document.body.removeChild(a);
             window.URL.revokeObjectURL(blobUrl);
@@ -158,7 +156,7 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="flex gap-2 mt-1 border-t border-gray-50 pt-3">
                                         {consent.tcle.document_hash && (
-                                            <button 
+                                            <button
                                                 onClick={() => handleDownload(consent.tcle.document_hash, 'TCLE')}
                                                 className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-medium rounded-xl transition-colors"
                                             >
@@ -193,7 +191,7 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="flex gap-2 mt-1 border-t border-gray-50 pt-3">
                                         {consent.privacy_policy.document_hash && (
-                                            <button 
+                                            <button
                                                 onClick={() => handleDownload(consent.privacy_policy.document_hash, 'Politica_de_Privacidade')}
                                                 className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-medium rounded-xl transition-colors"
                                             >
@@ -232,7 +230,7 @@ export default function SettingsPage() {
                                             {showTaleDropdown ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                         </div>
                                     </button>
-                                    
+
                                     {showTaleDropdown && (
                                         <div className="border-t border-gray-50 p-4 space-y-4 bg-gray-50/50">
                                             {patientsData.filter(p => p.tale_accepted).map(patient => (
@@ -247,7 +245,7 @@ export default function SettingsPage() {
                                                     </div>
                                                     <div className="mt-1">
                                                         {patient.tale_document_hash ? (
-                                                            <button 
+                                                            <button
                                                                 onClick={() => handleDownload(patient.tale_document_hash, `TALE_${patient.name.replace(/\\s+/g, '_')}`)}
                                                                 className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-medium rounded-lg border border-gray-200 transition-colors"
                                                             >

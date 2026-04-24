@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react"
 import FinishRegisterNew from "./FinishRegisterNew"
-import RegisterSumary from "./RegisterSumary"
+import RegisterSummary from "./RegisterSummary"
 import useSWRMutation from "swr/mutation"
 import { useNavigate, useParams } from "react-router-dom"
 import useSWR from "swr"
@@ -10,7 +10,7 @@ import { ArrowLeft, User2Icon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import CaptureOne from "./CaptureOne"
 import CaptureTwo from "./CaptureTwo"
-import ErrorPage from "@/lib/components_utils/ErrorPage"
+import ErrorPage from "@/components/ErrorPage"
 import apiClient from "@/lib/axios"
 import { TaleUpdateGuard } from "@/guards/TaleUpdateGuard"
 
@@ -137,7 +137,7 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`/api/mih/`, sendRequest)
+    const { trigger, error } = useSWRMutation(`/api/mih/`, sendRequest)
 
     const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/api/images/`, sendPhotoRequest)
 
@@ -279,7 +279,7 @@ export default function CreateRegister() {
         <CaptureOne />,
         <CaptureTwo />,
         <FinishRegisterNew />,
-        <RegisterSumary />
+        <RegisterSummary />
     ]
     return (
         <TaleUpdateGuard patientData={patientData}>

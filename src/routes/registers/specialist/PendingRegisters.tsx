@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Eye, Calendar, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import { useSpecialistRegistersContext } from "./SpecialistRegistersControl";
 import useSWR from "swr";
 import { ToyBackground } from "@/components/ui/toy-background";
 

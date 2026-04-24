@@ -4,10 +4,10 @@ import { useSWRConfig } from 'swr';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '@/lib/axios';
 
-import { useConsentDocuments } from '@/lib/hooks/useConsentDocuments';
+import { useConsentDocuments } from '@/hooks/useConsentDocuments';
 import { DocumentUpdateModalUI, type UpdateModalItem } from '@/components/ui/document-update-modal-ui';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
-import { useUser } from '@/lib/hooks/use-user';
+import { useUser } from '@/hooks/useUser';
 
 interface TaleUpdateGuardProps {
     patientData: any; // Using any for simplicity as it comes from SWR and matches PatientData in the form

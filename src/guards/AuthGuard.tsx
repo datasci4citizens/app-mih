@@ -1,6 +1,6 @@
-import LoadingInfos from "@/lib/components_utils/LoadingInfos";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
-import { UserContextProvider } from "@/lib/hooks/use-user";
+import LoadingInfos from "@/components/LoadingInfos";
+import ErrorPage from "@/components/ErrorPage";
+import { UserContextProvider } from "@/hooks/useUser";
 import { Navigate, Outlet } from "react-router-dom";
 import useSWR from "swr";
 

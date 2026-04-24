@@ -3,8 +3,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { useSWRConfig } from 'swr';
 import apiClient from '@/lib/axios';
 
-import { useUser } from '@/lib/hooks/use-user';
-import { useConsentModals } from '@/lib/hooks/useConsentModals';
+import { useUser } from '@/hooks/useUser';
+import { useConsentModals } from '@/hooks/useConsentModals';
 import { DocumentUpdateModalUI } from '@/components/ui/document-update-modal-ui';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
 

@@ -1,9 +1,9 @@
 import { User, Plus, ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToyBackground } from "@/components/ui/toy-background";
-import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
-import { usePatients } from "@/lib/hooks/usePatients";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
+import { usePatients } from "@/hooks/usePatients";
 import { calculateAge } from "@/lib/utils/date";
 
 
