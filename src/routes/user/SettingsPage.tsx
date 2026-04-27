@@ -20,7 +20,9 @@ import {
 export default function SettingsPage() {
     const navigate = useNavigate();
     const { data: user } = useSWR('/user/me/');
-    const { data: patientsData } = useSWR<any[]>('/api/patients/my/');
+    const { data: patientsData } = useSWR<any[]>(
+        user?.role === 'responsible' ? '/api/patients/my/' : null
+    );
     const consent = user?.consent;
 
     const [isUpdating, setIsUpdating] = useState(false);
@@ -217,7 +219,7 @@ export default function SettingsPage() {
                             )}
 
                             {/* TALE Accordion Dropdown */}
-                            {patientsData && patientsData.some(p => p.tale_accepted) && (
+                            {user?.role === 'responsible' && patientsData && patientsData.some(p => p.tale_accepted) && (
                                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
                                     <button
                                         onClick={() => setShowTaleDropdown(!showTaleDropdown)}
