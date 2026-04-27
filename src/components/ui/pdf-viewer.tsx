@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { notifyApiError } from "@/lib/api-error";
 
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -123,6 +124,7 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
                 if (import.meta.env.VITE_DEV_MODE === 'true') {
                     console.error("[PdfViewer] Erro:", e);
                 }
+                notifyApiError(e, 'Falha ao carregar o documento. Tente novamente.');
                 if (!cancelled) {
                     setErrorMsg(String(e));
                     setStatus("error");

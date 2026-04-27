@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentDocuments } from './useConsentDocuments';
+import { notifyApiError } from '@/lib/api-error';
 
 
 interface DocumentModal {
@@ -79,7 +80,8 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 							tcleUrlFetchedRef.current = false;
 						}
 					})
-					.catch(() => {
+					.catch((err) => {
+						notifyApiError(err, 'Não foi possível carregar o Termo de Consentimento. Tente novamente.');
 						tcleUrlFetchedRef.current = false;
 					});
 			} else {
@@ -105,7 +107,8 @@ export const useConsentModals = (): UseConsentModalsReturn => {
 							privacyUrlFetchedRef.current = false;
 						}
 					})
-					.catch(() => {
+					.catch((err) => {
+						notifyApiError(err, 'Não foi possível carregar a Política de Privacidade. Tente novamente.');
 						privacyUrlFetchedRef.current = false;
 					});
 			} else {
