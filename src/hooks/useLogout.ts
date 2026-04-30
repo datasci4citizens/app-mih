@@ -1,7 +1,6 @@
 import apiClient from "@/lib/axios";
 import { useNavigate } from "react-router-dom";
 import { useSWRConfig } from "swr";
-import { notifyApiError } from "@/lib/api-error";
 import { useCallback, useState } from "react";
 
 /**

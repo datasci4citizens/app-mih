@@ -74,9 +74,6 @@ const WebLogin = () => {
 	const navigate = useNavigate();
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.log('response:', codeResponse);
-			}
 			try {
 				// Troca o code do Google por dados do usuário + JWT diretamente
 				const response = await apiClient.post('/auth/login/google/', {
@@ -125,14 +122,8 @@ const NativeLogin = () => {
 					scopes: ['email', 'profile'],
 				},
 			});
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.log('Native Google Login Result:', JSON.stringify(login));
-			}
 
 			const result = login.result;
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.log('result ', result);
-			}
 			// Troca o access_token do Google por dados do usuário + JWT diretamente
 			const response = await apiClient.post('/auth/login/google/native/', {
 				code: (result as any).accessToken.token,
