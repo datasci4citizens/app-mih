@@ -10,7 +10,6 @@ import {
     FileText,
     Shield,
     AlertCircle,
-
     ChevronDown,
     ChevronUp,
     User
@@ -79,7 +78,7 @@ export default function SettingsPage() {
             if (import.meta.env.VITE_DEV_MODE === 'true') {
                 console.error('Failed to revoke TCLE', error);
             }
-			notifyApiError(error, 'Falha de conexão ao revogar TCLE. Tente novamente.');
+            notifyApiError(error, 'Falha de conexão ao revogar TCLE. Tente novamente.');
         } finally {
             setIsUpdating(false);
         }
