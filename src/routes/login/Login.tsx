@@ -4,7 +4,9 @@ import { Capacitor } from '@capacitor/core';
 import { SocialLogin } from '@capgo/capacitor-social-login';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+import { mutate } from 'swr';
 import { ToyBackground } from '@/components/ui/toy-background';
+import { notifyApiError } from '@/lib/api-error';
 
 // Content of the login page, without the login button logic
 const LoginContent = ({ onLoginClick }: { onLoginClick: () => void }) => (
@@ -72,19 +74,26 @@ const WebLogin = () => {
 	const navigate = useNavigate();
 	const login = useGoogleLogin({
 		onSuccess: async (codeResponse) => {
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.log('response:', codeResponse);
-			}
 			try {
-				const response = await apiClient.post('/auth/login/google', {
+				// Troca o code do Google por dados do usuário + JWT diretamente
+				const response = await apiClient.post('/auth/login/google/', {
 					code: codeResponse.code,
 				});
 				if (import.meta.env.VITE_DEV_MODE === 'true') {
 					console.log('Usuário logado:', response.data);
 				}
+				localStorage.setItem('access_token', response.data.access);
+				localStorage.setItem('refresh_token', response.data.refresh);
+
+				// Immediately put the user data in SWR cache so AuthGuard doesn't flash redirect
+				mutate('/user/me/', response.data, false);
+
 				navigate('/');
-			} catch (error) {
-				console.error('Erro ao logar:', error);
+			} catch (error: any) {
+				if (import.meta.env.VITE_DEV_MODE === 'true') {
+					console.error('Erro ao logar:', error);
+				}
+				notifyApiError(error, 'Não foi possível realizar o login. Verifique sua conexão ou tente novamente mais tarde.');
 			}
 		},
 		flow: 'auth-code',
@@ -113,23 +122,27 @@ const NativeLogin = () => {
 					scopes: ['email', 'profile'],
 				},
 			});
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.log('Native Google Login Result:', JSON.stringify(login));
-			}
 
 			const result = login.result;
-			if (import.meta.env.VITE_DEV_MODE === 'true') {
-				console.log('result ', result);
-			}
-			const response = await apiClient.post('/auth/login/google/native', {
+			// Troca o access_token do Google por dados do usuário + JWT diretamente
+			const response = await apiClient.post('/auth/login/google/native/', {
 				code: (result as any).accessToken.token,
 			});
 			if (import.meta.env.VITE_DEV_MODE === 'true') {
 				console.log('Usuário logado nativamente:', response.data);
 			}
+			localStorage.setItem('access_token', response.data.access);
+			localStorage.setItem('refresh_token', response.data.refresh);
+
+			// Immediately put the user data in SWR cache so AuthGuard doesn't flash redirect
+			mutate('/user/me/', response.data, false);
+
 			navigate('/');
-		} catch (error) {
-			console.error('Error during native Google login:', error);
+		} catch (error: any) {
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Error during native Google login:', error);
+			}
+			notifyApiError(error, 'Não foi possível realizar o login. Verifique sua conexão ou tente novamente mais tarde.');
 		}
 	};
 

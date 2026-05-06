@@ -15,15 +15,23 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ToyBackground } from '@/components/ui/toy-background';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, AlertCircle } from 'lucide-react';
 
-import ErrorPage from '@/lib/components_utils/ErrorPage';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
 import apiClient from '@/lib/axios';
-import { useState, useEffect } from 'react';
-import { useUser } from '@/lib/hooks/use-user';
+import { useState, useCallback, useEffect } from 'react';
+import { useUser } from '@/hooks/useUser';
+
+import { useConsentModals } from '@/hooks/useConsentModals';
+import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
+import { notifyApiError } from '@/lib/api-error';
+
+const documentSchema = z.object({
+	id: z.number().optional(),
+	hash: z.string().optional(),
+}).optional();
 
 const formSchema = z.object({
 	name: z.string().min(4, {
@@ -35,23 +43,31 @@ const formSchema = z.object({
 	email: z.string().email({
 		message: 'E-mail inválido.',
 	}),
+	accept_privacy_policy: z.boolean().refine((val) => val === true, {
+		message: 'É necessário que concorde com a Política de Privacidade para avançar.',
+	}),
+	privacy_policy_document: documentSchema,
 });
 
 async function sendRequest(
 	url: string,
-	{ arg }: { arg: { role: string; name: string; email: string; phone_number: string } },
+	{ arg }: { arg: any },
 ) {
 	return await apiClient.put(url, arg);
 }
 
 export default function CreateSpecialist() {
 	const user = useUser();
-	const { trigger, data, error, isMutating } = useSwrMutation(
-		`${import.meta.env.VITE_SERVER_URL}/users/`,
+	const { trigger } = useSwrMutation(
+		`/users/`,
 		sendRequest,
 	);
 	const [submitting, setSubmitting] = useState(false);
 	const navigate = useNavigate();
+
+	const { privacy, setPrivacyOpen, setPrivacyUnlocked, getPrivacyDocId, docsLoading } = useConsentModals();
+	const isMissingPrivacy = privacy.documentId === null;
+	const isMissingDocuments = !docsLoading && isMissingPrivacy;
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -59,8 +75,22 @@ export default function CreateSpecialist() {
 			name: user.name || '',
 			email: user.email || '',
 			phone_number: '',
+			accept_privacy_policy: false,
+			privacy_policy_document: undefined,
 		},
 	});
+
+	const handlePrivacyAccepted = useCallback((accepted: boolean) => {
+		if (accepted) {
+			setPrivacyOpen(false);
+			const docId = getPrivacyDocId();
+			form.setValue('accept_privacy_policy', true);
+			if (docId) {
+				form.setValue('privacy_policy_document', { id: docId });
+			}
+			setPrivacyUnlocked(true);
+		}
+	}, [form, getPrivacyDocId, setPrivacyOpen, setPrivacyUnlocked]);
 
 	// Update form values if user data loads after initial render
 	useEffect(() => {
@@ -80,6 +110,12 @@ export default function CreateSpecialist() {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		setSubmitting(true);
+
+		if (values.accept_privacy_policy && !values.privacy_policy_document?.id) {
+			const privacyId = getPrivacyDocId();
+			if (privacyId) values.privacy_policy_document = { id: privacyId };
+		}
+
 		if (import.meta.env.VITE_DEV_MODE === 'true') {
 			console.log('=== new values ===');
 			console.log(values);
@@ -89,32 +125,19 @@ export default function CreateSpecialist() {
 		if (import.meta.env.VITE_DEV_MODE === 'true') {
 			console.log(newValue);
 		}
-		const result = await trigger(newValue);
-
-		if (import.meta.env.VITE_DEV_MODE === 'true') {
-			console.log(error);
-		}
-		if (error) {
-			setSubmitting(false);
-			return <ErrorPage type="user"></ErrorPage>;
-		}
-		if (import.meta.env.VITE_DEV_MODE === 'true') {
-			console.log('=== result ===');
-			console.log(result);
-			console.log(data);
-			console.log(error);
-		}
-		if (!isMutating && !error) {
+		try {
+			const result = await trigger(newValue);
 			if (result) {
-				await mutate('/user/me', undefined, { revalidate: true });
+				await mutate('/user/me/', undefined, { revalidate: true });
 				setSubmitting(false);
 				navigate(`/specialist/home`);
-			} else {
-				setSubmitting(false);
-				if (import.meta.env.VITE_DEV_MODE === 'true') {
-					console.error('Erro ao enviar dados:', error);
-				}
 			}
+		} catch (err: any) {
+			setSubmitting(false);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Erro ao enviar dados:', err);
+			}
+			notifyApiError(err, 'Falha de conexão. Tente novamente mais tarde.');
 		}
 	}
 
@@ -214,19 +237,110 @@ export default function CreateSpecialist() {
 									)}
 								/>
 
+								{/* Documentos não encontrados */}
+								{isMissingDocuments && (
+									<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
+										<AlertCircle size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
+										<div>
+											<p className="font-semibold text-red-800 text-sm">Documentos Indisponíveis</p>
+											<p className="text-xs text-red-700 mt-0.5">
+												A Política de Privacidade necessária para o cadastro ainda não foi configurada no sistema. 
+												O acesso no momento está temporariamente bloqueado. Tente novamente mais tarde.
+											</p>
+										</div>
+									</div>
+								)}
+
+								{/* Card 4: Política de Privacidade — para todos */}
+								<FormField
+									control={form.control}
+									name="accept_privacy_policy"
+									render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<button
+													type="button"
+													disabled={docsLoading || isMissingPrivacy}
+													onClick={() => {
+														if (!privacy.isUnlocked) setPrivacyOpen(true);
+														else field.onChange(!field.value);
+													}}
+													className={`w-full text-left bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 border-2 transition-all active:scale-[0.99] ${field.value
+															? 'border-[#2A9D8F] bg-[#f0fdfb]/95'
+															: privacy.isUnlocked
+																? 'border-gray-200 hover:border-[#A0E7E5]'
+																: 'border-gray-200 hover:border-amber-300'
+														}`}
+												>
+													<div className="flex items-center gap-4">
+														<div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${field.value ? 'bg-[#2A9D8F]' : privacy.isUnlocked ? 'bg-gray-100' : 'bg-amber-50'
+															}`}>
+															{field.value ? (
+																<svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+															) : privacy.isUnlocked ? (
+																<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="3" /></svg>
+															) : (
+																<svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+															)}
+														</div>
+														<div className="flex-1">
+															<p className={`font-semibold text-sm leading-tight ${field.value ? 'text-[#2A9D8F]' : 'text-gray-800'}`}>
+																Li e aceito a Política de Privacidade*
+															</p>
+															<p className="text-xs text-gray-500 mt-0.5">
+																{field.value
+																	? 'Aceite confirmado. Clique para desmarcar.'
+																	: privacy.isUnlocked
+																		? 'Clique para confirmar o aceite'
+																		: 'Clique para ler a Política de Privacidade'}
+															</p>
+														</div>
+														{privacy.isUnlocked && (
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	setPrivacyOpen(true);
+																}}
+																className="text-xs font-medium text-[#2A9D8F] hover:text-[#2A9D8F]/80 underline ml-2 px-2 py-1 flex-shrink-0"
+															>
+																Ler novamente
+															</button>
+														)}
+														{!privacy.isUnlocked && (
+															<svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+														)}
+													</div>
+												</button>
+											</FormControl>
+											<FormMessage className="px-1 pt-1" />
+										</FormItem>
+									)}
+								/>
+
 								{/* Submit Button */}
 								<Button
 									className="w-full transform transition-all duration-150 active:scale-95 hover:-translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.1)] active:shadow-[0_1px_0_rgba(0,0,0,0.1)] active:translate-y-1 rounded-2xl py-6 font-bold text-white text-lg bg-gradient-to-br from-[#FF8A65] to-[#FFB394]"
 									type="submit"
-									disabled={submitting}
+									disabled={submitting || docsLoading || isMissingDocuments}
 								>
-									{submitting ? 'Enviando...' : 'Próximo'}
+									{docsLoading ? 'Carregando termo...' : submitting ? 'Enviando...' : 'Próximo'}
 								</Button>
 							</form>
 						</Form>
 					</div>
 				</div>
 			</div>
+
+			{/* Política de Privacidade Modal */}
+			<TcleModalSecure
+				open={privacy.isOpen}
+				onOpenChange={setPrivacyOpen}
+				onAccept={handlePrivacyAccepted}
+				documentType="privacy"
+				presignedUrl={privacy.presignedUrl || undefined}
+				isAlreadyUnlocked={privacy.isUnlocked}
+			/>
 		</div>
 	);
 }

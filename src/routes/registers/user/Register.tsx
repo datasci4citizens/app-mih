@@ -4,8 +4,8 @@ import { ToyBackground } from "@/components/ui/toy-background";
 import { MinioImage } from "@/components/ui/minio-image";
 import { useState } from "react";
 import useSWR from 'swr';
-import SkeletonLoading from "@/lib/components_utils/SkeletonLoading";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
 
 // InfoItem component for displaying questionnaire data
 interface InfoItemProps {
@@ -57,8 +57,8 @@ export default function Register() {
     const navigate = useNavigate();
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/patients/${patientId}`);
-    const { data, error, isLoading } = useSWR(`/patients/${patientId}/mih`);
+    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/api/patients/${patientId}`);
+    const { data, error, isLoading } = useSWR(`/api/patients/${patientId}/mih`);
 
     if (isLoading || patientLoading) {
         return <SkeletonLoading />;
@@ -68,7 +68,7 @@ export default function Register() {
         return <ErrorPage type="user"></ErrorPage>;
     }
 
-    const register = data?.mih?.find((r: any) => r.mih_id === Number(registerId));
+    const register = Array.isArray(data) ? data.find((r: any) => (r.mih_id ?? r.id) === Number(registerId)) : undefined;
 
     if (!register || !patient) {
         return <ErrorPage type="user"></ErrorPage>;
@@ -155,7 +155,7 @@ export default function Register() {
                                 <div className="mb-4 bg-gray-100 rounded-2xl overflow-hidden">
                                     <MinioImage
                                         className="w-full h-64 md:h-96 object-contain"
-                                        path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${photos[currentPhotoIndex]}.jpg`}
+                                        imageId={photos[currentPhotoIndex]}
                                     />
                                 </div>
 
@@ -172,7 +172,7 @@ export default function Register() {
                                         >
                                             <MinioImage
                                                 className="w-full h-full object-cover"
-                                                path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${photoId}.jpg`}
+                                                imageId={photoId}
                                             />
                                         </button>
                                     ))}

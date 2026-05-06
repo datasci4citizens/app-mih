@@ -30,7 +30,7 @@ const SectionHeader = ({ icon: Icon, title }: SectionHeaderProps) => (
     </div>
 );
 
-export default function RegisterSumary() {
+export default function RegisterSummary() {
 
     const { sendData, back, submit, submitting } = useFormContext();
 
@@ -78,31 +78,49 @@ export default function RegisterSumary() {
                                         <div className="grid grid-cols-3 gap-3">
                                             {/* Frontal Photo */}
                                             <div className="space-y-2">
-                                                <img
-                                                    src={URL.createObjectURL(sendData.photo1)}
-                                                    alt="Frontal"
-                                                    className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
-                                                />
+                                                {sendData.photo1 ? (
+                                                    <img
+                                                        src={URL.createObjectURL(sendData.photo1)}
+                                                        alt="Frontal"
+                                                        className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
+                                                        <ImageIcon className="text-gray-400" />
+                                                    </div>
+                                                )}
                                                 <p className="text-xs text-center text-gray-600 font-medium">Frontal</p>
                                             </div>
 
                                             {/* Molar Right Photo */}
                                             <div className="space-y-2">
-                                                <img
-                                                    src={URL.createObjectURL(sendData.photo2)}
-                                                    alt="Molar Dir."
-                                                    className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
-                                                />
+                                                {sendData.photo2 ? (
+                                                    <img
+                                                        src={URL.createObjectURL(sendData.photo2)}
+                                                        alt="Molar Dir."
+                                                        className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
+                                                        <ImageIcon className="text-gray-400" />
+                                                    </div>
+                                                )}
                                                 <p className="text-xs text-center text-gray-600 font-medium">Molar Dir.</p>
                                             </div>
 
                                             {/* Molar Left Photo */}
                                             <div className="space-y-2">
-                                                <img
-                                                    src={URL.createObjectURL(sendData.photo3)}
-                                                    alt="Molar Esq."
-                                                    className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
-                                                />
+                                                {sendData.photo3 ? (
+                                                    <img
+                                                        src={URL.createObjectURL(sendData.photo3)}
+                                                        alt="Molar Esq."
+                                                        className="w-full aspect-square object-cover rounded-lg shadow-md border border-gray-200"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
+                                                        <ImageIcon className="text-gray-400" />
+                                                    </div>
+                                                )}
                                                 <p className="text-xs text-center text-gray-600 font-medium">Molar Esq.</p>
                                             </div>
                                         </div>

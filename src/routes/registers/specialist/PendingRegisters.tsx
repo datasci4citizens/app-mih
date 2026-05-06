@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Eye, Calendar, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useSpecialistRegistersContext } from "./SpecialsitRegistersControl";
+import { useSpecialistRegistersContext } from "./SpecialistRegistersControl";
 import useSWR from "swr";
 import { ToyBackground } from "@/components/ui/toy-background";
 
@@ -17,12 +17,12 @@ type RegisterData = {
     specialistObservations: string,
     diagnosis: string
     mih_id: number;
+    patient: number;
 }
 
 function RegisterCard({ value, selectRegister }: { value: RegisterData, selectRegister: (id: string) => void }) {
-    const { data: mihData, isLoading } = useSWR(`/mih/${value.mih_id}`);
-
-    const patientName = isLoading ? "Carregando..." : mihData?.patient?.name || "Paciente desconhecido";
+    const { data: patientData, isLoading } = useSWR(`/api/patients/${value.patient}`);
+    const patientName = isLoading ? "Carregando..." : patientData?.name || "Paciente desconhecido";
 
     return (
         <Card className="bg-white/90 backdrop-blur-sm border-none shadow-lg rounded-3xl overflow-hidden hover:scale-[1.02] transition-transform duration-200">

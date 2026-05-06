@@ -1,10 +1,14 @@
 import { createContext, useContext, useState } from "react";
-import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
+import SkeletonLoading from "@/components/SkeletonLoading";
+
+
 import PendingRegisters from "./PendingRegisters";
 import RegisterDiagnostic from "./RegisterDiagnostic";
 import useSWR from "swr";
 import useSWRMutation from 'swr/mutation'
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import ErrorPage from "@/components/ErrorPage";
+import apiClient from "@/lib/axios";
+import { notifyApiError } from "@/lib/api-error";
 
 type RegisterData = {
     photo_id1: number;
@@ -20,6 +24,7 @@ type RegisterData = {
     specialistObservations: string,
     diagnosis: string;
     mih_id: number;
+    patient: number;
 }
 
 type RegisterArray = RegisterData[];
@@ -44,19 +49,12 @@ async function sendRequest(url: string, { arg }: {
         console.log('=== sending request to ===')
         console.log(url)
     }
-    return await fetch(url, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: "include",
-        body: JSON.stringify(arg)
-    }).then(res => res.json())
+    return apiClient.patch(url, arg).then(res => res.data)
 }
 
 export default function SpecialistRegistersControl() {
 
-    const { data, error, isLoading, mutate } = useSWR('/mih/undiagnosed');
+    const { data, error, isLoading, mutate } = useSWR('/api/mih/undiagnosed');
 
     const [page, setPage] = useState(0);
 
@@ -64,22 +62,18 @@ export default function SpecialistRegistersControl() {
 
     const [register, setRegister] = useState<RegisterData | undefined>(undefined)
 
-    const { trigger, error: isError, isMutating } = useSWRMutation(`${import.meta.env.VITE_SERVER_URL}/mih/${register?.mih_id}`, sendRequest)
+    const { trigger, isMutating } = useSWRMutation(`/api/mih/${register?.mih_id}/`, sendRequest)
 
     if (isLoading) {
         return <SkeletonLoading />
     }
-    if (error || data.detail) {
+    if (error || data?.detail) {
         return <ErrorPage type="specialist"></ErrorPage>
     }
 
     if (isMutating) {
         return <SkeletonLoading />
 
-    }
-
-    if (import.meta.env.VITE_DEV_MODE === 'true') {
-        console.log(data)
     }
 
     function selectRegister(registerId: string) {
@@ -135,25 +129,25 @@ export default function SpecialistRegistersControl() {
     }
 
     async function submitRegister() {
-
         setSubmitting(true);
 
         if (!register || register.diagnosis == null) {
             setSubmitting(false);
-            return undefined;
+            return;
         }
 
-        await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
-
-        mutate(undefined, { revalidate: true }); // Atualiza o cache localmente
-
-        if (isError) {
+        try {
+            await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations || "" });
+            await mutate(); // Re-fetch the undiagnosed list
             setSubmitting(false);
-            return <ErrorPage type="specialist"></ErrorPage>
+            back();
+        } catch (err: any) {
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error(err);
+            }
+            setSubmitting(false);
+            notifyApiError(err, "Falha ao salvar diagnóstico. Tente novamente.");
         }
-
-        setSubmitting(false);
-        back()
     }
 
     const pages = [

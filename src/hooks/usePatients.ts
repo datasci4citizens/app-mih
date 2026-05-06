@@ -1,17 +1,12 @@
 import useSWR from 'swr';
-
-interface Patient {
-    name: string;
-    birthday: string;
-    patient_id: number;
-}
+import type { Patient } from '@/types/patient.types';
 
 /**
  * Custom hook to fetch user's patients
  * Simple wrapper around SWR for consistency
  */
 export function usePatients() {
-    const { data, error, isLoading, mutate } = useSWR<Patient[]>('/users/patients/');
+    const { data, error, isLoading, mutate } = useSWR<Patient[]>('/api/patients/my/');
 
     return {
         patients: data,

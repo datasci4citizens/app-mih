@@ -1,14 +1,14 @@
-import LoadingInfos from "@/lib/components_utils/LoadingInfos";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
-import { UserContextProvider } from "@/lib/hooks/use-user";
+import LoadingInfos from "@/components/LoadingInfos";
+import ErrorPage from "@/components/ErrorPage";
+import { UserContextProvider } from "@/hooks/useUser";
 import { Navigate, Outlet } from "react-router-dom";
 import useSWR from "swr";
 
 export function AuthGuard() {
+    const { data, error, isLoading, isValidating } = useSWR('/user/me/')
 
-    const { data, error, isLoading } = useSWR('/user/me')
-
-    if (isLoading)
+    // Se estiver carregando ou validando (e ainda não temos dados), mostramos o loading
+    if (isLoading || (isValidating && !data))
         return <LoadingInfos />
 
     if (import.meta.env.VITE_DEV_MODE === 'true') {
@@ -23,6 +23,7 @@ export function AuthGuard() {
         return <ErrorPage type="login"></ErrorPage>
     }
 
+    // Se não houver dados ou se houver um detalhe de erro (como 'session_expired')
     if (!data || data.detail || typeof data === 'string') {
         if (import.meta.env.VITE_DEV_MODE === 'true') {
             console.log("AuthGuard: Navigating to /login due to invalid data or HTML response.")
@@ -30,7 +31,9 @@ export function AuthGuard() {
         return <Navigate to='/login' />
     }
 
-    return <UserContextProvider value={{ ...data }}>
-        <Outlet />
-    </UserContextProvider>
+    return (
+        <UserContextProvider value={{ ...data }}>
+            <Outlet />
+        </UserContextProvider>
+    )
 }

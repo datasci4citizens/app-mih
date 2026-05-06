@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react"
 import FinishRegisterNew from "./FinishRegisterNew"
-import RegisterSumary from "./RegisterSumary"
+import RegisterSummary from "./RegisterSummary"
 import useSWRMutation from "swr/mutation"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import useSWR from "swr"
 import ConfirmPatient from "./ConfirmPatient"
 import { Button } from "@/components/ui/button"
@@ -10,8 +10,10 @@ import { ArrowLeft, User2Icon } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import CaptureOne from "./CaptureOne"
 import CaptureTwo from "./CaptureTwo"
-import ErrorPage from "@/lib/components_utils/ErrorPage"
+import ErrorPage from "@/components/ErrorPage"
 import apiClient from "@/lib/axios"
+import { TaleUpdateGuard } from "@/guards/TaleUpdateGuard"
+import { notifyApiError } from "@/lib/api-error"
 
 type PatientsData = {
     name: string,
@@ -62,6 +64,7 @@ type SendData = {
     photo_id1: number;
     photo_id2: number;
     photo_id3: number;
+    patient: number;
     start_date: string;
     painLevel: number;
     sensitivityField: boolean;
@@ -93,9 +96,13 @@ async function sendRequest(url: string, { arg }: {
 }
 
 async function sendPhotoRequest(url: string, { arg }: {
-    arg: { extension: string };
+    arg: File | Blob;
 }) {
-    return apiClient.post(url, arg).then(res => res.data)
+    const formData = new FormData();
+    formData.append('file', arg, 'image.jpg');
+    return apiClient.post(url, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    }).then(res => res.data)
 }
 
 function IsLoading() {
@@ -131,34 +138,33 @@ export default function CreateRegister() {
 
     const [submitting, setSubmitting] = useState(false)
 
-    const { trigger, data, error } = useSWRMutation(`/${patient_id}/mih/`, sendRequest)
+    const { trigger } = useSWRMutation(`/api/mih/`, sendRequest)
 
-    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/images/`, sendPhotoRequest)
+    const { trigger: triggerPhoto, error: errorPhoto } = useSWRMutation(`/api/images/`, sendPhotoRequest)
 
-    const { data: patientData, error: isError, isLoading } = useSWR(`/patients/${patient_id}`)
+    const { data: patientData, error: isError, isLoading } = useSWR(`/api/patients/${patient_id}`)
 
     const [sendData, setSendData] = useState(INIT_DATA)
 
-    const [currentStepIndex, setCurrentStepIndex] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const stepParam = searchParams.get("step");
+    const currentStepIndex = stepParam ? parseInt(stepParam, 10) : (first_time === "new" ? 1 : 0);
 
     const navigate = useNavigate();
 
-    // Reset patient data when patient_id changes
+    // Reset patient data when patient_id changes, but don't overwrite if it already exists for the same patient
     useEffect(() => {
-        if (patientData) {
-            setSendData({
+        if (patientData && (!sendData.patient || String(sendData.patient.patient_id) !== String(patient_id))) {
+            setSendData(() => ({
                 ...INIT_DATA,
                 patient: patientData
-            });
-            // Only skip confirmation step if explicitly coming from a place that should skip it
-            // For now, we always show confirmation unless first_time is explicitly "new"
-            if (first_time === "new") {
-                setCurrentStepIndex(1);
-            } else {
-                setCurrentStepIndex(0);
+            }));
+            
+            if (!stepParam) {
+                setSearchParams({ step: (first_time === "new" ? 1 : 0).toString() }, { replace: true });
             }
         }
-    }, [patient_id, patientData, first_time]);
+    }, [patient_id, patientData, first_time, sendData.patient, stepParam, setSearchParams]);
 
     if (isLoading) {
         return <IsLoading />
@@ -177,109 +183,71 @@ export default function CreateRegister() {
     }
 
     function next() {
-
-        setCurrentStepIndex(i => {
-
-            if (currentStepIndex >= 4)
-                return i;
-            else
-                return i + 1;
-
-        })
+        const nextStep = currentStepIndex >= 4 ? currentStepIndex : currentStepIndex + 1;
+        setSearchParams({ step: nextStep.toString() });
     }
 
     const back = () => {
-
-        setCurrentStepIndex(i => {
-
-            if (currentStepIndex <= 0)
-                return i;
-            else
-                return i - 1;
-
-        })
+        if (currentStepIndex <= 0) return;
+        navigate(-1);
     }
 
     const goTo = (index: number) => {
-
-        setCurrentStepIndex(index);
-
+        setSearchParams({ step: index.toString() });
     }
 
-    async function submitImage(file: any) {
+    async function submitImage(file: File | Blob) {
 
-        const result = await triggerPhoto({ extension: "jpg" })
+        const result = await triggerPhoto(file)
 
-        const url = result.upload_url;
-
-        await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "image/jpeg",
-            },
-            body: file,
-        }).then(r => {
-            if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.log(r.ok)
-            }
-        }).catch(err => {
-            if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.log(err);
-            }
-        })
-
-        return result.image_id;
+        return result.id;
 
     }
 
     async function submit() {
+        try {
+            setSubmitting(true);
 
-        setSubmitting(true);
+            const id1 = await submitImage(sendData.photo1);
+            const id2 = await submitImage(sendData.photo2);
+            const id3 = await submitImage(sendData.photo3);
 
-        const id1 = await submitImage(sendData.photo1);
-        const id2 = await submitImage(sendData.photo2);
-        const id3 = await submitImage(sendData.photo3);
+            if (errorPhoto && import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(errorPhoto);
+            }
 
-        if (errorPhoto && import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(errorPhoto);
-        }
+            let arg: SendData = {
+                "photo_id1": id1,
+                "photo_id2": id2,
+                "photo_id3": id3,
+                "patient": Number(patient_id),
+                "start_date": new Date().toISOString(),
+                "painLevel": sendData.painLevel,
+                "sensitivityField": sendData.sensitivity,
+                "stain": sendData.toothStain,
+                "aestheticDiscomfort": sendData.aestheticDiscomfort,
+                "userObservations": sendData.userObservations,
+                "specialistObservations": null,
+                "diagnosis": null
+            }
 
-        let arg: SendData = {
-            "photo_id1": id1,
-            "photo_id2": id2,
-            "photo_id3": id3,
-            "start_date": new Date().toISOString(),
-            "painLevel": sendData.painLevel,
-            "sensitivityField": sendData.sensitivity,
-            "stain": sendData.toothStain,
-            "aestheticDiscomfort": sendData.aestheticDiscomfort,
-            "userObservations": sendData.userObservations,
-            "specialistObservations": null,
-            "diagnosis": null
-        }
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.log(arg)
+            }
 
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(arg)
-        }
-
-        const result = await trigger(arg)
-
-        if (error) {
-            return <ErrorPage type="user"></ErrorPage>
-        }
-
-        if (result && !error) {
-            setSubmitting(false);
-            navigate(`/user/home/`); // Redireciona para a home
-        } else {
+            const result = await trigger(arg)
+            
+            if (result) {
+                setSubmitting(false);
+                navigate(`/user/home/`);
+            }
+        } catch (err: any) {
             setSubmitting(false);
             if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.error('Erro ao enviar dados:', error);
+                console.error('Erro ao enviar dados:', err);
             }
-        }
 
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(data)
+            notifyApiError(err, "Ocorreu um erro ao enviar os dados. Tente novamente mais tarde.");
         }
     }
 
@@ -290,23 +258,23 @@ export default function CreateRegister() {
         <CaptureOne />,
         <CaptureTwo />,
         <FinishRegisterNew />,
-        <RegisterSumary />
+        <RegisterSummary />
     ]
     return (
-
-        <FormContext.Provider value={{
-            sendData,
-            patient_id,
-            submitting,
-            updateFields,
-            next,
-            back,
-            goTo,
-            submit
-        }}>
-            {steps[currentStepIndex]}
-        </FormContext.Provider>
-
+        <TaleUpdateGuard patientData={patientData}>
+            <FormContext.Provider value={{
+                sendData,
+                patient_id,
+                submitting,
+                updateFields,
+                next,
+                back,
+                goTo,
+                submit
+            }}>
+                {steps[currentStepIndex]}
+            </FormContext.Provider>
+        </TaleUpdateGuard>
     )
 
 }

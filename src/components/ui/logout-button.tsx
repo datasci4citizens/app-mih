@@ -1,22 +1,14 @@
-import apiClient from "@/lib/axios";
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useSWRConfig } from "swr";
 import { Button } from "./button";
+import { useLogout } from "@/hooks/useLogout";
 
 export function LogoutButton() {
-    const { mutate } = useSWRConfig();
-    const navigate = useNavigate();
-    const handleLogout = async () => {
-        await apiClient.post("/auth/logout");
-        mutate("/user/me", null);
-        localStorage.clear();
-        navigate("/login");
-    };
+    const { logout, isLoggingOut } = useLogout();
 
     return (
         <Button
-            onClick={handleLogout}
+            onClick={logout}
+            disabled={isLoggingOut}
             size="icon"
             className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 shrink-0"
         >

@@ -1,8 +1,8 @@
 import { ChevronLeft, Calendar, AlertCircle, CheckCircle2, Plus, XCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useSWR from 'swr';
-import SkeletonLoading from "../../../lib/components_utils/SkeletonLoading";
-import ErrorPage from "@/lib/components_utils/ErrorPage";
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
 import { ToyBackground } from "@/components/ui/toy-background";
 // Map diagnosis to risk level with visual styling
 const getDiagnosisInfo = (diagnosis: string | null) => {
@@ -53,8 +53,8 @@ const getDiagnosisInfo = (diagnosis: string | null) => {
 export default function PatientRegisters() {
     const { patientId } = useParams<{ patientId: string }>();
     const navigate = useNavigate();
-    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/patients/${patientId}`);
-    const { data, error, isLoading } = useSWR(`/patients/${patientId}/mih`);
+    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/api/patients/${patientId}`);
+    const { data, error, isLoading } = useSWR(`/api/patients/${patientId}/mih`);
 
     if (isLoading || patientLoading) {
         return <SkeletonLoading />;
@@ -63,7 +63,7 @@ export default function PatientRegisters() {
         return <ErrorPage type="user"></ErrorPage>;
     }
 
-    const registers = data?.mih || [];
+    const registers = Array.isArray(data) ? data : [];
     const undiagnosedCount = registers.filter((r: any) => !r.diagnosis || r.diagnosis === null).length;
 
     return (

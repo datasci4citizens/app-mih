@@ -1,12 +1,8 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import apiClient from '@/lib/axios';
-
-interface Patient {
-    name: string;
-    birthday: string;
-    patient_id: number;
-}
+import type { Patient } from '@/types/patient.types';
+import { notifyApiError } from '@/lib/api-error';
 
 interface Register {
     mih_id: number;
@@ -24,7 +20,7 @@ export interface RegisterWithPatient extends Register {
  * Extracted from AllRegisters.tsx component
  */
 export function useAllRegisters() {
-    const { data: patientsData, error: patientsError, isLoading: patientsLoading } = useSWR<Patient[]>('/users/patients/');
+    const { data: patientsData, error: patientsError, isLoading: patientsLoading } = useSWR<Patient[]>('/api/patients/my/');
     const [allRegisters, setAllRegisters] = useState<RegisterWithPatient[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -37,10 +33,12 @@ export function useAllRegisters() {
                 setLoading(true);
                 const promises = patientsData.map(async (patient) => {
                     try {
-                        const response = await apiClient.get(`/patients/${patient.patient_id}/mih`);
-                        if (response.data?.mih && Array.isArray(response.data.mih)) {
-                            return response.data.mih.map((register: Register) => ({
-                                ...register,
+                        const response = await apiClient.get(`/api/patients/${patient.patient_id}/mih`);
+                        if (Array.isArray(response.data)) {
+                            return response.data.map((register: any) => ({
+                                mih_id: register.id,
+                                start_date: register.start_date,
+                                diagnosis: register.diagnosis,
                                 patient_id: patient.patient_id,
                                 patientName: patient.name
                             }));
@@ -50,6 +48,7 @@ export function useAllRegisters() {
                         if (import.meta.env.VITE_DEV_MODE === 'true') {
                             console.error(`Error fetching registers for patient ${patient.patient_id}:`, err);
                         }
+                        notifyApiError(err, `Não foi possível carregar os registros do paciente ${patient.name}.`);
                         return [];
                     }
                 });
@@ -68,6 +67,7 @@ export function useAllRegisters() {
                 if (import.meta.env.VITE_DEV_MODE === 'true') {
                     console.error('Error fetching all registers:', err);
                 }
+                notifyApiError(err, 'Não foi possível carregar todos os registros. Algumas informações podem estar incompletas.');
                 setError(true);
                 setLoading(false);
             }
