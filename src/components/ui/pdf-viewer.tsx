@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { notifyApiError } from "@/lib/api-error";
 
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -120,7 +121,10 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
                     console.log("[PdfViewer] Renderização concluída");
                 }
             } catch (e) {
-                console.error("[PdfViewer] Erro:", e);
+                if (import.meta.env.VITE_DEV_MODE === 'true') {
+                    console.error("[PdfViewer] Erro:", e);
+                }
+                notifyApiError(e, 'Falha ao carregar o documento. Tente novamente.');
                 if (!cancelled) {
                     setErrorMsg(String(e));
                     setStatus("error");
@@ -135,27 +139,44 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
     useEffect(() => {
         if (status !== "done") return; // Só verificar final da página após o PDF ser renderizado
         const scrollParent = containerRef.current?.closest("[data-scroll-container]") as HTMLDivElement | null;
-        if (!scrollParent) {
-            console.warn("[PdfViewer] [data-scroll-container] não encontrado");
-            return;
-        }
-        const handleScroll = () => {
-            // Em mobile com zoom, as direções X e Y podem rolar
+        if (!scrollParent) return;
+
+        let intervalId: any;
+
+        const checkScroll = () => {
+            // Se as dimensões estão muito pequenas, o layout do Dialog/CSS provavelmente ainda não estabilizou
+            if (scrollParent.clientHeight < 50 || scrollParent.scrollHeight < 50) return;
+
             const maxScrollY = scrollParent.scrollHeight - scrollParent.clientHeight;
             if (maxScrollY <= 0) {
-                // Se a altura não for rolável, já chegou no final
+                // Se o documento couber inteiro na tela, desbloqueia.
                 onProgress?.(100);
                 onScrolledToEnd?.();
                 return;
             }
-            const progress = (scrollParent.scrollTop / maxScrollY) * 100;
+
+            // progress entre 0 e 100
+            const progress = Math.max(0, Math.min((scrollParent.scrollTop / maxScrollY) * 100, 100));
             onProgress?.(progress);
             if (progress >= 95) onScrolledToEnd?.();
         };
+
+        const handleScroll = () => checkScroll();
+
         scrollParent.addEventListener("scroll", handleScroll);
-        // Chama no mount também caso o doc seja pequeno
-        setTimeout(() => handleScroll(), 300);
-        return () => scrollParent.removeEventListener("scroll", handleScroll);
+        
+        // Em vez de checar 1 vez, checamos múltiplas vezes durante 1.5s após o load.
+        // Isso previne que a barra "pule pro final" se o navegador restaurar scroll de cache/sessão falhando momentaneamente.
+        intervalId = setInterval(checkScroll, 300);
+        setTimeout(() => clearInterval(intervalId), 1500);
+
+        // Força checagem imediata também.
+        checkScroll();
+
+        return () => {
+            scrollParent.removeEventListener("scroll", handleScroll);
+            clearInterval(intervalId);
+        };
     }, [onScrolledToEnd, onProgress, status]);
 
     return (

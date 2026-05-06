@@ -79,6 +79,13 @@ export function TcleModalSecure({
         }
     }, [isAlreadyUnlocked]);
 
+    // Força o scroll para o topo sempre que o modal for reaberto
+    useEffect(() => {
+        if (open && scrollRef.current) {
+            scrollRef.current.scrollTop = 0;
+        }
+    }, [open]);
+
     const config = DOCUMENT_CONFIG[documentType || "tcle"];
     const documentUrl = presignedUrl;
     const isPdf = presignedUrl ? presignedUrl.includes('.pdf') : config.type === "pdf";

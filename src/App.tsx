@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { AuthGuard } from './guards/AuthGuard';
 
 import SpecialistHomePage from './routes/home/SpecialistHomePage';
@@ -27,114 +27,126 @@ import apiClient from './lib/axios';
 import AllRegisters from './routes/registers/user/AllRegisters';
 
 import { ConsentUpdateGuard } from './guards/ConsentUpdateGuard';
+import { Toaster } from './components/ui/toaster';
+import { AndroidBackButtonHandler } from './components/AndroidBackButtonHandler';
+
+/**
+ * Layout raiz que injeta o AndroidBackButtonHandler globalmente.
+ * Renderizado uma única vez para todo o app.
+ */
+function RootLayout() {
+  return (
+    <>
+      <AndroidBackButtonHandler />
+      <Outlet />
+    </>
+  );
+}
 
 const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />
-  },
-  {
     path: '/',
-    element: <AuthGuard />,
+    element: <RootLayout />,
     children: [
       {
+        path: '/login',
+        element: <LoginPage />
+      },
+      {
         path: '/',
-        element: <ConsentUpdateGuard />,
+        element: <AuthGuard />,
         children: [
           {
             path: '/',
-            element: <RoleGuard />,
-            children: [
-          {
-            path: '/',
-            element: <ChoseRoleGuard />
-          },
-          {
-            path: '/user',
-            element: <UserGuard />,
+            element: <ConsentUpdateGuard />,
             children: [
               {
-                path: '/user/create/patient',
-                element: <PatientForm />
-              },
-              {
-                path: '/user/home',
-                element: <PatientHomePage />
-
-              },
-              {
-                path: '/user/registers',
-                element: <AllRegisters />
-              },
-              {
-                path: '/user/patients',
-                element: <Patients />
-              },
-              {
-                path: '/user/patients/:patientId',
-                element: <PatientRegisters />
-              },
-              {
-                path: '/user/patients/:patientId/:registerId',
-                element: <Register />
-              },
-              {
-                path: '/user/registers/create-register/:patient_id/:first_time',
-                element: <CreateRegister />
-              },
-              {
-                path: '/user/settings',
-                element: <SettingsPage />
+                path: '/',
+                element: <RoleGuard />,
+                children: [
+                  {
+                    path: '/',
+                    element: <ChoseRoleGuard />
+                  },
+                  {
+                    path: '/user',
+                    element: <UserGuard />,
+                    children: [
+                      {
+                        path: '/user/create/patient',
+                        element: <PatientForm />
+                      },
+                      {
+                        path: '/user/home',
+                        element: <PatientHomePage />
+                      },
+                      {
+                        path: '/user/registers',
+                        element: <AllRegisters />
+                      },
+                      {
+                        path: '/user/patients',
+                        element: <Patients />
+                      },
+                      {
+                        path: '/user/patients/:patientId',
+                        element: <PatientRegisters />
+                      },
+                      {
+                        path: '/user/patients/:patientId/:registerId',
+                        element: <Register />
+                      },
+                      {
+                        path: '/user/registers/create-register/:patient_id/:first_time',
+                        element: <CreateRegister />
+                      },
+                      {
+                        path: '/user/settings',
+                        element: <SettingsPage />
+                      }
+                    ]
+                  },
+                  {
+                    path: '/specialist',
+                    element: <SpecialistGuard />,
+                    children: [
+                      {
+                        path: '/specialist/home',
+                        element: <SpecialistHomePage />
+                      },
+                      {
+                        path: '/specialist/settings',
+                        element: <SettingsPage />
+                      },
+                      {
+                        path: '/specialist/home/registers-evaluation',
+                        element: <SpecialistRegistersControl />
+                      }
+                    ]
+                  }
+                ]
               }
             ]
-
           },
           {
-
-            path: '/specialist',
-            element: <SpecialistGuard />,
+            path: '/',
+            element: <NoRoleGuard />,
             children: [
-
               {
-                path: '/specialist/home',
-                element: <SpecialistHomePage />
-
+                path: '/user/create',
+                element: <CreateUser />
               },
               {
-                path: '/specialist/settings',
-                element: <SettingsPage />
+                path: '/specialist/create',
+                element: <CreateSpecialist />
               },
               {
-
-                path: '/specialist/home/registers-evaluation',
-                element: <SpecialistRegistersControl />
-
-              }
+                path: '/select',
+                element: <SelectUserType />
+              },
             ]
           }
         ]
-      }
-    ]
-  },
-      {
-        path: "/",
-        element: <NoRoleGuard />,
-        children: [
-
-          {
-            path: '/user/create',
-            element: <CreateUser />
-          },
-          {
-            path: '/specialist/create',
-            element: <CreateSpecialist />
-          },
-          {
-            path: '/select',
-            element: <SelectUserType />
-          },
-        ]
-
       }
     ]
   }
@@ -147,7 +159,9 @@ export function App() {
         try {
           await Fullscreen.activateImmersiveMode();
         } catch (error) {
-          console.error('Failed to activate immersive mode:', error);
+          if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.error('Failed to activate immersive mode:', error);
+          }
         }
       }
     };
@@ -158,6 +172,7 @@ export function App() {
       fetcher: (url) => apiClient.get(url).then(res => res.data)
     }}>
       <RouterProvider router={router} />
+      <Toaster />
     </SWRConfig>
   )
 }

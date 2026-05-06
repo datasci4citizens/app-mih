@@ -32,13 +32,13 @@ import {
 import useSWRMutation from 'swr/mutation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Checkbox } from '@/components/ui/checkbox'
-import ErrorPage from '@/components/ErrorPage'
 import DatePicker from '@/components/ui/date-picker'
 
 import { useState, useEffect, useRef } from 'react'
 import apiClient from '@/lib/axios'
 import { useUser } from '@/hooks/useUser'
 import { useConsentDocuments } from '@/hooks/useConsentDocuments'
+import { notifyApiError } from '@/lib/api-error'
 
 
 const deliveryProblems = [
@@ -95,7 +95,7 @@ async function sendRequest(url: string, { arg }: { arg: any }) {
 
 export default function PatientForm() {
 
-    const { trigger, data, error } = useSWRMutation(`/api/patients/`, sendRequest)
+	const { trigger } = useSWRMutation(`/api/patients/`, sendRequest)
     const [submitting, setSubmitting] = useState(false)
     const navigate = useNavigate()
     const { consent } = useUser()
@@ -159,21 +159,32 @@ export default function PatientForm() {
 
     // Gera presigned URL ao abrir o modal TALE
     useEffect(() => {
+        const abortController = new AbortController();
         if (taleModalOpen && taleDocumentId && !taleUrlFetchedRef.current && taleType) {
             taleUrlFetchedRef.current = true
             getPresignedUrl(taleType, 'pt-BR').then(response => {
+                if (abortController.signal.aborted) return;
                 if (response?.presigned_url) {
                     setTalePresignedUrl(response.presigned_url)
                     // Sincroniza o ID com o documento real que a URL aponta,
                     // evitando race condition quando o admin publica nova versão
                     // entre o carregamento da lista e a abertura do modal.
                     if (response?.document_id) setTaleDocumentId(response.document_id)
+                } else {
+                    taleUrlFetchedRef.current = false;
                 }
+            }).catch(() => {
+                if (abortController.signal.aborted) return;
+                taleUrlFetchedRef.current = false;
             })
         } else if (!taleModalOpen) {
             taleUrlFetchedRef.current = false
         }
-    }, [taleModalOpen, taleDocumentId, taleType])
+        
+        return () => {
+            abortController.abort();
+        };
+    }, [taleModalOpen, taleDocumentId, taleType, getPresignedUrl])
 
     // TALE obrigatório se: participa da pesquisa + criança na faixa + documento disponível
     const taleRequired = participatesInResearch && taleType !== null && taleDocumentId !== null
@@ -215,27 +226,21 @@ export default function PatientForm() {
             newValue.tale_accepted = true
         }
 
-        const result = await trigger(newValue)
+        try {
+            const result = await trigger(newValue)
 
-        if (error) {
-            return <ErrorPage type="user"></ErrorPage>
-        }
-
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log(data);
-        }
-        if (result && !error) {
-            setSubmitting(false)
-            navigate(`/user/registers/create-register/${result.data.id}/first_time`);
-        } else {
+            if (result) {
+                setSubmitting(false)
+                navigate(`/user/registers/create-register/${result.data.id}/first_time`);
+            }
+        } catch (err: any) {
             setSubmitting(false)
             if (import.meta.env.VITE_DEV_MODE === 'true') {
-                console.error('Erro ao enviar dados:', error);
+                console.error('Erro ao enviar dados:', err);
             }
-        }
-        if (import.meta.env.VITE_DEV_MODE === 'true') {
-            console.log('=== result ===')
-            console.log(result)
+            
+            // Lida com erros do backend (ex: Erros de TALE ou Bad Request)
+            notifyApiError(err, 'Falha de conexão. Tente novamente mais tarde.');
         }
     }
 

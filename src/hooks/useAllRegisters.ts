@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import apiClient from '@/lib/axios';
 import type { Patient } from '@/types/patient.types';
+import { notifyApiError } from '@/lib/api-error';
 
 interface Register {
     mih_id: number;
@@ -47,6 +48,7 @@ export function useAllRegisters() {
                         if (import.meta.env.VITE_DEV_MODE === 'true') {
                             console.error(`Error fetching registers for patient ${patient.patient_id}:`, err);
                         }
+                        notifyApiError(err, `Não foi possível carregar os registros do paciente ${patient.name}.`);
                         return [];
                     }
                 });
@@ -65,6 +67,7 @@ export function useAllRegisters() {
                 if (import.meta.env.VITE_DEV_MODE === 'true') {
                     console.error('Error fetching all registers:', err);
                 }
+                notifyApiError(err, 'Não foi possível carregar todos os registros. Algumas informações podem estar incompletas.');
                 setError(true);
                 setLoading(false);
             }

@@ -8,6 +8,7 @@ import useSWR from "swr";
 import useSWRMutation from 'swr/mutation'
 import ErrorPage from "@/components/ErrorPage";
 import apiClient from "@/lib/axios";
+import { notifyApiError } from "@/lib/api-error";
 
 type RegisterData = {
     photo_id1: number;
@@ -66,7 +67,7 @@ export default function SpecialistRegistersControl() {
     if (isLoading) {
         return <SkeletonLoading />
     }
-    if (error || data.detail) {
+    if (error || data?.detail) {
         return <ErrorPage type="specialist"></ErrorPage>
     }
 
@@ -136,14 +137,16 @@ export default function SpecialistRegistersControl() {
         }
 
         try {
-            await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations });
+            await trigger({ "diagnosis": register.diagnosis, "specialistObservations": register.specialistObservations || "" });
             await mutate(); // Re-fetch the undiagnosed list
             setSubmitting(false);
             back();
-        } catch (err) {
-            console.error(err);
+        } catch (err: any) {
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error(err);
+            }
             setSubmitting(false);
-            // Error handling is done by the isError render check at the top of the component
+            notifyApiError(err, "Falha ao salvar diagnóstico. Tente novamente.");
         }
     }
 

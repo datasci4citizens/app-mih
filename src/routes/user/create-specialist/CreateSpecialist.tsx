@@ -17,7 +17,6 @@ import { Input } from '@/components/ui/input';
 import { ToyBackground } from '@/components/ui/toy-background';
 import { ChevronLeft, AlertCircle } from 'lucide-react';
 
-import ErrorPage from '@/components/ErrorPage';
 import { useNavigate } from 'react-router-dom';
 import { mutate } from 'swr';
 import useSwrMutation from 'swr/mutation';
@@ -27,6 +26,7 @@ import { useUser } from '@/hooks/useUser';
 
 import { useConsentModals } from '@/hooks/useConsentModals';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
+import { notifyApiError } from '@/lib/api-error';
 
 const documentSchema = z.object({
 	id: z.number().optional(),
@@ -58,7 +58,7 @@ async function sendRequest(
 
 export default function CreateSpecialist() {
 	const user = useUser();
-	const { trigger, data, error, isMutating } = useSwrMutation(
+	const { trigger } = useSwrMutation(
 		`/users/`,
 		sendRequest,
 	);
@@ -125,32 +125,19 @@ export default function CreateSpecialist() {
 		if (import.meta.env.VITE_DEV_MODE === 'true') {
 			console.log(newValue);
 		}
-		const result = await trigger(newValue);
-
-		if (import.meta.env.VITE_DEV_MODE === 'true') {
-			console.log(error);
-		}
-		if (error) {
-			setSubmitting(false);
-			return <ErrorPage type="user"></ErrorPage>;
-		}
-		if (import.meta.env.VITE_DEV_MODE === 'true') {
-			console.log('=== result ===');
-			console.log(result);
-			console.log(data);
-			console.log(error);
-		}
-		if (!isMutating && !error) {
+		try {
+			const result = await trigger(newValue);
 			if (result) {
 				await mutate('/user/me/', undefined, { revalidate: true });
 				setSubmitting(false);
 				navigate(`/specialist/home`);
-			} else {
-				setSubmitting(false);
-				if (import.meta.env.VITE_DEV_MODE === 'true') {
-					console.error('Erro ao enviar dados:', error);
-				}
 			}
+		} catch (err: any) {
+			setSubmitting(false);
+			if (import.meta.env.VITE_DEV_MODE === 'true') {
+				console.error('Erro ao enviar dados:', err);
+			}
+			notifyApiError(err, 'Falha de conexão. Tente novamente mais tarde.');
 		}
 	}
 

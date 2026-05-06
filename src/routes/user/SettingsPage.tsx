@@ -3,13 +3,15 @@ import useSWR, { mutate } from "swr";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import apiClient from "@/lib/axios";
+import { notifyApiError } from "@/lib/api-error";
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import {
     ChevronLeft,
     Download,
     FileText,
     Shield,
     AlertCircle,
-
     ChevronDown,
     ChevronUp,
     User
@@ -19,7 +21,9 @@ import {
 export default function SettingsPage() {
     const navigate = useNavigate();
     const { data: user } = useSWR('/user/me/');
-    const { data: patientsData } = useSWR<any[]>('/api/patients/my/');
+    const { data: patientsData } = useSWR<any[]>(
+        user?.role === 'responsible' ? '/api/patients/my/' : null
+    );
     const consent = user?.consent;
 
     const [isUpdating, setIsUpdating] = useState(false);
@@ -34,8 +38,14 @@ export default function SettingsPage() {
                 params: { hash: documentHash }
             });
             const url = resp.data.presigned_url;
+            
+            if (Capacitor.isNativePlatform()) {
+                // Abre no navegador externo do aparelho, delegando o download para ele
+                await Browser.open({ url });
+                return;
+            }
+            
             const contentType = resp.data.content_type;
-
             const ext = contentType === 'text/html' ? '.html' : '.pdf';
             const filename = `${defaultFilename}${ext}`;
 
@@ -55,8 +65,10 @@ export default function SettingsPage() {
             document.body.removeChild(a);
             window.URL.revokeObjectURL(blobUrl);
         } catch (error) {
-            console.error('Failed to download document', error);
-            alert("Não foi possível realizar o download do documento.");
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Failed to download document', error);
+            }
+            notifyApiError(error, 'Não foi possível realizar o download do documento.');
         }
     };
 
@@ -70,8 +82,11 @@ export default function SettingsPage() {
             });
             await mutate('/user/me/');
             setShowRevokeTcleModal(false);
-        } catch (error) {
-            console.error('Failed to revoke TCLE', error);
+        } catch (error: any) {
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error('Failed to revoke TCLE', error);
+            }
+            notifyApiError(error, 'Falha de conexão ao revogar TCLE. Tente novamente.');
         } finally {
             setIsUpdating(false);
         }
@@ -211,7 +226,7 @@ export default function SettingsPage() {
                             )}
 
                             {/* TALE Accordion Dropdown */}
-                            {patientsData && patientsData.some(p => p.tale_accepted) && (
+                            {user?.role === 'responsible' && patientsData && patientsData.some(p => p.tale_accepted) && (
                                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
                                     <button
                                         onClick={() => setShowTaleDropdown(!showTaleDropdown)}

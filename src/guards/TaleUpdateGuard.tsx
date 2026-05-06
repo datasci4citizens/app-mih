@@ -8,6 +8,7 @@ import { useConsentDocuments } from '@/hooks/useConsentDocuments';
 import { DocumentUpdateModalUI, type UpdateModalItem } from '@/components/ui/document-update-modal-ui';
 import { TcleModalSecure } from '@/components/ui/tcle-modal-secure';
 import { useUser } from '@/hooks/useUser';
+import { notifyApiError } from '@/lib/api-error';
 
 interface TaleUpdateGuardProps {
     patientData: any; // Using any for simplicity as it comes from SWR and matches PatientData in the form
@@ -67,9 +68,11 @@ export function TaleUpdateGuard({ patientData, children }: TaleUpdateGuardProps)
             // Update successful, refresh the cache for this patient
             await mutate(`/api/patients/${patientData.patient_id}`);
             setDismissed(true);
-        } catch (error) {
-            console.error("Falha ao aceitar o TALE.", error);
-            alert("Não foi possível confirmar os dados no servidor. Verifique sua internet.");
+        } catch (error: any) {
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error("Falha ao aceitar o TALE.", error);
+            }
+            notifyApiError(error, 'Não foi possível confirmar os dados no servidor. Verifique sua internet.');
         } finally {
             setSubmitting(false);
         }
@@ -82,7 +85,10 @@ export function TaleUpdateGuard({ patientData, children }: TaleUpdateGuardProps)
             setPresignedUrl(urlData?.presigned_url || null);
             setPdfViewerOpen(true);
         } catch (err) {
-            console.error("Failed to fetch URL", err);
+            if (import.meta.env.VITE_DEV_MODE === 'true') {
+                console.error("Failed to fetch URL", err);
+            }
+            notifyApiError(err, 'Não foi possível carregar o documento agora.');
         }
     };
 
