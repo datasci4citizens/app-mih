@@ -1,0 +1,86 @@
+import { useState, useEffect } from 'react';
+import useSWR from 'swr';
+import apiClient from '@/lib/axios';
+import type { Patient } from '@/types/patient.types';
+import { notifyApiError } from '@/lib/api-error';
+
+interface Register {
+    mih_id: number;
+    start_date: string;
+    diagnosis: string | null;
+    patient_id: number;
+}
+
+export interface RegisterWithPatient extends Register {
+    patientName: string;
+}
+
+/**
+ * Custom hook to fetch all registers from all patients
+ * Extracted from AllRegisters.tsx component
+ */
+export function useAllRegisters() {
+    const { data: patientsData, error: patientsError, isLoading: patientsLoading } = useSWR<Patient[]>('/api/patients/my/');
+    const [allRegisters, setAllRegisters] = useState<RegisterWithPatient[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        if (!patientsData) return;
+
+        const fetchAllRegisters = async () => {
+            try {
+                setLoading(true);
+                const promises = patientsData.map(async (patient) => {
+                    try {
+                        const response = await apiClient.get(`/api/patients/${patient.patient_id}/mih`);
+                        if (Array.isArray(response.data)) {
+                            return response.data.map((register: any) => ({
+                                mih_id: register.id,
+                                start_date: register.start_date,
+                                diagnosis: register.diagnosis,
+                                patient_id: patient.patient_id,
+                                patientName: patient.name
+                            }));
+                        }
+                        return [];
+                    } catch (err) {
+                        if (import.meta.env.VITE_DEV_MODE === 'true') {
+                            console.error(`Error fetching registers for patient ${patient.patient_id}:`, err);
+                        }
+                        notifyApiError(err, `Não foi possível carregar os registros do paciente ${patient.name}.`);
+                        return [];
+                    }
+                });
+
+                const results = await Promise.all(promises);
+                const flattenedRegisters = results.flat();
+
+                // Sort by date (most recent first)
+                flattenedRegisters.sort((a, b) =>
+                    new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+                );
+
+                setAllRegisters(flattenedRegisters);
+                setLoading(false);
+            } catch (err) {
+                if (import.meta.env.VITE_DEV_MODE === 'true') {
+                    console.error('Error fetching all registers:', err);
+                }
+                notifyApiError(err, 'Não foi possível carregar todos os registros. Algumas informações podem estar incompletas.');
+                setError(true);
+                setLoading(false);
+            }
+        };
+
+        fetchAllRegisters();
+    }, [patientsData]);
+
+    return {
+        allRegisters,
+        loading: patientsLoading || loading,
+        error: patientsError || error,
+        totalRegisters: allRegisters.length,
+        undiagnosedCount: allRegisters.filter(r => !r.diagnosis).length
+    };
+}

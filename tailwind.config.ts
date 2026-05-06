@@ -26,7 +26,9 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['"Inter Variable"', 'sans-serif'],
+				sans: ['Quicksand', 'Nunito', '"Inter Variable"', 'sans-serif'],
+				quicksand: ['Quicksand', 'sans-serif'],
+				nunito: ['Nunito', 'sans-serif'],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -43,6 +45,15 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 			},
 			colors: {
+				// New Design Colors
+				'mih-primary': '#A0E7E5',
+				'mih-secondary': '#FF8A65',
+				'mih-highlight': '#F2CF59',
+				'mih-peach': '#F8CA9D',
+				'mih-sage': '#C5D7C0',
+				'mih-text': '#2D3748',
+				'mih-text-light': '#718096',
+				
 				border: stone[200],
 				input: stone[200],
 				background: white,

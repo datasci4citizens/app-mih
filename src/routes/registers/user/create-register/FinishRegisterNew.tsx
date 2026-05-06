@@ -1,31 +1,21 @@
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-
 import { useForm } from 'react-hook-form'
-
-import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch.tsx'
-
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select.tsx'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowLeft } from 'lucide-react'
+import { ChevronLeft, ArrowRight } from 'lucide-react'
 import { useFormContext } from './CreateRegisterForm'
+import { ToggleField } from '@/components/ui/toggle-field'
+import { ActionButton } from '@/components/ui/action-button'
+import { ToyBackground } from '@/components/ui/toy-background'
+import { cn } from '@/lib/utils'
 
 const formSchema = z.object({
     toothache: z.boolean(),
@@ -34,8 +24,6 @@ const formSchema = z.object({
     toothStain: z.boolean(),
     aestheticDiscomfort: z.boolean(),
     userObservations: z.string()
-
-
 }).superRefine((values, ctx) => {
     if (values.toothache && values.painLevel === 0) {
         ctx.addIssue({
@@ -45,6 +33,43 @@ const formSchema = z.object({
         });
     }
 });
+
+// Pain Level Selector Component
+interface PainLevelSelectorProps {
+    value: number;
+    onChange: (value: number) => void;
+}
+
+const PainLevelSelector = ({ value, onChange }: PainLevelSelectorProps) => {
+    const levels = [
+        { value: 1, label: 'Leve', color: 'bg-yellow-400' },
+        { value: 2, label: 'Moderada', color: 'bg-orange-400' },
+        { value: 3, label: 'Intensa', color: 'bg-red-500' },
+    ];
+
+    return (
+        <div className="bg-gray-50 p-4 rounded-xl space-y-3 border-l-4 border-[#FF8A65]">
+            <label className="text-sm font-semibold text-gray-700">Nível da dor</label>
+            <div className="flex gap-2">
+                {levels.map((level) => (
+                    <button
+                        key={level.value}
+                        type="button"
+                        onClick={() => onChange(level.value)}
+                        className={cn(
+                            "flex-1 py-2 rounded-lg text-sm font-bold text-white transition-all transform active:scale-95",
+                            value === level.value
+                                ? `${level.color} shadow-md scale-105`
+                                : 'bg-gray-300'
+                        )}
+                    >
+                        {level.label}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default function FinishRegisterNew() {
 
@@ -61,202 +86,184 @@ export default function FinishRegisterNew() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            toothache: false,
-            painLevel: 0,
-            sensitivity: false,
-            toothStain: false,
-            aestheticDiscomfort: false,
-            userObservations: ""
+            toothache: toothache || false,
+            painLevel: painLevel || 0,
+            sensitivity: sensitivity || false,
+            toothStain: toothStain || false,
+            aestheticDiscomfort: aestheticDiscomfort || false,
+            userObservations: userObservations || ""
         },
     })
 
-    async function onSubmit(_values: z.infer<typeof formSchema>) {
+    const handleChange = (field: string, value: any) => {
+        updateFields({ [field]: value });
+        form.setValue(field as keyof z.infer<typeof formSchema>, value);
+
+        // Reset dependent fields
+        if (field === 'toothache' && !value) {
+            updateFields({ painLevel: 0 });
+            form.setValue('painLevel', 0);
+        }
+        if (field === 'toothStain' && !value) {
+            updateFields({ aestheticDiscomfort: false });
+            form.setValue('aestheticDiscomfort', false);
+        }
+    };
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (import.meta.env.VITE_DEV_MODE === 'true') {
+            console.log(values);
+        }
         next()
     }
 
     return (
+        <div className="w-full min-h-screen bg-[#A0E7E5] relative overflow-auto">
+            <ToyBackground />
 
-        <div className='overflow-auto max-h-screen min-h-screen'>
-
-            <div className="bg-[#0C4A6E] h-32 w-full"></div>
-
-            <div className='flex flex-col items-start justify-center pt-[30px] rounded-t-3xl -mt-16 bg-white'>
-
-                <div className="flex w-[100%] justify-start items-center px-[30px] mt-2 mb-10">
-
-                    <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 " onClick={back}>
-                        <ArrowLeft color="black" />
-                    </Button>
+            <div className="relative z-10 min-h-screen flex flex-col pb-10">
+                {/* Header */}
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
+                    <button onClick={back} className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center">
+                        <ChevronLeft size={24} />
+                    </button>
+                    <h1 className="text-xl font-bold text-gray-800">Questionário</h1>
                 </div>
 
-                <Card className='w-[100%] border-none'>
-                    <CardHeader>
-                        <CardTitle className='text-center font-extrabold mb-10'>Terminar seu registro</CardTitle>
-                    </CardHeader>
-                    <CardContent className='flex flex-col items-center justify-center'>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="toothache"
-                                    render={() => (
-                                        <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel className='font-bold'>A criança sente dor nos dentes ?</FormLabel>
-                                            <div className='flex gap-[15px] items-center justify-center'>
-                                                <FormDescription>Não</FormDescription>
-                                                <FormControl>
-                                                    <Switch
-                                                        checked={toothache}
-                                                        onCheckedChange={(checked) => {
-                                                            updateFields({ toothache: checked });
-                                                            form.setValue("toothache", checked);
-
-                                                            if (!checked) {
-                                                                updateFields({ painLevel: 0 });
-                                                                form.setValue("painLevel", 0);
-                                                            }
-
-                                                        }} />
-                                                </FormControl>
-                                                <FormDescription>Sim</FormDescription>
-                                            </div>
-                                        </FormItem>
-                                    )}
-                                />
-                                {toothache && (<FormField
-                                    control={form.control}
-                                    name="painLevel"
-                                    render={() => (
-                                        <FormItem >
-                                            <FormLabel className='font-bold'>Nível da dor </FormLabel>
-                                            <Select
-                                                onValueChange={e => {
-                                                    updateFields({ painLevel: Number(e) })
-                                                    form.setValue("painLevel", Number(e));
-                                                }}
-                                                defaultValue={String(painLevel)}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Selecione o nível de dor" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="1">Leve</SelectItem>
-                                                    <SelectItem value="2">Moderada</SelectItem>
-                                                    <SelectItem value="3">Intensa</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />)}
-                                <FormField
-                                    control={form.control}
-                                    name="sensitivity"
-                                    render={() => (
-                                        <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel className='font-bold'>A criança tem sensibilidade nos dentes ?</FormLabel>
-                                            <div className='flex gap-[15px] items-center justify-center'>
-                                                <FormDescription>Não</FormDescription>
-                                                <FormControl>
-                                                    <Switch
-                                                        checked={sensitivity}
-                                                        onCheckedChange={checked => {
-                                                            updateFields({ sensitivity: checked })
-                                                            form.setValue("sensitivity", checked);
-
-                                                        }} />
-                                                </FormControl>
-                                                <FormDescription>Sim</FormDescription>
-                                            </div>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="toothStain"
-                                    render={() => (
-                                        <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel className='font-bold'>A criança apresenta mancha nos dentes ?</FormLabel>
-                                            <div className='flex gap-[15px] items-center justify-center'>
-                                                <FormDescription>Não</FormDescription>
-                                                <FormControl>
-                                                    <Switch
-                                                        checked={toothStain}
-                                                        onCheckedChange={(checked) => {
-                                                            updateFields({ toothStain: checked })
-                                                            form.setValue("toothStain", checked);
-
-                                                            if (!checked) {
-                                                                updateFields({ aestheticDiscomfort: false })
-                                                                form.setValue("aestheticDiscomfort", false);
-                                                            }
-                                                        }} />
-                                                </FormControl>
-                                                <FormDescription>Sim</FormDescription>
-                                            </div>
-                                        </FormItem>
-                                    )}
-                                />
-                                {toothStain && (<FormField
-                                    control={form.control}
-                                    name="aestheticDiscomfort"
-                                    render={() => (
-                                        <FormItem className='flex flex-col gap-[10px] items-center justify-center'>
-                                            <FormLabel className='font-bold'>A mancha gera desconforto estético ?</FormLabel>
-                                            <div className='flex gap-[15px] items-center justify-center'>
-                                                <FormDescription>Não</FormDescription>
-                                                <FormControl>
-                                                    <Switch
-                                                        checked={aestheticDiscomfort}
-                                                        onCheckedChange={checked => {
-                                                            updateFields({ aestheticDiscomfort: checked })
-                                                            form.setValue("aestheticDiscomfort", checked);
-
-                                                        }} />
-                                                </FormControl>
-                                                <FormDescription>Sim</FormDescription>
-                                            </div>
-                                        </FormItem>
-                                    )}
-                                />)}
-                                <FormField
-                                    control={form.control}
-                                    name="userObservations"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Observações</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-
-                                                    placeholder="Observações adicionais"
-                                                    className="resize-none "
-                                                    value={userObservations}
-                                                    onChange={e => {
-                                                        updateFields({ userObservations: e.target.value })
-                                                        form.setValue("userObservations", e.target.value);
-
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <Button className="w-[300px] text-center" type="submit">
-                                    Próximo
-                                </Button>
+                {/* Content */}
+                <div className="flex-1 flex items-center justify-center px-6">
+                    <div className="w-full max-w-md md:max-w-4xl">
+                        <div className="bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-3xl shadow-xl space-y-6">
+                            <p className="text-gray-600 text-center mb-2">
+                                Responda algumas perguntas sobre a criança.
+                            </p>
 
 
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                        <FormField
+                                            control={form.control}
+                                            name="toothache"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <ToggleField
+                                                            label="A criança sente dor de dente?"
+                                                            value={toothache}
+                                                            onChange={(val) => handleChange('toothache', val)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        {toothache && (
+                                            <FormField
+                                                control={form.control}
+                                                name="painLevel"
+                                                render={() => (
+                                                    <FormItem className="md:col-span-1">
+                                                        <FormControl>
+                                                            <PainLevelSelector
+                                                                value={painLevel}
+                                                                onChange={(val) => handleChange('painLevel', val)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        )}
+
+                                        <FormField
+                                            control={form.control}
+                                            name="sensitivity"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <ToggleField
+                                                            label="Tem sensibilidade nos dentes?"
+                                                            value={sensitivity}
+                                                            onChange={(val) => handleChange('sensitivity', val)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="toothStain"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <ToggleField
+                                                            label="Apresenta mancha nos dentes?"
+                                                            value={toothStain}
+                                                            onChange={(val) => handleChange('toothStain', val)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        {toothStain && (
+                                            <FormField
+                                                control={form.control}
+                                                name="aestheticDiscomfort"
+                                                render={() => (
+                                                    <FormItem className="md:col-span-2">
+                                                        <FormControl>
+                                                            <ToggleField
+                                                                label="A mancha gera desconforto estético?"
+                                                                value={aestheticDiscomfort}
+                                                                onChange={(val) => handleChange('aestheticDiscomfort', val)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        )}
+
+                                        <FormField
+                                            control={form.control}
+                                            name="userObservations"
+                                            render={() => (
+                                                <FormItem className="md:col-span-2">
+                                                    <FormLabel className="block text-sm font-semibold text-gray-600 mb-1 ml-1">Observações</FormLabel>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            placeholder="Adicione uma observação..."
+                                                            rows={3}
+                                                            value={userObservations}
+                                                            onChange={(e) => handleChange('userObservations', e.target.value)}
+                                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#A0E7E5] focus:ring-2 focus:ring-[#A0E7E5]/20 text-gray-700 transition-all resize-none"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="pt-4 flex justify-end">
+                                        <div className="w-full md:w-auto md:min-w-[200px]">
+                                            <ActionButton type="submit" icon={ArrowRight}>
+                                                Ver Resumo
+                                            </ActionButton>
+                                        </div>
+                                    </div>
+                                </form>
+                            </Form>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-
+        </div >
     )
-
 }

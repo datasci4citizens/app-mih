@@ -28,16 +28,15 @@ Esse arquivo ReadME tem como objetivo explicar os processos e interação entre 
       - `CreateRegisterForm.tsx`: Componente que gerencia o formulário de criação de registro, com a lógica de múltiplos passos.
       - `FinishRegisterNew.tsx`: Última etapa do formulário de registro, com perguntas sobre dor, sensibilidade e manchas.
       - `RegisterSumary.tsx`: Página que mostra um resumo de todas as informações do registro antes de enviá-lo.
+    - `AllRegisters.tsx`: Mostra a visualização consolidada de todos os registros de todas as crianças cadastradas pelo responsável, com estatísticas totais.
     - `PatientRegisters.tsx`: Mostra a lista de registros de um paciente específico.
     - `Patients.tsx`: Mostra a lista de crianças (pacientes) cadastradas por um responsável.
     - `Register.tsx`: Exibe as informações detalhadas de um registro específico, incluindo o diagnóstico (se houver).
-    - `RegistersControl.tsx`: Controla o fluxo de visualização dos registros do usuário, gerenciando o estado entre a lista de pacientes, a lista de registros do paciente e a visualização de um registro específico.
 
 - `user`
   - `create-specialist`
     - `CreateSpecialist.tsx`: Formulário para o especialista completar seu cadastro.
   - `create-user-patient`
-    - `CreateUser.tsx`: Formulário para o responsável (usuário) se cadastrar.
+    - `CreateUser.tsx`: Formulário para o responsável (usuário) se cadastrar, incluindo informações sobre o TCLE (Termo de Consentimento Livre e Esclarecido).
     - `PatientForm.tsx`: Formulário para cadastrar uma nova criança, com perguntas sobre seu histórico de saúde.
-    - `Tcle.tsx`: Página que exibe o Termo de Consentimento Livre e Esclarecido (TCLE) e direciona para o cadastro.
   - `SelectUserType.tsx`: Página inicial onde o usuário seleciona se é um paciente/responsável ou um dentista.

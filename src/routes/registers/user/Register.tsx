@@ -1,190 +1,230 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
-
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-
-} from "@/components/ui/carousel"
-
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, User2Icon } from "lucide-react";
-import { useRegistersContext } from "./RegistersControl";
+import { ChevronLeft, AlertCircle, Thermometer, FileText, Stethoscope, User as UserIcon } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ToyBackground } from "@/components/ui/toy-background";
 import { MinioImage } from "@/components/ui/minio-image";
+import { useState } from "react";
+import useSWR from 'swr';
+import SkeletonLoading from "@/components/SkeletonLoading";
+import ErrorPage from "@/components/ErrorPage";
+
+// InfoItem component for displaying questionnaire data
+interface InfoItemProps {
+    icon: React.ElementType;
+    label: string;
+    value: string;
+}
+
+const InfoItem = ({ icon: Icon, label, value }: InfoItemProps) => (
+    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+        <div className="p-2 bg-white rounded-lg shadow-sm text-[#A0E7E5]">
+            <Icon size={20} />
+        </div>
+        <div>
+            <p className="text-xs text-gray-500 font-medium">{label}</p>
+            <p className="text-sm font-bold text-gray-700">{value}</p>
+        </div>
+    </div>
+);
+
+// Get diagnosis styling
+const getDiagnosisStyle = (diagnosis: string | null) => {
+    switch (diagnosis) {
+        case "presence":
+            return { label: "Presença de HMI", color: "text-red-500", bg: "bg-red-500", risk: "Alto" };
+        case "sugestive":
+            return { label: "Sugestivo de HMI", color: "text-yellow-500", bg: "bg-yellow-500", risk: "Médio" };
+        case "absence":
+            return { label: "Ausência de HMI", color: "text-green-500", bg: "bg-green-500", risk: "Baixo" };
+        case "invalid":
+            return { label: "Fotos inadequadas", color: "text-gray-500", bg: "bg-gray-500", risk: "Inválido" };
+        default:
+            return { label: "Aguardando diagnóstico", color: "text-orange-500", bg: "bg-orange-500", risk: "Pendente" };
+    }
+};
+
+const getPainLevelLabel = (level: number) => {
+    switch (level) {
+        case 0: return "Sem dor";
+        case 1: return "Leve";
+        case 2: return "Moderada";
+        case 3: return "Intensa";
+        default: return "Não informado";
+    }
+};
 
 export default function Register() {
+    const { patientId, registerId } = useParams<{ patientId: string; registerId: string }>();
+    const navigate = useNavigate();
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-    const { register, patient, back } = useRegistersContext();
+    const { data: patient, error: patientError, isLoading: patientLoading } = useSWR(`/api/patients/${patientId}`);
+    const { data, error, isLoading } = useSWR(`/api/patients/${patientId}/mih`);
+
+    if (isLoading || patientLoading) {
+        return <SkeletonLoading />;
+    }
+
+    if (error || patientError) {
+        return <ErrorPage type="user"></ErrorPage>;
+    }
+
+    const register = Array.isArray(data) ? data.find((r: any) => (r.mih_id ?? r.id) === Number(registerId)) : undefined;
+
+    if (!register || !patient) {
+        return <ErrorPage type="user"></ErrorPage>;
+    }
+
+    const diagnosisStyle = getDiagnosisStyle(register.diagnosis);
+    const painLevel = getPainLevelLabel(register.painLevel);
+    const photos = [register.photo_id1, register.photo_id2, register.photo_id3];
 
     return (
+        <div className="min-h-screen h-full relative bg-[#A0E7E5]">
+            <ToyBackground />
 
-        <div className="overflow-scroll max-h-screen">
+            <div className="min-h-screen h-full flex flex-col relative z-10">
+                {/* Header */}
+                <div className="px-6 pb-4 flex items-center gap-4" style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}>
+                    <button onClick={() => navigate(-1)} className="bg-white/40 hover:bg-white/60 text-gray-700 rounded-full h-12 w-12 border border-white/50 backdrop-blur-md shadow-lg transition-colors flex items-center justify-center">
+                        <ChevronLeft size={24} />
+                    </button>
+                    <h1 className="text-xl font-bold text-gray-800">Detalhes do Registro</h1>
+                </div>
 
-            <div className="bg-[#0C4A6E] h-32 w-full"></div>
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto">
+                    <div className="min-h-full p-6 pb-20">
+                        <div className="w-full max-w-md md:max-w-4xl mx-auto space-y-6">
 
-            <div className=" items-center justify-between pt-[30px] rounded-t-3xl -mt-16 bg-white">
+                            {/* Header Card with Patient Info and Diagnosis */}
+                            <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl border border-gray-100">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-[#A0E7E5] to-[#8EC9BB] rounded-full flex items-center justify-center text-white">
+                                            <UserIcon size={24} strokeWidth={2.5} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-gray-800">{patient.name}</h2>
+                                            <p className="text-sm text-gray-500">
+                                                {new Date(register.start_date).toLocaleDateString('pt-BR')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {register.diagnosis && (
+                                        <div className={`px-4 py-2 rounded-full bg-opacity-10 ${diagnosisStyle.bg} ${diagnosisStyle.color} font-bold text-sm`}>
+                                            Risco {diagnosisStyle.risk}
+                                        </div>
+                                    )}
+                                </div>
 
-                <div className="w-[100%] mt-2">
-                    <div className="flex w-[100%] justify-between items-center px-[30px] mb-10">
+                                {register.diagnosis ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="bg-gray-50 p-4 rounded-2xl">
+                                            <h3 className="font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                                <FileText size={18} />
+                                                Diagnóstico
+                                            </h3>
+                                            <p className={`font-bold ${diagnosisStyle.color}`}>{diagnosisStyle.label}</p>
+                                        </div>
+                                        {register.specialistObservations && (
+                                            <div className="bg-gray-50 p-4 rounded-2xl">
+                                                <h3 className="font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                                    <Stethoscope size={18} />
+                                                    Observações do Especialista
+                                                </h3>
+                                                <p className="text-gray-600 text-sm">{register.specialistObservations}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="bg-orange-50 border border-orange-200 p-4 rounded-2xl flex items-center gap-3">
+                                        <AlertCircle className="text-orange-500" size={24} />
+                                        <div>
+                                            <p className="font-bold text-orange-700">Aguardando Diagnóstico</p>
+                                            <p className="text-sm text-orange-600">Este registro ainda não foi avaliado por um especialista.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
-                        <Button size={"icon"} onClick={back} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
+                            {/* Photos */}
+                            <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl border border-gray-100">
+                                <h3 className="font-bold text-gray-800 mb-4 text-lg">Fotos Registradas</h3>
 
-                            <ArrowLeft color="black" />
+                                {/* Main Photo Display */}
+                                <div className="mb-4 bg-gray-100 rounded-2xl overflow-hidden">
+                                    <MinioImage
+                                        className="w-full h-64 md:h-96 object-contain"
+                                        imageId={photos[currentPhotoIndex]}
+                                    />
+                                </div>
 
-                        </Button>
+                                {/* Photo Thumbnails */}
+                                <div className="grid grid-cols-3 gap-2 mt-6 max-w-sm mx-auto">
+                                    {photos.map((photoId, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setCurrentPhotoIndex(index)}
+                                            className={`aspect-square bg-gray-100 rounded-xl overflow-hidden border-2 transition-all ${currentPhotoIndex === index
+                                                ? 'border-[#A0E7E5] shadow-lg scale-100 opacity-100'
+                                                : 'border-gray-200 hover:border-gray-300 scale-90 opacity-60'
+                                                }`}
+                                        >
+                                            <MinioImage
+                                                className="w-full h-full object-cover"
+                                                imageId={photoId}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
 
-                        <h1 className="text-3xl font-bold">Registro</h1>
+                                <div className="mt-3 flex justify-center gap-2">
+                                    <span className="text-xs text-gray-500 font-medium">
+                                        {currentPhotoIndex === 0 && "Foto Frontal"}
+                                        {currentPhotoIndex === 1 && "Molar Direito"}
+                                        {currentPhotoIndex === 2 && "Molar Esquerdo"}
+                                    </span>
+                                </div>
+                            </div>
 
-                        <Button size={"icon"} className="bg-[#E2E8F0] hover:bg-[#E2E8F0]/70 ">
-                            <User2Icon color="black" />
-                        </Button>
+                            {/* Questionnaire Answers */}
+                            <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-xl border border-gray-100">
+                                <h3 className="font-bold text-gray-800 mb-4 text-lg">Respostas do Questionário</h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <InfoItem
+                                        icon={AlertCircle}
+                                        label="Dor de Dente"
+                                        value={register.painLevel > 0 ? `Sim (${painLevel})` : "Não"}
+                                    />
+                                    <InfoItem
+                                        icon={Thermometer}
+                                        label="Sensibilidade"
+                                        value={register.sensitivityField ? "Sim" : "Não"}
+                                    />
+                                    <InfoItem
+                                        icon={AlertCircle}
+                                        label="Manchas nos Dentes"
+                                        value={register.stain ? "Sim" : "Não"}
+                                    />
+                                    <InfoItem
+                                        icon={UserIcon}
+                                        label="Desconforto Estético"
+                                        value={register.aestheticDiscomfort ? "Sim" : "Não"}
+                                    />
+                                </div>
+
+                                {register.userObservations && (
+                                    <div className="mt-4 p-4 bg-gray-50 rounded-2xl">
+                                        <p className="text-xs text-gray-500 font-medium mb-1">Observações do Responsável</p>
+                                        <p className="text-gray-700 text-sm">{register.userObservations}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-
-                    <Card className="w-[100%] p-[20px] border-none shadow-none">
-
-                        <CardDescription>
-                            Resgistro criado em: {new Date(register?.start_date || "").toLocaleDateString('pt-BR')}
-                        </CardDescription>
-
-                        <CardContent className="flex flex-col items-center p-[20px] ">
-
-                            <Carousel className="w-full max-w-[80%]">
-                                <CarouselContent>
-                                    {Array.from({ length: 3 }).map((_, index) => {
-
-                                        const photoKey = `photo_id${index + 1}` as 'photo_id1' | 'photo_id2' | 'photo_id3';
-
-                                        if (register)
-                                            return (
-                                                <CarouselItem key={index} className="min-h-[200px] flex items-center justify-center">
-                                                    <div className="p-1">
-                                                        <MinioImage className="max-h-96 object-contain" path={`/${import.meta.env.VITE_MINIO_IMAGES_BUCKET}/${register[photoKey]}.jpg`} />
-                                                    </div>
-                                                </CarouselItem>
-                                            )
-                                        else
-                                            return (
-                                                <CarouselItem key={index}>
-                                                    <div className="p-1">
-                                                        <h1>Error</h1>
-                                                    </div>
-                                                </CarouselItem>
-                                            )
-                                    })}
-                                </CarouselContent>
-                                <CarouselPrevious />
-                                <CarouselNext />
-                            </Carousel>
-
-                            <Card className="min-w-[80%] mt-4">
-                                <CardHeader>
-                                    <CardTitle className="text-sm ">
-                                        {patient?.name}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <CardDescription>
-                                        Data de nascimento: {new Date(patient?.birthday || "").toLocaleDateString('pt-BR')}
-                                    </CardDescription>
-                                    <CardDescription>
-                                        Registro enviado: {new Date(register?.start_date ? register?.start_date : 0).toLocaleDateString('pt-BR')}
-                                    </CardDescription>
-                                    <CardDescription>
-                                        Dor nos dentes: {register?.painLevel == 0 ? "Não possui" : ""}
-                                        {register?.painLevel == 1 ? "Leve" : ""}
-                                        {register?.painLevel == 2 ? "Moderada" : ""}
-                                        {register?.painLevel == 3 ? "Intensa" : ""}
-                                    </CardDescription>
-                                    <CardDescription>
-                                        Apresenta manchas {register?.stain ? "Sim" : "Não"}
-                                    </CardDescription>
-                                    <CardDescription>
-                                        Tem Sensibilidade {register?.sensitivityField ? "Sim" : "Não"}
-                                    </CardDescription>
-                                    <CardDescription>
-                                        Observações {register?.userObservations}
-                                    </CardDescription>
-
-                                </CardContent>
-                            </Card>
-
-                            {
-
-                                !register?.diagnosis && (
-
-                                    <h1 className="text-center font-bold text-destructive mt-10">O registro não foi diagnosticado ainda</h1>
-
-                                )
-
-                            }
-
-                            <Accordion type="single" collapsible className="w-full">
-                                {
-
-                                    register?.diagnosis && (
-                                        <AccordionItem value="item-1">
-                                            <AccordionTrigger>Diagnóstico</AccordionTrigger>
-
-                                            {
-                                                register?.diagnosis !== null ? (
-                                                    <AccordionContent>
-                                                        {register?.diagnosis == "sugestive" ? "Sugestivo de HMI" : ""}
-                                                        {register?.diagnosis == "presence" ? "Presença de HMI" : ""}
-                                                        {register?.diagnosis == "absence" ? "Ausência de HMI" : ""}
-                                                        {register?.diagnosis == "invalid" ? "Fotos inadequadas para o diagnóstivo, por favor enviar um novo registro" : ""}
-
-                                                    </AccordionContent>
-                                                ) : (
-                                                    <AccordionContent>
-                                                        O registro ainda não foi diagnosticado
-                                                    </AccordionContent>
-                                                )
-
-                                            }
-
-                                        </AccordionItem>
-                                    )
-
-                                }
-                                {
-                                    register?.specialistObservations && (
-                                        <AccordionItem value="item-2">
-
-                                            <AccordionTrigger>Observações do especialista</AccordionTrigger>
-
-                                            <AccordionContent>
-                                                {register.specialistObservations}
-                                            </AccordionContent>
-                                        </AccordionItem>
-
-                                    )
-
-                                }
-
-                            </Accordion>
-
-                        </CardContent>
-
-                    </Card >
                 </div>
             </div>
         </div>
-
-
-    )
-
+    );
 }

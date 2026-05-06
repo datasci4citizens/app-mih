@@ -1,4 +1,4 @@
-import { useUser } from "@/lib/hooks/use-user";
+import { useUser } from "@/hooks/useUser";
 import { Navigate, Outlet } from "react-router-dom";
 
 export function NoRoleGuard() {
