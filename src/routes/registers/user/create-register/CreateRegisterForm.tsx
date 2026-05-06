@@ -152,9 +152,9 @@ export default function CreateRegister() {
 
     const navigate = useNavigate();
 
-    // Reset patient data when patient_id changes, but don't overwrite if it already exists
+    // Reset patient data when patient_id changes, but don't overwrite if it already exists for the same patient
     useEffect(() => {
-        if (patientData && !sendData.patient) {
+        if (patientData && (!sendData.patient || String(sendData.patient.patient_id) !== String(patient_id))) {
             setSendData(() => ({
                 ...INIT_DATA,
                 patient: patientData
