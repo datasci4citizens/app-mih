@@ -14,6 +14,7 @@
 		"@boengli/capacitor-fullscreen": "^0.0.19",
 		"@capacitor/android": "^7.4.4",
 		"@capacitor/app": "^8.1.0",
+		"@capacitor/browser": "^7.0.5",
 		"@capacitor/core": "^7.4.4",
 		"@capacitor/ios": "^7.4.4",
 		"@capgo/capacitor-social-login": "^7.14.11",

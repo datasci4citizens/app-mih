@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import apiClient from "@/lib/axios";
 import { notifyApiError } from "@/lib/api-error";
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import {
     ChevronLeft,
     Download,
@@ -36,8 +38,14 @@ export default function SettingsPage() {
                 params: { hash: documentHash }
             });
             const url = resp.data.presigned_url;
+            
+            if (Capacitor.isNativePlatform()) {
+                // Abre no navegador externo do aparelho, delegando o download para ele
+                await Browser.open({ url });
+                return;
+            }
+            
             const contentType = resp.data.content_type;
-
             const ext = contentType === 'text/html' ? '.html' : '.pdf';
             const filename = `${defaultFilename}${ext}`;
 
