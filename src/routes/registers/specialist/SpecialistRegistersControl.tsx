@@ -67,7 +67,7 @@ export default function SpecialistRegistersControl() {
     if (isLoading) {
         return <SkeletonLoading />
     }
-    if (error || data.detail) {
+    if (error || data?.detail) {
         return <ErrorPage type="specialist"></ErrorPage>
     }
 
