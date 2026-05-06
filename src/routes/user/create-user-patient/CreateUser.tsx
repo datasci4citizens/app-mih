@@ -182,10 +182,6 @@ export default function CreateUser() {
 			user_agent: navigator.userAgent,
 		};
 
-		// console.log('DEBUG: Submitting payload:', payload);
-		// console.log('DEBUG: tcle unlocked?', tcle.isUnlocked, 'doc id:', getTcleDocId());
-		// console.log('DEBUG: privacy unlocked?', privacy.isUnlocked, 'doc id:', getPrivacyDocId());
-
 		try {
 			const result = await trigger(payload);
 

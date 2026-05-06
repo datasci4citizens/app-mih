@@ -64,13 +64,17 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
 
         (async () => {
             try {
-                console.log("[PdfViewer] Carregando:", url);
+                if (import.meta.env.VITE_DEV_MODE === 'true') {
+                    console.log("[PdfViewer] Carregando:", url);
+                }
                 const dpr = window.devicePixelRatio || 1;
                 const scale = RENDER_SCALE * dpr;
 
                 const pdfDoc = await pdfjsLib.getDocument(url).promise;
                 if (cancelled) return;
-                console.log(`[PdfViewer] ${pdfDoc.numPages} páginas, scale=${scale}`);
+                if (import.meta.env.VITE_DEV_MODE === 'true') {
+                    console.log(`[PdfViewer] ${pdfDoc.numPages} páginas, scale=${scale}`);
+                }
 
                 for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
                     if (cancelled) return;
@@ -110,7 +114,9 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
                         // Respeita os limites de zoom
                         const clampedFitZoom = Math.max(PDF_ZOOM_CONSTANTS.MIN, Math.min(PDF_ZOOM_CONSTANTS.MAX, fitZoom));
 
-                        console.log(`[PdfViewer] fitZoom=${clampedFitZoom.toFixed(2)} (raw=${fitZoom.toFixed(2)}), availableWidth=${availableWidth}, cssW=${cssW}`);
+                        if (import.meta.env.VITE_DEV_MODE === 'true') {
+                            console.log(`[PdfViewer] fitZoom=${clampedFitZoom.toFixed(2)} (raw=${fitZoom.toFixed(2)}), availableWidth=${availableWidth}, cssW=${cssW}`);
+                        }
                         onReady(clampedFitZoom);
                         fitEmitted = true;
                     }
@@ -118,7 +124,9 @@ export function PdfViewer({ url, zoom, onReady, onScrolledToEnd, onProgress }: P
 
                 if (!cancelled) {
                     setStatus("done");
-                    console.log("[PdfViewer] Renderização concluída");
+                    if (import.meta.env.VITE_DEV_MODE === 'true') {
+                        console.log("[PdfViewer] Renderização concluída");
+                    }
                 }
             } catch (e) {
                 if (import.meta.env.VITE_DEV_MODE === 'true') {

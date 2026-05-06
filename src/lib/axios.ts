@@ -5,9 +5,7 @@ import { notifyApiError } from './api-error';
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_SERVER_URL,
 	withCredentials: true,
-	headers: {
-		'ngrok-skip-browser-warning': 'true',
-	},
+	headers: import.meta.env.VITE_DEV_MODE === 'true' ? { 'ngrok-skip-browser-warning': 'true' } : {},
 });
 
 // Injeta o JWT em toda requisição
@@ -66,7 +64,7 @@ apiClient.interceptors.response.use(
 				const refreshResponse = await axios.post(
 					`${import.meta.env.VITE_SERVER_URL}/api/token/refresh/`,
 					{ refresh },
-					{ headers: { 'ngrok-skip-browser-warning': 'true' } },
+					{ headers: import.meta.env.VITE_DEV_MODE === 'true' ? { 'ngrok-skip-browser-warning': 'true' } : {} },
 				);
 				const newAccessToken = refreshResponse.data.access;
 
