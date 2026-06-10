@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+.git
+.github
+android
+ios
+.env
+.env-local
+.env-global
+*.log
+.DS_Store
