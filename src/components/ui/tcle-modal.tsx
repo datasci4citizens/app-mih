@@ -118,9 +118,10 @@ export function TcleModal({ open, onOpenChange }: TcleModalProps) {
                                 Em caso de dúvidas sobre a pesquisa, você pode entrar em contato com:
                             </p>
                             <ul className="list-none ml-4 mt-2 space-y-1">
-                                <li><strong>Instituição:</strong> FOP - Unicamp</li>
-                                <li><strong>Departamento:</strong> </li>
-                                <li><strong>E-mail:</strong> </li>
+                                <li><strong>Instituição:</strong> Faculdade de Odontologia de Piracicaba (UNICAMP)</li>
+                                <li><strong>Departamento:</strong> Ciências da Saúde e Odontologia Infantil, Área de Saúde Coletiva</li>
+                                <li><strong>E-mail:</strong> c223510@dac.unicamp.br / meneghim@unicamp.br</li>
+                                <li><strong>Telefone:</strong> (68) 98110-1711 / (19) 2106-5220</li>
                             </ul>
                         </section>
 
