@@ -3,14 +3,6 @@ apply plugin: 'com.android.application'
 import java.util.Properties
 import java.io.FileInputStream
 
-def envFile = rootProject.file(".env")
-def googleClientId = ""
-
-if (envFile.exists()) {
-    Properties properties = new Properties()
-    properties.load(new FileInputStream(envFile))
-    googleClientId = properties.getProperty("VITE_GOOGLE_CLIENT_ID")
-}
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -25,15 +17,14 @@ android {
         applicationId "br.unicamp.ic.mih"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "2.1"
+        versionCode 7
+        versionName "2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
-        resValue "string", "server_client_id", googleClientId
     }
     signingConfigs {
         release {
